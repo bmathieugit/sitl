@@ -1,0 +1,29 @@
+
+
+type person 
+ attr i32 id
+ attr i16 age
+
+
+function i32 main 
+  param i32 argc
+  param string argv
+  
+  let i32 a 12
+  let i32 b a
+  let string c b 
+ 
+
+  const string toto "coucou"
+  copy a 12  
+  move b a 
+
+  if true
+    return 1
+  
+  while true 
+    return 2
+  
+  return a
+  return bool
+  return toto qdqs
