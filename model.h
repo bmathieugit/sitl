@@ -7,6 +7,10 @@
 #define LTKSSIZE 6
 #define MAXERRORS 50
 
+
+// OBJECT MODEL
+
+
 typedef enum
 {
   TT_ATTR,
@@ -62,6 +66,18 @@ typedef struct
   tl_state_t state;
 
 } tline_t;
+
+
+typedef struct 
+{
+  size_t hash;
+  char* val;
+
+} type_index_t;
+
+
+// PROCESS MODEL
+
 
 typedef enum
 {

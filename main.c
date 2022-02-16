@@ -28,16 +28,17 @@ int main(
          process.astname,
          process.repname);
 
-  sitl_fparse();
+  sitl_parse();
   sitl_fparse_error();
 
-  sitl_fcheckstx();
+  sitl_checkstx();
   sitl_fcheckstx_error();
 
-  // sitl_fchecksem();
+  // sitl_checksem();
   // sitl_fchecksem_error();
 
   sitl_wreport();
+  sitl_typesindex();
 
   return EXIT_SUCCESS;
 }

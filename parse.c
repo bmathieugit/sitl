@@ -271,7 +271,7 @@ __lastl(tline_t *tl)
   tl->offset = 0;
 }
 
-void sitl_fparse()
+void sitl_parse()
 {
   if (process.prssstate != STEP_NOTDONE)
     return;

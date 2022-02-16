@@ -4,6 +4,51 @@ type person
  attr i32 id
  attr i16 age
 
+type person 
+ attr i32 id
+ attr i16 age
+
+
+type person 
+ attr i32 id
+ attr i16 age
+
+
+type person 
+ attr i32 id
+ attr i16 age
+
+
+type person 
+ attr i32 id
+ attr i16 age
+
+
+type person 
+ attr i32 id
+ attr i16 age
+
+
+type person 
+ attr i32 id
+ attr i16 age
+
+
+type person 
+ attr i32 id
+ attr i16 age
+
+
+type person 
+ attr i32 id
+ attr i16 age
+
+
+type person 
+ attr i32 id
+ attr i16 age
+
+
 
 function i32 main 
   param i32 argc

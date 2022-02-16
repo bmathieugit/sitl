@@ -24,10 +24,12 @@ void sitl_rreport();
 void sitl_rtksl(tline_t *tl, FILE* ftks);
 void sitl_wtksl(tline_t *tl, FILE* ftks);
 
-void sitl_fparse();
-void sitl_fcheckstx();
-void sitl_fchecksem();
-void sitl_ftranslate();
+void sitl_parse();
+void sitl_checkstx();
+void sitl_typesindex();
+void sitl_buildast();
+void sitl_checksem();
+void sitl_translate();
 
 void sitl_fparse_error();
 void sitl_fcheckstx_error();

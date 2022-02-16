@@ -6,7 +6,7 @@
 #include "model.h"
 #include "api.h"
 
-void sitl_fcheckstx()
+void sitl_checkstx()
 {
   if (process.stxsstate != STEP_NOTDONE)
     return;
