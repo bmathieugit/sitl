@@ -161,13 +161,13 @@ namespace lib
     return s ? 4 : 5;
   }
 
-  template <character char_t, typename buffer_t>
+  template <typename buffer_t>
   inline void format_of(
       buffer_t &buff,
       const bool &v)
   {
-    format_of(buff, v ? basic_string_view<char_t>("true")
-                      : basic_string_view<char_t>("false"));
+    format_of(buff, v ? string_view("true")
+                      : string_view("false"));
   }
 
   template <character char_t>

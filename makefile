@@ -6,10 +6,11 @@ LIBS=-I.
 SRCS=$(wildcard *.cpp)
 EXECS=$(SRCS:.cpp=.exe)
 RUNS=$(SRCS:.cpp=.run)
+ASMS=$(SRCS:.cpp=.s)
 
-TEMPS= *.s *.i *.ii *.o *.tks *.report *.ast *.exe
+TEMPS=*.s *.i *.ii *.o *.tks *.report *.ast *.exe *.run
 
-all: $(EXECS) $(RUNS)
+all: $(EXECS) $(RUNS) measure
 
 remake: clean all
 
@@ -23,7 +24,11 @@ remake: clean all
 	./$< > $@ 
 	cat $@
 
+measure: $(ASMS)
+	wc -l $^
+
+
 clean: 
 	rm -f  ${TEMPS}
 
-.PHONY: remake clean all
+.PHONY: remake clean all measure

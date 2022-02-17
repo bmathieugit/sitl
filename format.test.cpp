@@ -1,8 +1,9 @@
 #include "format.hpp"
-#include "format-ansi.hpp"
-#include "ios.hpp"
+#include "test.hpp"
 
 int main()
 {
-  lib::printfln("rpouthis is the ans wer #", lib::cleft | lib::cleft | lib::bold | 42);
+  test_equals(lib::format("this is #", 42), "this is 42");
+  test_equals(lib::format("this is #", "42"), "this is 42");
+  test_equals(lib::format("this is #", true), "this is true");
 }

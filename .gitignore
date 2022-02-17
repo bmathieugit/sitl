@@ -2,6 +2,7 @@
 *.d
 *.s
 *.i
+*.ii
 
 # Object files
 *.o
@@ -57,3 +58,4 @@ dkms.conf
 .vscode
 *.tks
 *.report
+*.run
