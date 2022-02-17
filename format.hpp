@@ -71,7 +71,7 @@ namespace lib
   inline unsigned length_of(const integral_t &i)
   {
     const integral_t v = i;
-    // TODO gérer signe
+    // TODO: gérer signe
     // const int abs[2] = {i, -i};
     // const integral_t v = abs[i < 0];
 
