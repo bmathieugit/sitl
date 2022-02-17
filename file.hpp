@@ -22,18 +22,18 @@ namespace lib
 
     file(std::FILE *f) noexcept : fd(f) {}
 
-    inline bool opened() const
+    bool opened() const
     {
       return fd == nullptr;
     }
 
-    inline bool has_error() const
+    bool has_error() const
     {
       return fd == nullptr or
              std::ferror(fd) != 0;
     }
 
-    inline bool eof() const
+    bool eof() const
     {
       return fd == nullptr or
              std::feof(fd) != 0;
@@ -46,7 +46,7 @@ namespace lib
     }
 
     template <typename type_t, typename limit_t>
-    inline void write(span<type_t, limit_t> s)
+    void write(span<type_t, limit_t> s)
     {
       std::fwrite(s.data(), sizeof(type_t), s.size(), fd);
     }
@@ -60,32 +60,32 @@ namespace lib
     }
 
     // template<typename type_t>
-    // inline void read(basic_string<type_t>& out, lib::size_t nbbytes)
+    // void read(basic_string<type_t>& out, lib::size_t nbbytes)
     // {
     //   std::fread(out.data(), nbbytes, fd);
     // }
   };
 
-  inline file fopen(string_view filename, string_view mode)
+  file fopen(string_view filename, string_view mode)
   {
     file f(std::fopen(filename.data(), mode.data()));
     return f;
   }
 
-  inline void fclose(file &f)
+  void fclose(file &f)
   {
     std::fclose(f.fd);
     f.fd = nullptr;
   }
 
-  inline void fflush(file &f)
+  void fflush(file &f)
   {
     std::fflush(f.fd);
   }
 
-  inline file cout(stdout);
-  inline file cin(stdin);
-  inline file cerr(stderr);
+  file cout(stdout);
+  file cin(stdin);
+  file cerr(stderr);
 }
 
 #endif

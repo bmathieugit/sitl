@@ -140,7 +140,7 @@ namespace lib
 
   template <typename char_t, size_t n,
             typename type_t, typename buffer_t>
-  inline void format_of(
+  void format_of(
       buffer_t &buff,
       const styled_object<char_t, n, type_t> &so)
   {

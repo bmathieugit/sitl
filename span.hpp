@@ -115,7 +115,7 @@ namespace lib
   template <
       typename type_t1, typename lim1,
       typename type_t2, typename lim2>
-  inline bool equals(
+  bool equals(
       const span<type_t1, lim1> s1,
       const span<type_t2, lim2> s2)
   {
