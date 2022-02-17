@@ -21,7 +21,7 @@ remake: clean all
 	${CC} -o $@ $< ${FLAGS} ${LIBS}
 
 %.run: %.exe
-	./$< > $@ 
+	./$< > $@ --file ldla qlkd  qzd  lqk zd: lqkz d
 	cat $@
 
 measure: $(ASMS)

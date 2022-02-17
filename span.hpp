@@ -1,7 +1,6 @@
 #ifndef __lib_span_hpp__
 #define __lib_span_hpp__
 
-
 #include "utility.hpp"
 #include "algorithm.hpp"
 
@@ -10,7 +9,7 @@ namespace lib
   struct normal_limit
   {
     constexpr size_t
-    operator()(
+    sized(
         size_t n)
     {
       return n;
@@ -18,13 +17,13 @@ namespace lib
   };
 
   template <
-      typename type_t,
-      typename end_limit = normal_limit>
+      typename T,
+      typename limit = normal_limit>
   class span
   {
 
-    type_t *b = nullptr;
-    type_t *e = nullptr;
+    T *b = nullptr;
+    T *e = nullptr;
 
   public:
     constexpr span() noexcept = default;
@@ -38,61 +37,62 @@ namespace lib
     ~span() = default;
 
     constexpr explicit span(
-        type_t *_begin,
-        type_t *_end)
+        T *_begin,
+        T *_end)
         : b(_begin),
           e(_end) {}
 
     constexpr explicit span(
-        type_t *_begin,
+        T *_begin,
         size_t _length)
         : span(_begin,
                _begin + _length) {}
 
     template <size_t n>
     constexpr span(
-        const type_t (&_begin)[n])
-        : span(_begin, end_limit{}(n)) {}
+        const T (&_begin)[n])
+        : span(_begin, limit{}.sized(n)) {}
+
 
   public:
-    constexpr type_t *
+    constexpr T *
     begin()
     {
       return b;
     }
 
-    constexpr type_t *
+    constexpr T *
     end()
     {
       return e;
     }
 
-    constexpr const type_t *
+    constexpr const T *
     begin() const
     {
       return b;
     }
 
-    constexpr const type_t *
+    constexpr const T *
     end() const
     {
       return e;
     }
 
-    constexpr const type_t *
+    constexpr const T *
     data() const
     {
       return b;
     }
 
-    constexpr const type_t &
+    constexpr const T &
     operator[](
         size_t i) const
     {
       return *(b + i);
     }
 
-    constexpr type_t &
+    constexpr T &
     operator[](
         size_t i)
     {
@@ -112,12 +112,18 @@ namespace lib
     }
   };
 
+  template<typename T>
+  span<T> span_of(T* t, size_t n)
+  {
+    return span<T>(t, n);
+  }
+
   template <
-      typename type_t1, typename lim1,
-      typename type_t2, typename lim2>
+      typename T1, typename lim1,
+      typename T2, typename lim2>
   bool equals(
-      const span<type_t1, lim1> s1,
-      const span<type_t2, lim2> s2)
+      const span<T1, lim1> s1,
+      const span<T2, lim2> s2)
   {
     return lib::equals(
         s1.begin(), s1.end(),

@@ -3,6 +3,7 @@
 
 #include "utility.hpp"
 #include "algorithm.hpp"
+#include "span.hpp"
 
 namespace lib
 {
@@ -10,7 +11,7 @@ namespace lib
   class vector
   {
     size_t lgth = 0;
-    size_t max = 0;
+    size_t max = 10;
     T *data = nullptr;
 
   public:
@@ -28,6 +29,12 @@ namespace lib
         push_back(*b);
     }
 
+    template <typename O>
+    explicit vector(span<O> sp)
+        : vector(sp.begin(), sp.end())
+    {
+    }
+
     vector(const vector<T> &v)
         : vector(v.max)
     {
@@ -36,8 +43,7 @@ namespace lib
     }
 
     vector(vector<T> &&v)
-        : 
-          lgth(v.lgth),
+        : lgth(v.lgth),
           max(v.max),
           data(v.data)
     {
@@ -67,7 +73,20 @@ namespace lib
       return *this;
     }
 
-    vector<T> &operator=(vector<T> &&v) = default;
+    vector<T> &operator=(vector<T> &&v)
+    {
+      if (this != &v)
+      {
+        data = v.data;
+        lgth = v.lgth;
+        max = v.max;
+        v.data = nullptr;
+        v.lgth = 0;
+        v.max = 0;
+      }
+
+      return *this;
+    };
 
     size_t size() const
     {
@@ -106,6 +125,7 @@ namespace lib
           data[i] = move(tmp[i]);
 
         max = nmax;
+        delete[] tmp;
       }
 
       data[lgth] = t;
@@ -124,9 +144,10 @@ namespace lib
           data[i] = move(tmp[i]);
 
         max = nmax;
+        delete[] tmp;
       }
 
-      data[lgth] = move(t);
+      data[lgth] = static_cast<T &&>(t);
       ++lgth;
     }
 
@@ -167,7 +188,7 @@ namespace lib
 
     const T &back() const
     {
-      return *end();
+      return *(end() - 1);
     }
 
     T &front()
@@ -177,7 +198,7 @@ namespace lib
 
     T &back()
     {
-      return *end();
+      return *(end() - 1);
     }
   };
 

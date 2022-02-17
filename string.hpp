@@ -29,6 +29,16 @@ namespace lib
           push_back(c);
     }
 
+    basic_string(
+        const char_t *s)
+    {
+      while (*s != '\0')
+      {
+        push_back(*s);
+        ++s;
+      }
+    }
+
     template <typename iterator_t>
     basic_string(
         iterator_t b,
@@ -43,7 +53,7 @@ namespace lib
         const basic_string &) = default;
 
     basic_string &operator=(
-        basic_string &&) = default;
+        basic_string &&s) = default;
 
   public:
     bool operator==(
@@ -61,7 +71,6 @@ namespace lib
     {
       return view();
     }
-
 
   public:
     const size_t
