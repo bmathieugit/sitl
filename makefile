@@ -1,33 +1,29 @@
-CC=gcc
-FLAGS=-Wall -Werror -pedantic -O3 -save-temps
+CC=g++
+FLAGS=-Wall -Werror -pedantic -O3 -save-temps -std=c++20
 FLAGS+=-DNDEBUG
 LIBS=-I.
 
-SRCS=$(wildcard *.c)
-OBJECTS=$(SRCS:.c=.o)
-ASMS=$(SRCS:.c=.s)
-TEMPS= *.s *.i *.ii *.o *.tks *.report *.ast
+SRCS=$(wildcard *.cpp)
+EXECS=$(SRCS:.cpp=.exe)
+RUNS=$(SRCS:.cpp=.run)
 
-EXEC=sitl.exe
+TEMPS= *.s *.i *.ii *.o *.tks *.report *.ast *.exe
 
-all: exec asms run
+all: $(EXECS) $(RUNS)
+
 remake: clean all
 
-%.o: %.c
+%.o: %.cpp 
 	${CC} -o $@ -c $< ${FLAGS} ${LIBS}
 
-${EXEC}: ${OBJECTS}
-	${CC} -o $@ $^ ${FLAGS} ${LIBS} 
+%.exe: %.o
+	${CC} -o $@ $< ${FLAGS} ${LIBS}
 
-exec: ${EXEC}
-
-asms: ${EXEC} 
-	wc -l ${ASMS}
-
-run: exec
-	./${EXEC} --file=toto.sitl
+%.run: %.exe
+	./$< > $@ 
+	cat $@
 
 clean: 
-	rm -f  ${TEMPS} ${EXEC} 
+	rm -f  ${TEMPS}
 
-.PHONY: remake clean exec asms run
+.PHONY: remake clean all
