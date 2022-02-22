@@ -3,8 +3,7 @@
 
 int main(int argc, char **argv)
 {
-  lib::argument_parser aparse("--", "=", ",");
-  aparse.init(argc, argv);
+  lib::argument_parser aparse("--", "=", ",", argc, argv);
 
   if (aparse.has("file"))
   {

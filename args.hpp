@@ -18,9 +18,9 @@ namespace lib
     argument_parser(
         std::string_view _prefix,
         std::string_view _key_value_sep,
-        std::string_view _value_sep);
+        std::string_view _value_sep, 
+        int argc, char** argv);
 
-    void init(int argc, char **argv);
     bool has(std::string_view arg);
     std::string_view get(std::string_view arg);
     std::string_view val(std::string_view arg);

@@ -35,19 +35,15 @@ static int __toint(std::string_view s)
 lib::argument_parser::argument_parser(
     std::string_view _prefix,
     std::string_view _key_value_sep,
-    std::string_view _value_sep)
+    std::string_view _value_sep, 
+    int argc, char **argv)
 
     : prefix(_prefix),
       key_value_sep(_key_value_sep),
-      value_sep(_value_sep)
+      value_sep(_value_sep), 
+      args( std::span<char *>(argv, argc))
 
 {
-}
-
-void lib::argument_parser::init(
-    int argc, char **argv)
-{
-  args = std::span<char *>(argv, argc);
 }
 
 bool lib::argument_parser::has(
