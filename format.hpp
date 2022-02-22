@@ -12,17 +12,20 @@
 
 namespace lib
 {
-  template <typename char_t>
-  using basic_format = std::basic_string_view<char_t>;
+  template <typename C>
+  using basic_format = std::basic_string_view<C>;
+
+  template<typename C>
+  using basic_view = std::basic_string_view<C>;
 }
 
 namespace lib::impl
 {
-  template <typename char_t>
-  basic_format<char_t>
+  template <typename C>
+  basic_format<C>
   format_of_fmt(
-      std::basic_string<char_t> &buff,
-      basic_format<char_t> fmt)
+      std::basic_string<C> &buff,
+      basic_format<C> fmt)
   {
     auto htag = fmt.find('#');
     auto part = fmt.substr(0, htag);
@@ -36,15 +39,15 @@ namespace lib::impl
   }
 
   template <
-      typename char_t,
+      typename C,
       typename... args_t>
-  std::basic_string<char_t>
+  std::basic_string<C>
   format(
-      basic_format<char_t> fmt,
+      basic_format<C> fmt,
       const args_t &...args)
   {
 
-    std::basic_string<char_t> buff;
+    std::basic_string<C> buff;
 
     buff.reserve((length_of(args) + ... + fmt.size()));
 

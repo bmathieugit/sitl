@@ -125,11 +125,11 @@ namespace lib
 }
 
 template <
-    typename char_t,
+    typename C,
     size_t n,
     typename T>
 constexpr void format_of(
-    std::basic_string<char_t> &buff,
+    std::basic_string<C> &buff,
     const lib::styled_object<n, T> &so)
 {
   for (auto &&s : so.styles)

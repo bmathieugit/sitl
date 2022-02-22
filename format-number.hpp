@@ -54,10 +54,10 @@ length_of(const integer &i)
 }
 
 template <
-    typename char_t,
+    typename C,
     is_integer integral_t>
 constexpr void format_of(
-    std::basic_string<char_t> &buff,
+    std::basic_string<C> &buff,
     integral_t t)
 {
   if (t == 0)

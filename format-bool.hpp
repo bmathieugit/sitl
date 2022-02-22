@@ -11,10 +11,10 @@ constexpr unsigned length_of(boolean b)
 }
 
 template <
-    typename char_t,
+    typename C,
     is_boolean boolean>
 constexpr void format_of(
-    std::basic_string<char_t> &buff,
+    std::basic_string<C> &buff,
     boolean b)
 {
   buff.append(b ? "true" : "false");

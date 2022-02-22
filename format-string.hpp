@@ -1,62 +1,62 @@
 #include <string>
 #include <string_view>
 
-template <typename char_t>
-constexpr std::basic_string_view<char_t>
-view_of(const std::basic_string<char_t> &s)
+template <typename C>
+constexpr std::basic_string_view<C>
+view_of(const std::basic_string<C> &s)
 {
-  return std::basic_string_view<char_t>(
+  return std::basic_string_view<C>(
       s.begin(), s.end());
 }
 
-template <typename char_t, size_t n>
-constexpr std::basic_string_view<char_t>
-view_of(const char_t (&v)[n])
+template <typename C, size_t n>
+constexpr std::basic_string_view<C>
+view_of(const C (&v)[n])
 {
-  return std::basic_string_view<char_t>(v, n);
+  return std::basic_string_view<C>(v, n);
 }
 
-template <typename char_t>
+template <typename C>
 constexpr void format_of(
-    std::basic_string<char_t> &buff,
-    const std::basic_string_view<char_t> &v)
+    std::basic_string<C> &buff,
+    const std::basic_string_view<C> &v)
 {
   buff.append(v.begin(), v.end());
 }
 
-template <typename char_t>
+template <typename C>
 constexpr size_t length_of(
-    const std::basic_string_view<char_t> &v)
+    const std::basic_string_view<C> &v)
 {
   return v.size();
 }
 
-template <typename char_t>
+template <typename C>
 constexpr void format_of(
-    std::basic_string<char_t> &buff,
-    const std::basic_string<char_t> &s)
+    std::basic_string<C> &buff,
+    const std::basic_string<C> &s)
 {
   format_of(buff, view_of(s));
 }
 
-template <typename char_t>
+template <typename C>
 constexpr size_t length_of(
-    const std::basic_string<char_t> &s)
+    const std::basic_string<C> &s)
 {
   return length_of(view_of(s));
 }
 
-template <typename char_t, size_t n>
+template <typename C, size_t n>
 constexpr void format_of(
-    std::basic_string<char_t> &buff,
-    const char_t (&v)[n])
+    std::basic_string<C> &buff,
+    const C (&v)[n])
 {
   format_of(buff, view_of(v));
 }
 
-template <typename char_t, size_t n>
+template <typename C, size_t n>
 constexpr size_t length_of(
-    const char_t (&v)[n])
+    const C (&v)[n])
 {
   return length_of(view_of(v));
 }

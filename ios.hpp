@@ -8,46 +8,88 @@
 
 namespace lib
 {
-  template <typename char_t>
-  void fprint(
-      FILE *out,
-      std::basic_string_view<char_t> s)
+  template <typename T>
+  size_t fwrite(FILE *f, T *data, size_t count)
   {
-    std::fwrite(s.data(), sizeof(char_t), s.size(), out);
+    return std::fwrite(data, sizeof(T), count, f);
   }
 
-  template <typename char_t>
+  template <typename C>
+  void fprint(
+      FILE *out,
+      basic_view<C> s)
+  {
+    fwrite(out, s.data(), s.size());
+  }
+
+  template <typename C>
   void fprintln(
       FILE *out,
-      std::basic_string_view<char_t> s)
+      basic_view<C> s)
   {
     fprint(out, s);
-    fprint(out, std::basic_string_view<char_t>("\n"));
+    fprint(out, basic_view<C>("\n"));
   }
 
   template <
-      typename char_t,
+      typename C,
       typename... args_t>
   void fprintf(
       FILE *out,
-      std::basic_string_view<char_t> fmt,
+      basic_view<C> fmt,
       const args_t &...args)
   {
-    fprint(out, format(fmt, args...));
+    fprint(out, (basic_view<C>) format(fmt, args...));
   }
 
   template <
-      typename char_t,
+      typename C,
       typename... args_t>
   void fprintfln(
       FILE *out,
-      std::basic_string_view<char_t> fmt,
+      basic_view<C> fmt,
       const args_t &...args)
   {
-    fprintln(out, format(fmt, args...));
+    fprintln(out, (basic_view<C>)format(fmt, args...));
+  }
+
+  template <typename C>
+  void fprint(
+      FILE *out,
+      const C *s)
+  {
+    fprint(out, basic_view<C>(s));
+  }
+
+  template <typename C>
+  void fprintln(
+      FILE *out,
+      const C *s)
+  {
+    fprintln(out, basic_view<C>(s));
+  }
+
+  template <
+      typename C,
+      typename... args_t>
+  void fprintf(
+      FILE *out,
+      const C *fmt,
+      const args_t &...args)
+  {
+    fprintf(out, basic_format<C>(fmt), args...);
+  }
+
+  template <
+      typename C,
+      typename... args_t>
+  void fprintfln(
+      FILE *out,
+      const C *fmt,
+      const args_t &...args)
+  {
+    fprintfln(out, basic_format<C>(fmt), args...);
   }
 }
-
-
 
 #endif

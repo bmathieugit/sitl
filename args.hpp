@@ -1,27 +1,33 @@
 #ifndef __lib_args_hpp__
 #define __lib_args_hpp__
 
-#include "string.hpp"
-#include "array.hpp"
+#include <string_view>
+#include <span>
 
 namespace lib
 {
-  template <typename char_t>
   class argument_parser
   {
-    basic_string<char_t> prefix;
-    basic_string<char_t> value_sep;
-    basic_string<char_t> key_value_sep;
+    std::string_view prefix;
+    std::string_view key_value_sep;
+    std::string_view value_sep;
 
+    std::span<char *> args;
+
+  public:
     argument_parser(
-        basic_string_view<char_t> _prefix,
-        basic_string_view<char_t> _value_sep,
-        basic_string_view<char_t> _key_value_sep)
-        : prefix(_prefix),
-          value_sep(_value_sep),
-          key_value_sep(_key_value_sep)
-    {
-    }
+        std::string_view _prefix,
+        std::string_view _key_value_sep,
+        std::string_view _value_sep);
+
+    void init(int argc, char **argv);
+    bool has(std::string_view arg);
+    std::string_view get(std::string_view arg);
+    std::string_view val(std::string_view arg);
+
+    int integer(std::string_view arg, int def);
+    bool boolean(std::string_view arg, bool def);
+    std::string_view string(std::string_view arg, std::string_view def);
   };
 }
 
