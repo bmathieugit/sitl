@@ -1,74 +1,79 @@
-
-
 type person 
- attr i32 id
- attr i16 age
+{
+ id:i32
+ age:i16
+}
 
-type person 
- attr i32 id
- attr i16 age
+build person
+(
+  _id:i32
+  _age:i16
+)
+{
+  id = _id
+  age = _age
+}
 
+copy person
+(
+  cpy:person
+)
+{
+  cpy.id = id
+  cpy.age = age
+}
 
-type person 
- attr i32 id
- attr i16 age
-
-
-type person 
- attr i32 id
- attr i16 age
-
-
-type person 
- attr i32 id
- attr i16 age
-
-
-type person 
- attr i32 id
- attr i16 age
-
-
-type person 
- attr i32 id
- attr i16 age
-
-
-type person 
- attr i32 id
- attr i16 age
-
-
-type person 
- attr i32 id
- attr i16 age
-
-
-type person 
- attr i32 id
- attr i16 age
-
-
-
-function i32 main 
-  param i32 argc
-  param string argv
+move person
+(
+  mov:person
+)
+{
+  mov.id := id
+  mov.age := age
   
-  let i32 a 12
-  let i32 b a
-  let string c b 
- 
+  age = 0
+  id = 0
+}
 
-  const string toto "coucou"
-  copy a 12  
-  move b a 
+del person
+{
+  id = 0
+  age = 0
+}
 
-  if true
+fun i32 main 
+(
+  argv:string[]
+) 
+{
+  p:person = {12, 33}
+  p2:person = p
+
+  p3:person := p2
+  move(p2, p3)
+  copy(p2, p3)
+  del(p2)
+  del(p3)
+
+
+  a:i32 = 12
+  b:i32 = a
+  c:string = to_string(b)
+
+  toto:string = "coucou"
+
+  a = 12  
+  b := a 
+
+  if (true) 
+  {
     return 1
-  
-  while true 
+  }
+
+  while (true) 
+  { 
     return 2
-  
+  }
+
   return a
-  return bool
-  return toto qdqs
+}

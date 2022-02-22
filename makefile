@@ -4,6 +4,7 @@ FLAGS+=-DNDEBUG
 LIBS=-I.
 
 EXEC=sitl.exe
+RUN=$(EXEC).run
 
 SRCS=$(wildcard *.cpp)
 OBJS=$(SRCS:.cpp=.o)
@@ -22,7 +23,7 @@ $(EXEC): $(OBJS)
 	${CC} -o $@ $^ ${FLAGS} ${LIBS}
 
 $(EXEC).run: $(EXEC)
-	./$< > $@ --file ldla qlkd  qzd  lqk zd: lqkz d
+	./$< > $@ --file=toto.sitl ldla qlkd  qzd  lqk zd: lqkz d
 	cat $@
 
 measure: $(ASMS)

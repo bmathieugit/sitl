@@ -35,13 +35,13 @@ static int __toint(std::string_view s)
 lib::cmdline::cmdline(
     std::string_view _prefix,
     std::string_view _key_value_sep,
-    std::string_view _value_sep, 
+    std::string_view _value_sep,
     int argc, char **argv)
 
     : prefix(_prefix),
       key_value_sep(_key_value_sep),
-      value_sep(_value_sep), 
-      args( std::span<char *>(argv, argc))
+      value_sep(_value_sep),
+      args(std::span<char *>(argv, argc))
 
 {
 }
@@ -105,5 +105,13 @@ std::string_view lib::cmdline::string(
     std::string_view arg, std::string_view def)
 {
   std::string_view v = val(arg);
-  return not v.empty() ? v : def;
+  return v.empty() ? def : v;
+}
+
+std::filesystem::path lib::cmdline::path(
+    std::string_view arg,
+    std::string_view def)
+{
+  std::string_view v = val(arg);
+  return std::filesystem::path(v.empty() ? def : v);
 }
