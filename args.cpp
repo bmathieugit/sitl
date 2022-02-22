@@ -32,7 +32,7 @@ static int __toint(std::string_view s)
   return neg ? -res : res;
 }
 
-lib::argument_parser::argument_parser(
+lib::cmdline::cmdline(
     std::string_view _prefix,
     std::string_view _key_value_sep,
     std::string_view _value_sep, 
@@ -46,13 +46,13 @@ lib::argument_parser::argument_parser(
 {
 }
 
-bool lib::argument_parser::has(
+bool lib::cmdline::has(
     std::string_view arg)
 {
   return not get(arg).empty();
 }
 
-std::string_view lib::argument_parser::get(
+std::string_view lib::cmdline::get(
     std::string_view arg)
 {
   auto found =
@@ -68,7 +68,7 @@ std::string_view lib::argument_parser::get(
   return found != args.end() ? *found : "";
 }
 
-std::string_view lib::argument_parser::val(
+std::string_view lib::cmdline::val(
     std::string_view arg)
 {
   std::string_view fullv = get(arg);
@@ -80,7 +80,7 @@ std::string_view lib::argument_parser::val(
     return fullv.substr(i + key_value_sep.size());
 }
 
-int lib::argument_parser::integer(
+int lib::cmdline::integer(
     std::string_view arg, int def)
 {
   std::string_view v = val(arg);
@@ -88,7 +88,7 @@ int lib::argument_parser::integer(
   return isint ? __toint(v) : def;
 }
 
-bool lib::argument_parser::boolean(
+bool lib::cmdline::boolean(
     std::string_view arg, bool def)
 {
   std::string_view v = val(arg);
@@ -101,7 +101,7 @@ bool lib::argument_parser::boolean(
     return def;
 }
 
-std::string_view lib::argument_parser::string(
+std::string_view lib::cmdline::string(
     std::string_view arg, std::string_view def)
 {
   std::string_view v = val(arg);

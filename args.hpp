@@ -6,7 +6,7 @@
 
 namespace lib
 {
-  class argument_parser
+  class cmdline
   {
     std::string_view prefix;
     std::string_view key_value_sep;
@@ -15,7 +15,7 @@ namespace lib
     std::span<char *> args;
 
   public:
-    argument_parser(
+    cmdline(
         std::string_view _prefix,
         std::string_view _key_value_sep,
         std::string_view _value_sep, 
