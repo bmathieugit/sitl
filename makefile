@@ -1,6 +1,6 @@
 CC=g++
-FLAGS=-Wall -Werror -pedantic -O3 -save-temps -std=c++20
-FLAGS+=-DNDEBUG
+FLAGS=-Wall -Werror -pedantic -O3  -std=c++20
+FLAGS+= -save-temps
 LIBS=-I.
 
 EXEC=sitl.exe
@@ -12,7 +12,7 @@ ASMS=$(SRCS:.cpp=.s)
 
 TEMPS=*.s *.i *.ii *.o *.tks *.report *.ast *.exe *.run
 
-all: $(EXEC) $(RUN) measure
+all: $(EXEC)  measure $(RUN)
 
 remake: clean all
 

@@ -2,9 +2,11 @@
 #include <streambuf>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "ios.hpp"
 #include "args.hpp"
+#include "tokens.hpp"
 
 int main(int argc, char **argv)
 {
@@ -19,7 +21,9 @@ int main(int argc, char **argv)
       std::istreambuf_iterator<char>(src),
       std::istreambuf_iterator<char>()};
 
-  lib::fprintfln(stdout, "content of # : \n#", fname, strsrc);
-
+  std::vector<sitl::token> tks = sitl::tokens(strsrc);
+  for (const sitl::token &tk : tks)
+    lib::fprintfln(stdout, "token # -> #", (int)tk.tp, tk.val);
+  lib::fprintfln(stdout, "size #", tks.size());
   return EXIT_SUCCESS;
 }
