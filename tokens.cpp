@@ -1,38 +1,35 @@
-#include <vector>
 #include <string_view>
 #include <functional>
+// #include <tuple>
+#include <vector>
 
 #include "tokens.hpp"
 
-// static bool __isdigit(char c)
-// {
-//   return '0' <= c and c <= '9';
-// }
+static constexpr std::string_view lower = "abcdefghijklmnopqrstuvwxyz";
+static constexpr std::string_view upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static constexpr std::string_view digit = "0123456789";
+static constexpr std::string_view blank = " \n\t\r";
+static constexpr std::string_view alnum = "abcdefghijklmnopqrstuvwxyz"
+                                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                          "0123456789"
+                                          "_";
+static constexpr std::string_view alpha = "abcdefghijklmnopqrstuvwxyz"
+                                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                          "_";
 
-// static bool __isalpha(char c)
-// {
-//   return ('a' <= c and c <= 'z') or
-//          ('A' <= c and c <= 'Z') or
-//          c == '_';
-// }
+static constexpr size_t svnpos = std::string_view::npos;
 
-// static bool __isblank(char c)
-// {
-//   return c == ' ' or
-//          c == '\r' or
-//          c == '\v' or
-//          c == '\f';
-// }
-
-static std::string_view __ignoreblk(std::string_view src)
+static std::string_view
+__ignoreblk(std::string_view src)
 {
-  size_t pos = src.find_first_not_of(" \r\t\n");
-  return pos == std::string_view::npos
+  size_t pos = src.find_first_not_of(blank);
+  return pos == svnpos
              ? std::string_view()
              : src.substr(pos);
 }
 
-static auto keyword(
+static auto
+keyword(
     std::string_view kw,
     sitl::token_type tp)
 {
@@ -44,55 +41,60 @@ static auto keyword(
   };
 }
 
-// static sitl::token string(std::string_view src)
-// {
-// }
+static sitl::token string(std::string_view src)
+{
+  if (src.starts_with('"'))
+  {
+    size_t pos = src.substr(1).find_first_of('"');
 
-// static sitl::token identifier(std::string_view src)
-// {
-// }
+    if (pos != svnpos)
+      return sitl::token{
+          sitl::token_type::sm_str,
+          src.substr(0, pos + 2)};
+  }
+
+  return sitl::token{};
+}
+
+static sitl::token identifier(std::string_view src)
+{
+  using tt = sitl::token_type;
+  size_t pos = src.find_first_of(alpha) == 0
+                   ? src.find_first_not_of(alnum)
+                   : svnpos;
+  return pos == svnpos
+             ? sitl::token{}
+             : sitl::token{tt::sm_id, src.substr(0, pos)};
+}
 
 static sitl::token integer(std::string_view src)
 {
-  size_t pos = src.find_first_not_of("0123456789");
-  return pos == std::string_view::npos
+  using tt = sitl::token_type;
+  size_t pos = src.find_first_not_of(digit);
+  return pos == 0
              ? sitl::token{}
-             : sitl::token{sitl::token_type::sm_int, src.substr(0, pos)};
+             : sitl::token{tt::sm_int, src.substr(0, pos)};
 }
 
-struct parser
+template <
+    typename... test_t>
+constexpr static auto make_parser(
+    test_t &&...t)
 {
-  std::string_view src;
-  sitl::token tk;
-  std::vector<std::function<sitl::token(std::string_view)>> tests;
-
-  parser &init(std::string_view sc)
+  return [=](std::string_view src)
   {
-    src = sc;
-    return *this;
-  }
+    using tt = sitl::token_type;
 
-  parser &tryparse(const std::function<sitl::token(std::string_view)> &test)
-  {
-    tests.push_back(test);
-    return *this;
-  }
-
-  sitl::token token()
-  {
-    for (auto &&test : tests)
-    {
-      sitl::token tk = test(src);
-
-      if (tk.tp != sitl::token_type::notyet)
-        return tk;
-    }
+    if (src.empty())
+      return sitl::token{tt::last};
 
     sitl::token tk;
-    tk.tp = sitl::token_type::unexpected;
-    return tk;
-  }
-};
+
+    return (((tk = t(src)).tp != tt::notyet) || ...)
+               ? tk
+               : sitl::token{tt::unexpected};
+  };
+}
 
 std::vector<sitl::token> sitl::tokens(std::string_view src)
 {
@@ -100,42 +102,41 @@ std::vector<sitl::token> sitl::tokens(std::string_view src)
 
   std::vector<sitl::token> tks;
   std::string_view scan = src;
-
-  parser psr;
-
-  psr.tryparse(keyword("type", tt::kw_type))
-      .tryparse(keyword("build", tt::kw_build))
-      .tryparse(keyword("copy", tt::kw_copy))
-      .tryparse(keyword("move", tt::kw_move))
-      .tryparse(keyword("fun", tt::kw_fun))
-      .tryparse(keyword("del", tt::kw_del))
-      .tryparse(keyword("if", tt::kw_if))
-      .tryparse(keyword("while", tt::kw_while))
-      .tryparse(keyword("for", tt::kw_for))
-      .tryparse(keyword("true", tt::kw_true))
-      .tryparse(keyword("false", tt::kw_false))
-      .tryparse(keyword("return", tt::kw_return))
-      .tryparse(keyword("('", tt::sm_lbracket))
-      .tryparse(keyword(")", tt::sm_rbracket))
-      .tryparse(keyword("[", tt::sm_lsbracket))
-      .tryparse(keyword("]", tt::sm_rsbracket))
-      .tryparse(keyword("{", tt::sm_lbrace))
-      .tryparse(keyword("}", tt::sm_rbrace))
-      .tryparse(keyword(":=", tt::sm_mv))
-      .tryparse(keyword("=", tt::sm_eq))
-      .tryparse(keyword(":", tt::sm_colon))
-      .tryparse(keyword(",", tt::sm_comma))
-      /*.tryparse(string)
-        .tryparse(identifier)*/
-        .tryparse(integer)
-      ;
+  auto prs = make_parser(
+      keyword("type", tt::kw_type),
+      keyword("build", tt::kw_build),
+      keyword("copy", tt::kw_copy),
+      keyword("move", tt::kw_move),
+      keyword("fun", tt::kw_fun),
+      keyword("del", tt::kw_del),
+      keyword("if", tt::kw_if),
+      keyword("while", tt::kw_while),
+      keyword("for", tt::kw_for),
+      keyword("true", tt::kw_true),
+      keyword("false", tt::kw_false),
+      keyword("return", tt::kw_return),
+      keyword("('", tt::sm_lbracket),
+      keyword(")", tt::sm_rbracket),
+      keyword("[", tt::sm_lsbracket),
+      keyword("]", tt::sm_rsbracket),
+      keyword("{", tt::sm_lbrace),
+      keyword("}", tt::sm_rbrace),
+      keyword(":=", tt::sm_mv),
+      keyword("=", tt::sm_eq),
+      keyword(":", tt::sm_colon),
+      keyword(",", tt::sm_comma),
+      string,
+      integer,
+      identifier);
 
   while (not scan.empty())
   {
-
     scan = __ignoreblk(scan);
-    sitl::token tk = psr.init(scan).token();
 
+    sitl::token tk = prs(scan);
+
+    if (tk.tp == tt::last)
+      scan = "";
     if (tk.tp == tt::unexpected)
       scan = scan.substr(1);
     else

@@ -10,9 +10,9 @@ SRCS=$(wildcard *.cpp)
 OBJS=$(SRCS:.cpp=.o)
 ASMS=$(SRCS:.cpp=.s)
 
-TEMPS=*.s *.i *.ii *.o *.tks *.report *.ast *.exe *.run
+TEMPS=*.s *.i *.ii *.o *.tks *.report *.ast *.exe
 
-all: $(EXEC)  measure $(RUN)
+all: $(EXEC)  measure run
 
 remake: clean all
 
@@ -22,9 +22,8 @@ remake: clean all
 $(EXEC): $(OBJS)
 	${CC} -o $@ $^ ${FLAGS} ${LIBS}
 
-$(EXEC).run: $(EXEC)
-	./$< > $@ --file=toto.sitl ldla qlkd  qzd  lqk zd: lqkz d
-	cat $@
+run: $(EXEC)
+	./$< --file=toto.sitl ldla qlkd  qzd  lqk zd: lqkz d
 
 measure: $(ASMS)
 	wc -l $^
