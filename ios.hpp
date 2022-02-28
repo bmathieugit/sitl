@@ -39,7 +39,7 @@ namespace lib
       basic_view<C> fmt,
       const args_t &...args)
   {
-    fprint(out, (basic_view<C>) format(fmt, args...));
+    fprint(out, (basic_view<C>)format(fmt, args...));
   }
 
   template <
@@ -77,7 +77,7 @@ namespace lib
       const C *fmt,
       const args_t &...args)
   {
-    fprintf(out, basic_format<C>(fmt), args...);
+    fprintf(out, basic_view<C>(fmt), args...);
   }
 
   template <
@@ -88,7 +88,47 @@ namespace lib
       const C *fmt,
       const args_t &...args)
   {
-    fprintfln(out, basic_format<C>(fmt), args...);
+    fprintfln(out, basic_view<C>(fmt), args...);
+  }
+
+  template <
+      typename C,
+      typename... args_t>
+  void printf(
+      basic_view<C> fmt,
+      args_t &&...args)
+  {
+    fprintf(stdout, fmt, args...);
+  }
+
+  template <
+      typename C,
+      typename... args_t>
+  void printfln(
+      basic_view<C> fmt,
+      args_t &&...args)
+  {
+    fprintfln(stdout, fmt, args...);
+  }
+
+  template <
+      typename C,
+      typename... args_t>
+  void printf(
+      const C *fmt,
+      args_t &&...args)
+  {
+    fprintf(stdout, basic_view<C>(fmt), args...);
+  }
+
+  template <
+      typename C,
+      typename... args_t>
+  void printfln(
+      const C *fmt,
+      args_t &&...args)
+  {
+    fprintfln(stdout, basic_view<C>(fmt), args...);
   }
 }
 

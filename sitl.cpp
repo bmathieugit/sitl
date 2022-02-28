@@ -14,7 +14,7 @@ try
 {
   lib::cmdline aparse("--", "=", ",", argc, argv);
   std::string_view fname = aparse.string("file");
-  lib::fprintfln(stdout, "filename found '#'", fname);
+  lib::printfln("filename found '#'", fname);
 
   std::ifstream src(fname.data());
 
@@ -25,14 +25,14 @@ try
   std::vector<sitl::token> tks = sitl::tokens(strsrc);
 
   for (const sitl::token &tk : tks)
-    lib::fprintfln(stdout, "token # -> #", (int)tk.tp, tk.val);
+    lib::printf("..token # -> #", (int)tk.tp, tk.val);
     
-  lib::fprintfln(stdout, "size #", tks.size());
+  lib::printfln("size #", tks.size());
 
 
   return EXIT_SUCCESS;
 } 
 catch (std::exception& e)
 {
-  std::printf("exception %s", e.what());
+  lib::printf("exception #", std::string_view(e.what()));
 }
