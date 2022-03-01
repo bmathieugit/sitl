@@ -1,6 +1,4 @@
 #include <string_view>
-#include <functional>
-// #include <tuple>
 #include <vector>
 
 #include "tokens.hpp"
@@ -81,6 +79,7 @@ static sitl::token identifier(std::string_view src)
 static sitl::token integer(std::string_view src)
 {
   using tt = sitl::token_type;
+  
   size_t pos = src.find_first_not_of(digit);
   return pos == 0
              ? sitl::token{}
@@ -107,7 +106,9 @@ constexpr static auto make_parser(
   };
 }
 
-std::vector<sitl::token> sitl::tokens(std::string_view src)
+std::vector<sitl::token>
+sitl::tokens(
+    std::string_view src)
 {
   using tt = sitl::token_type;
 

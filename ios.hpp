@@ -17,7 +17,7 @@ namespace lib
   template <typename C>
   void fprint(
       FILE *out,
-      basic_view<C> s)
+      std::basic_string_view<C> s)
   {
     fwrite(out, s.data(), s.size());
   }
@@ -25,10 +25,10 @@ namespace lib
   template <typename C>
   void fprintln(
       FILE *out,
-      basic_view<C> s)
+      std::basic_string_view<C> s)
   {
     fprint(out, s);
-    fprint(out, basic_view<C>("\n"));
+    fprint(out, std::basic_string_view<C>("\n"));
   }
 
   template <
@@ -36,10 +36,10 @@ namespace lib
       typename... args_t>
   void fprintf(
       FILE *out,
-      basic_view<C> fmt,
+      std::basic_string_view<C> fmt,
       const args_t &...args)
   {
-    fprint(out, (basic_view<C>)format(fmt, args...));
+    fprint(out, (std::basic_string_view<C>)fmt::format(fmt, args...));
   }
 
   template <
@@ -47,10 +47,10 @@ namespace lib
       typename... args_t>
   void fprintfln(
       FILE *out,
-      basic_view<C> fmt,
+      std::basic_string_view<C> fmt,
       const args_t &...args)
   {
-    fprintln(out, (basic_view<C>)format(fmt, args...));
+    fprintln(out, (std::basic_string_view<C>)fmt::format(fmt, args...));
   }
 
   template <typename C>
@@ -58,7 +58,7 @@ namespace lib
       FILE *out,
       const C *s)
   {
-    fprint(out, basic_view<C>(s));
+    fprint(out, std::basic_string_view<C>(s));
   }
 
   template <typename C>
@@ -66,7 +66,7 @@ namespace lib
       FILE *out,
       const C *s)
   {
-    fprintln(out, basic_view<C>(s));
+    fprintln(out, std::basic_string_view<C>(s));
   }
 
   template <
@@ -77,7 +77,7 @@ namespace lib
       const C *fmt,
       const args_t &...args)
   {
-    fprintf(out, basic_view<C>(fmt), args...);
+    fprintf(out, std::basic_string_view<C>(fmt), args...);
   }
 
   template <
@@ -88,14 +88,14 @@ namespace lib
       const C *fmt,
       const args_t &...args)
   {
-    fprintfln(out, basic_view<C>(fmt), args...);
+    fprintfln(out, std::basic_string_view<C>(fmt), args...);
   }
 
   template <
       typename C,
       typename... args_t>
   void printf(
-      basic_view<C> fmt,
+      std::basic_string_view<C> fmt,
       args_t &&...args)
   {
     fprintf(stdout, fmt, args...);
@@ -105,7 +105,7 @@ namespace lib
       typename C,
       typename... args_t>
   void printfln(
-      basic_view<C> fmt,
+      std::basic_string_view<C> fmt,
       args_t &&...args)
   {
     fprintfln(stdout, fmt, args...);
@@ -118,7 +118,7 @@ namespace lib
       const C *fmt,
       args_t &&...args)
   {
-    fprintf(stdout, basic_view<C>(fmt), args...);
+    fprintf(stdout, std::basic_string_view<C>(fmt), args...);
   }
 
   template <
@@ -128,7 +128,7 @@ namespace lib
       const C *fmt,
       args_t &&...args)
   {
-    fprintfln(stdout, basic_view<C>(fmt), args...);
+    fprintfln(stdout, std::basic_string_view<C>(fmt), args...);
   }
 }
 

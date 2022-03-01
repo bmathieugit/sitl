@@ -6,26 +6,20 @@
 #include <vector>
 #include <array>
 
+#include "format-model.hpp"
+
+#include "format-string.hpp"
 #include "format-number.hpp"
 #include "format-bool.hpp"
-#include "format-string.hpp"
+#include "format-ansi.hpp"
 
-namespace lib
+namespace fmt::impl
 {
   template <typename C>
-  using basic_format = std::basic_string_view<C>;
-
-  template<typename C>
-  using basic_view = std::basic_string_view<C>;
-}
-
-namespace lib::impl
-{
-  template <typename C>
-  basic_format<C>
-  format_of_fmt(
-      std::basic_string<C> &buff,
-      basic_format<C> fmt)
+  std::basic_string_view<C>
+  bfmt(
+      buffer<C> &buff,
+      std::basic_string_view<C> fmt)
   {
     auto htag = fmt.find('#');
     auto part = fmt.substr(0, htag);
@@ -38,41 +32,36 @@ namespace lib::impl
             : htag);
   }
 
-  template <
-      typename C,
-      typename... args_t>
-  std::basic_string<C>
-  format(
-      basic_format<C> fmt,
+  template <typename C,
+            typename... args_t>
+  constexpr auto format(
+      std::basic_string_view<C> fm,
       const args_t &...args)
   {
+    buffer<C> buff;
 
-    std::basic_string<C> buff;
-
-    buff.reserve((length_of(args) + ... + fmt.size()));
-
-    ((fmt = format_of_fmt(buff, fmt),
-      format_of(buff, args)),
-     ...,
-     format_of(buff, fmt));
+    ((fm = bfmt(buff, fm),
+      fmt::fmt(buff, args)),
+     ...);
+    bfmt(buff, fm);
 
     return buff;
-  }
+  };
 }
 
-namespace lib
+namespace fmt
 {
   template <typename... args_t>
-  std::basic_string<char>
-  format(basic_format<char> fmt,
+  constexpr auto
+  format(std::basic_string_view<char> fmt,
          const args_t &...args)
   {
     return impl::format(fmt, args...);
   }
 
   template <typename... args_t>
-  std::basic_string<wchar_t>
-  format(basic_format<wchar_t> fmt,
+  constexpr auto
+  format(std::basic_string_view<wchar_t> fmt,
          const args_t &...args)
   {
     return impl::format(fmt, args...);

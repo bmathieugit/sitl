@@ -10,7 +10,7 @@
 
 int main(int argc, char **argv)
 
-try 
+try
 {
   lib::cmdline aparse("--", "=", ",", argc, argv);
   std::string_view fname = aparse.string("file");
@@ -25,14 +25,14 @@ try
   std::vector<sitl::token> tks = sitl::tokens(strsrc);
 
   for (const sitl::token &tk : tks)
-    lib::printf("..token # -> #", (int)tk.tp, tk.val);
-    
+    lib::printfln("..token # -> #", (int)tk.tp, fmt::green | tk.val);
+
   lib::printfln("size #", tks.size());
 
 
   return EXIT_SUCCESS;
-} 
-catch (std::exception& e)
+}
+catch (std::exception &e)
 {
   lib::printf("exception #", std::string_view(e.what()));
 }

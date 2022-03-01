@@ -4,9 +4,8 @@
 #include <string_view>
 #include <array>
 
-namespace lib
+namespace fmt
 {
-
   struct style
   {
     std::string_view code;
@@ -26,34 +25,6 @@ namespace lib
     std::array<style, n> styles;
     const T &obj;
   };
-
-  constexpr style black{"\u001b[30m"};
-  constexpr style red{"\u001b[31m"};
-  constexpr style green{"\u001b[32m"};
-  constexpr style yellow{"\u001b[33m"};
-  constexpr style blue{"\u001b[34m"};
-  constexpr style magenta{"\u001b[35m"};
-  constexpr style cyan{"\u001b[36m"};
-  constexpr style white{"\u001b[37m"};
-
-  constexpr style bblack{"\u001b[40m"};
-  constexpr style bred{"\u001b[41m"};
-  constexpr style bgreen{"\u001b[42m"};
-  constexpr style byellow{"\u001b[43m"};
-  constexpr style bblue{"\u001b[44m"};
-  constexpr style bmagenta{"\u001b[45m"};
-  constexpr style bcyan{"\u001b[46m"};
-  constexpr style bwhite{"\u001b[47m"};
-
-  constexpr style bold{"\u001b[1m"};
-  constexpr style underline{"\u001b[4m"};
-  constexpr style reversed{"\u001b[7m"};
-  constexpr style reset{"\u001b[0m"};
-
-  constexpr style cup{"\u001b[1A"};
-  constexpr style cdown{"\u001b[1B"};
-  constexpr style cright{"\u001b[1C"};
-  constexpr style cleft{"\u001b[1D"};
 
   consteval combined_style<2>
   operator|(
@@ -114,29 +85,50 @@ namespace lib
     return {s.styles, o};
   }
 
-  template <size_t n,
-            typename T>
-  constexpr size_t length_of(
+  constexpr style reset{"\u001b[0m"};
+
+  template <
+      typename C,
+      size_t n,
+      typename T>
+  void fmt(
+      buffer<C> &buff,
       const styled_object<n, T> &so)
   {
-    return n * 5;
+    for (auto &&s : so.styles)
+      fmt(buff, s.code);
+
+    fmt(buff, so.obj);
+    fmt(buff, reset.code);
   }
 
-}
+  constexpr style black{"\u001b[30m"};
+  constexpr style red{"\u001b[31m"};
+  constexpr style green{"\u001b[32m"};
+  constexpr style yellow{"\u001b[33m"};
+  constexpr style blue{"\u001b[34m"};
+  constexpr style magenta{"\u001b[35m"};
+  constexpr style cyan{"\u001b[36m"};
+  constexpr style white{"\u001b[37m"};
 
-template <
-    typename C,
-    size_t n,
-    typename T>
-constexpr void format_of(
-    std::basic_string<C> &buff,
-    const lib::styled_object<n, T> &so)
-{
-  for (auto &&s : so.styles)
-    format_of(buff, s.code);
+  constexpr style bblack{"\u001b[40m"};
+  constexpr style bred{"\u001b[41m"};
+  constexpr style bgreen{"\u001b[42m"};
+  constexpr style byellow{"\u001b[43m"};
+  constexpr style bblue{"\u001b[44m"};
+  constexpr style bmagenta{"\u001b[45m"};
+  constexpr style bcyan{"\u001b[46m"};
+  constexpr style bwhite{"\u001b[47m"};
 
-  format_of(buff, so.obj);
-  format_of(buff, lib::reset.code);
+  constexpr style bold{"\u001b[1m"};
+  constexpr style underline{"\u001b[4m"};
+  constexpr style reversed{"\u001b[7m"};
+
+  constexpr style cup{"\u001b[1A"};
+  constexpr style cdown{"\u001b[1B"};
+  constexpr style cright{"\u001b[1C"};
+  constexpr style cleft{"\u001b[1D"};
+
 }
 
 #endif
