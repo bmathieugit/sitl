@@ -1,4 +1,3 @@
-#include <array>
 #include <string>
 #include <concepts>
 
@@ -7,30 +6,41 @@
 
 namespace fmt
 {
+  template <typename C>
+  class stack_array
+  {
+    C data[20];
+    int i = -1;
+
+  public:
+    void push(C c) { data[++i] = c; }
+    C pop() { return data[i--]; }
+    bool empty() { return i == -1; }
+  };
+
   template <
       typename C>
   void fmt(
       buffer<C> &buff,
       is_integer auto t)
   {
-    if (t == 0)
-      buff.push_back('0');
+    bool neg = t < 0;
+    auto _abs = [](int i)
+    { return i < 0 ? -i : i; };
 
-    std::array<char, 50> tbuff;
-    auto e = tbuff.end();
-    auto i = e - 1;
+    stack_array<C> tbuff;
 
     while (t != 0)
     {
-      *i = "0123456789"[t % 10];
-      --i;
+      tbuff.push("0123456789"[_abs(t % 10)]);
       t /= 10;
     }
 
-    if (i != e)
-      ++i;
+    if (neg)
+      tbuff.push('-');
 
-    for (; i != e; ++i)
-      buff.push_back(*i);
+    while (not tbuff.empty())
+      buff.push_back(tbuff.pop());
   }
+
 }

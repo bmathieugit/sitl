@@ -25,11 +25,13 @@ try
   std::vector<sitl::token> tks = sitl::tokens(strsrc);
 
   for (const sitl::token &tk : tks)
-    lib::printfln("..token # -> #", (int)tk.tp, fmt::green | tk.val);
+    lib::printfln("..token # -> #", (int)tk.tp,  tk.val);
 
-  lib::printfln("size #", tks.size());
+  lib::printfln("size #", -12);
 
-
+  // std::string buff;
+  // fmt::fmt(buff, -12);
+  // std::printf("%s", buff.c_str());
   return EXIT_SUCCESS;
 }
 catch (std::exception &e)

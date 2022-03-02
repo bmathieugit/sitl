@@ -30,6 +30,7 @@ namespace sitl
     sm_mv,
     sm_colon,
     sm_comma,
+    sm_dot,
     sm_int,
     sm_str,
     sm_id,

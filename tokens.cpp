@@ -127,7 +127,7 @@ sitl::tokens(
       keyword("true", tt::kw_true),
       keyword("false", tt::kw_false),
       keyword("return", tt::kw_return),
-      keyword("('", tt::sm_lbracket),
+      keyword("(", tt::sm_lbracket),
       keyword(")", tt::sm_rbracket),
       keyword("[", tt::sm_lsbracket),
       keyword("]", tt::sm_rsbracket),
@@ -137,6 +137,7 @@ sitl::tokens(
       keyword("=", tt::sm_eq),
       keyword(":", tt::sm_colon),
       keyword(",", tt::sm_comma),
+      keyword(".", tt::sm_dot),
       string,
       integer,
       identifier);
