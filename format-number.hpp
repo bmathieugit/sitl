@@ -6,17 +6,20 @@
 
 namespace fmt
 {
-  template <typename C>
-  class stack_array
+  namespace
   {
-    C data[20];
-    int i = -1;
+    template <typename C>
+    class stack_array
+    {
+      C data[40];
+      int i = -1;
 
-  public:
-    void push(C c) { data[++i] = c; }
-    C pop() { return data[i--]; }
-    bool empty() { return i == -1; }
-  };
+    public:
+      void push(C c) { data[++i] = c; }
+      C pop() { return data[i--]; }
+      bool empty() { return i == -1; }
+    };
+  }
 
   template <
       typename C>
@@ -24,6 +27,7 @@ namespace fmt
       buffer<C> &buff,
       is_integer auto t)
   {
+
     bool neg = t < 0;
     auto _abs = [](int i)
     { return i < 0 ? -i : i; };
