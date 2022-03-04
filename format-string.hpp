@@ -6,7 +6,7 @@
 
 namespace fmt
 {
-  template <typename C>
+  template <is_character C>
   struct formatter<std::basic_string<C>>
   {
     void operator()(
@@ -17,7 +17,7 @@ namespace fmt
     }
   };
 
-  template <typename C>
+  template <is_character C>
   struct formatter<std::basic_string_view<C>>
   {
     void operator()(
@@ -28,7 +28,7 @@ namespace fmt
     }
   };
 
-  template <typename C, size_t n>
+  template <is_character C, size_t n>
   struct formatter<C[n]>
   {
     void operator()(

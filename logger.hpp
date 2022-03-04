@@ -49,7 +49,7 @@ namespace logger
                    1900 + now->tm_year,
                    hour{now->tm_hour},
                    minute{now->tm_min},
-                   second{0});
+                   second{now->tm_sec});
 
       ios::fprintf(stdout, "[#] : ", l);
       ios::fprintfln(stdout, msg, pms...);

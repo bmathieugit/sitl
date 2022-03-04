@@ -67,5 +67,6 @@ namespace fmt
 #include "format-integer.hpp"
 #include "format-bool.hpp"
 #include "format-ansi.hpp"
+#include "format-vector.hpp"
 
 #endif
