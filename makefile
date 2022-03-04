@@ -1,5 +1,5 @@
 CC=g++
-FLAGS=-Wall -Werror -pedantic -O3  -std=c++20
+FLAGS=-Wall -Werror -pedantic -O3 -std=c++20
 FLAGS+= -save-temps
 LIBS=-I.
 
@@ -12,7 +12,7 @@ ASMS=$(SRCS:.cpp=.s)
 
 TEMPS=*.s *.i *.ii *.o *.tks *.report *.ast *.exe
 
-all: $(EXEC)  measure run
+all: $(EXEC) run measure
 
 remake: clean all
 

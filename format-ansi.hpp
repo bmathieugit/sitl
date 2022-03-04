@@ -87,20 +87,26 @@ namespace fmt
 
   constexpr style reset{"\u001b[0m"};
 
+  template <size_t n, typename T>
+  struct formatter<styled_object<n, T>>
+  {
+    template <typename C>
+    void operator()(
+        std::basic_string<C> &buff,
+        const styled_object<n, T> &so)
+    {
+      for (auto &&s : so.styles)
+        formatter<styled_object<n, T>>{}(buff, s.code);
+
+      formatter<T>{}(buff, so.obj);
+      formatter<styled_object<n, T>>{}(buff, reset.code);
+    }
+  };
+
   template <
       typename C,
       size_t n,
       typename T>
-  void fmt(
-      buffer<C> &buff,
-      const styled_object<n, T> &so)
-  {
-    for (auto &&s : so.styles)
-      fmt(buff, s.code);
-
-    fmt(buff, so.obj);
-    fmt(buff, reset.code);
-  }
 
   constexpr style black{"\u001b[30m"};
   constexpr style red{"\u001b[31m"};

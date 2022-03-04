@@ -1,34 +1,53 @@
 #include <string_view>
 #include <string>
 
-#include "format-model.hpp"
+#include "format-core.hpp"
+#include "meta.hpp"
 
 namespace fmt
 {
   template <typename C>
-  void fmt(
-      buffer<C> &buff,
-      const std::basic_string_view<C> &v)
+  struct formatter<std::basic_string<C>>
   {
-    buff.append(v.begin(), v.end());
-  }
+    void operator()(
+        std::basic_string<C> &buff,
+        const std::basic_string<C> &s)
+    {
+      buff.append(s);
+    }
+  };
 
   template <typename C>
-  void fmt(
-      buffer<C> &buff,
-      const std::basic_string<C> &s)
+  struct formatter<std::basic_string_view<C>>
   {
-    fmt(buff,
-        std::basic_string_view<C>(s));
-  }
+    void operator()(
+        std::basic_string<C> &buff,
+        const std::basic_string_view<C> &s)
+    {
+      buff.append(s);
+    }
+  };
 
   template <typename C, size_t n>
-  void fmt(
-      buffer<C> &buff,
-      const C (&s)[n])
+  struct formatter<C[n]>
   {
-    fmt(buff,
-        std::basic_string_view<C>(s, n));
-  }
+    void operator()(
+        std::basic_string<C> &buff,
+        const C (&s)[n])
+    {
+      buff.append(std::basic_string_view<C>(s, n));
+    }
+  };
+
+  template <is_character C>
+  struct formatter<C>
+  {
+    void operator()(
+        std::basic_string<C> &buff,
+        C c)
+    {
+      buff.push_back(c);
+    }
+  };
 
 }

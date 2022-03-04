@@ -6,19 +6,14 @@
 #include <vector>
 #include <array>
 
-#include "format-model.hpp"
-
-#include "format-string.hpp"
-#include "format-number.hpp"
-#include "format-bool.hpp"
-#include "format-ansi.hpp"
+#include "format-core.hpp"
 
 namespace fmt::impl
 {
   template <typename C>
   std::basic_string_view<C>
   bfmt(
-      buffer<C> &buff,
+      std::basic_string<C> &buff,
       std::basic_string_view<C> fmt)
   {
     auto htag = fmt.find('#');
@@ -38,10 +33,10 @@ namespace fmt::impl
       std::basic_string_view<C> fm,
       const args_t &...args)
   {
-    buffer<C> buff;
+    std::basic_string<C> buff;
 
     ((fm = bfmt(buff, fm),
-      fmt::fmt(buff, args)),
+      formatter<args_t>{}(buff, args)),
      ...);
     bfmt(buff, fm);
 
@@ -67,5 +62,10 @@ namespace fmt
     return impl::format(fmt, args...);
   }
 }
+
+#include "format-string.hpp"
+#include "format-integer.hpp"
+#include "format-bool.hpp"
+#include "format-ansi.hpp"
 
 #endif

@@ -2,17 +2,20 @@
 #include <string>
 #include <concepts>
 
-#include "format-model.hpp"
 #include "meta.hpp"
+#include "format-core.hpp"
 
 namespace fmt
 {
-  template <
-      typename C>
-  void fmt(
-      buffer<C> &buff,
-      is_boolean auto b)
+  template <is_boolean B>
+  struct formatter<B>
   {
-    buff.append(b ? "true" : "false");
-  }
+    template <typename C>
+    void operator()(
+        std::basic_string<C> &buff,
+        const B &b)
+    {
+      buff.append(b ? "true" : "false");
+    }
+  };
 }

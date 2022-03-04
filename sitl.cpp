@@ -7,6 +7,7 @@
 #include "ios.hpp"
 #include "args.hpp"
 #include "tokens.hpp"
+#include "logger.hpp"
 
 int main(int argc, char **argv)
 
@@ -14,7 +15,7 @@ try
 {
   lib::cmdline aparse("--", "=", ",", argc, argv);
   std::string_view fname = aparse.string("file");
-  lib::printfln("filename found '#'", fname);
+  logger::info("filename found '#'", fname);
 
   std::ifstream src(fname.data());
 
@@ -25,16 +26,13 @@ try
   std::vector<sitl::token> tks = sitl::tokens(strsrc);
 
   for (const sitl::token &tk : tks)
-    lib::printfln("..token # -> #", (int)tk.tp,  tk.val);
+    logger::debug("..token # -> #", (int)tk.tp, tk.val);
 
-  lib::printfln("size #", -12);
+  logger::debug("size #", tks.size());
 
-  // std::string buff;
-  // fmt::fmt(buff, -12);
-  // std::printf("%s", buff.c_str());
   return EXIT_SUCCESS;
 }
 catch (std::exception &e)
 {
-  lib::printf("exception #", std::string_view(e.what()));
+  ios::printf("exception #", std::string_view(e.what()));
 }

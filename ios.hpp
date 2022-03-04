@@ -6,17 +6,17 @@
 
 #include "format.hpp"
 
-namespace lib
+namespace ios
 {
   template <typename T>
-  size_t fwrite(FILE *f, T *data, size_t count)
+  size_t fwrite(std::FILE *f, T *data, size_t count)
   {
     return std::fwrite(data, sizeof(T), count, f);
   }
 
   template <typename C>
   void fprint(
-      FILE *out,
+      std::FILE *out,
       std::basic_string_view<C> s)
   {
     fwrite(out, s.data(), s.size());
@@ -24,7 +24,7 @@ namespace lib
 
   template <typename C>
   void fprintln(
-      FILE *out,
+      std::FILE *out,
       std::basic_string_view<C> s)
   {
     fprint(out, s);
@@ -35,7 +35,7 @@ namespace lib
       typename C,
       typename... args_t>
   void fprintf(
-      FILE *out,
+      std::FILE *out,
       std::basic_string_view<C> fmt,
       const args_t &...args)
   {
@@ -46,7 +46,7 @@ namespace lib
       typename C,
       typename... args_t>
   void fprintfln(
-      FILE *out,
+      std::FILE *out,
       std::basic_string_view<C> fmt,
       const args_t &...args)
   {
@@ -55,7 +55,7 @@ namespace lib
 
   template <typename C>
   void fprint(
-      FILE *out,
+      std::FILE *out,
       const C *s)
   {
     fprint(out, std::basic_string_view<C>(s));
@@ -63,7 +63,7 @@ namespace lib
 
   template <typename C>
   void fprintln(
-      FILE *out,
+      std::FILE *out,
       const C *s)
   {
     fprintln(out, std::basic_string_view<C>(s));
@@ -73,7 +73,7 @@ namespace lib
       typename C,
       typename... args_t>
   void fprintf(
-      FILE *out,
+      std::FILE *out,
       const C *fmt,
       const args_t &...args)
   {
@@ -84,7 +84,7 @@ namespace lib
       typename C,
       typename... args_t>
   void fprintfln(
-      FILE *out,
+      std::FILE *out,
       const C *fmt,
       const args_t &...args)
   {
