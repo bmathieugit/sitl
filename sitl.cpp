@@ -34,6 +34,11 @@ try
 
   logger::info("vector #", is);
 
+  std::map<std::string, int> m = {{"name", 2}, {"age", 3}, {"first", 4}};
+
+  logger::info("map #", m);
+  logger::info("map #", m);
+
   return EXIT_SUCCESS;
 }
 catch (std::exception &e)

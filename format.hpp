@@ -68,5 +68,6 @@ namespace fmt
 #include "format-bool.hpp"
 #include "format-ansi.hpp"
 #include "format-vector.hpp"
+#include "format-map.hpp"
 
 #endif
