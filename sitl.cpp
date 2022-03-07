@@ -9,6 +9,8 @@
 #include "tokens.hpp"
 #include "logger.hpp"
 
+#include "tree.hpp"
+
 int main(int argc, char **argv)
 
 try
@@ -24,21 +26,8 @@ try
       std::istreambuf_iterator<char>()};
 
   std::vector<sitl::token> tks = sitl::tokens(strsrc);
-
-  for (const sitl::token &tk : tks)
-    logger::debug("..token # -> #", (int)tk.tp, tk.val);
-
-  logger::debug("size #", tks.size());
-
-  std::vector<int> is = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-  logger::info("vector #", is);
-
-  std::map<std::string, int> m = {{"name", 2}, {"age", 3}, {"first", 4}};
-
-  logger::info("map #", m);
-  logger::info("map #", m);
-
+  
+ 
   return EXIT_SUCCESS;
 }
 catch (std::exception &e)
