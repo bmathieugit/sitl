@@ -43,16 +43,12 @@ namespace logger
       std::time_t tnow = std::time(nullptr);
       std::tm *now = std::localtime(&tnow);
 
-      ios::fprintf(stdout, "#/#/# #:#:# : ",
-                   day{now->tm_mday},
-                   month{now->tm_mon},
-                   1900 + now->tm_year,
-                   hour{now->tm_hour},
-                   minute{now->tm_min},
-                   second{now->tm_sec});
-
-      ios::fprintf(stdout, "[#] : ", l);
-      ios::fprintfln(stdout, msg, pms...);
+      ios::fprintfln(
+          stdout, "#/#/# #:#:# : [#] : #",
+          day{now->tm_mday}, month{now->tm_mon},
+          1900 + now->tm_year, hour{now->tm_hour},
+          minute{now->tm_min}, second{now->tm_sec}, l,
+          fmt::format(msg, pms...));
     }
   }
 

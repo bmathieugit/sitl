@@ -9,7 +9,8 @@
 #include "tokens.hpp"
 #include "logger.hpp"
 
-#include "tree.hpp"
+#include "syntax.hpp"
+#include <iostream>
 
 int main(int argc, char **argv)
 
@@ -26,8 +27,9 @@ try
       std::istreambuf_iterator<char>()};
 
   std::vector<sitl::token> tks = sitl::tokens(strsrc);
-  
- 
+  bool stype = sitl::syntax_type(tks.begin(), tks.end());
+
+  logger::info("resultat of syntax : #", stype);
   return EXIT_SUCCESS;
 }
 catch (std::exception &e)
