@@ -9,127 +9,68 @@
 namespace ios
 {
   template <typename T>
-  size_t fwrite(std::FILE *f, T *data, size_t count)
-  {
-    return std::fwrite(data, sizeof(T), count, f);
-  }
+  size_t fwrite(std::FILE *f, T *data, size_t count);
 
-  template <typename C>
-  void fprint(
-      std::FILE *out,
-      std::basic_string_view<C> s)
-  {
-    fwrite(out, s.data(), s.size());
-  }
+  void fprint(std::FILE *out, std::string_view s);
+  void fprintln(std::FILE *out, std::string_view s);
 
-  template <typename C>
-  void fprintln(
-      std::FILE *out,
-      std::basic_string_view<C> s)
-  {
-    fprint(out, s);
-    fprint(out, std::basic_string_view<C>("\n"));
-  }
+  template <typename... args_t>
+  void fprintf(std::FILE *out,
+               std::string_view fmt,
+               const args_t &...args);
 
-  template <
-      typename C,
-      typename... args_t>
-  void fprintf(
-      std::FILE *out,
-      std::basic_string_view<C> fmt,
-      const args_t &...args)
-  {
-    fprint(out, (std::basic_string_view<C>)fmt::format(fmt, args...));
-  }
+  template <typename... args_t>
+  void fprintfln(std::FILE *out,
+                 std::string_view fmt,
+                 const args_t &...args);
 
-  template <
-      typename C,
-      typename... args_t>
-  void fprintfln(
-      std::FILE *out,
-      std::basic_string_view<C> fmt,
-      const args_t &...args)
-  {
-    fprintln(out, (std::basic_string_view<C>)fmt::format(fmt, args...));
-  }
+  template <typename... args_t>
+  void printf(std::string_view fmt,
+              args_t &&...args);
 
-  template <typename C>
-  void fprint(
-      std::FILE *out,
-      const C *s)
-  {
-    fprint(out, std::basic_string_view<C>(s));
-  }
+  template <typename... args_t>
+  void printfln(std::string_view fmt,
+                args_t &&...args);
+}
 
-  template <typename C>
-  void fprintln(
-      std::FILE *out,
-      const C *s)
-  {
-    fprintln(out, std::basic_string_view<C>(s));
-  }
+template <typename T>
+size_t ios::fwrite(std::FILE *f, T *data, size_t count)
+{
+  return std::fwrite(data, sizeof(T), count, f);
+}
 
-  template <
-      typename C,
-      typename... args_t>
-  void fprintf(
-      std::FILE *out,
-      const C *fmt,
-      const args_t &...args)
-  {
-    fprintf(out, std::basic_string_view<C>(fmt), args...);
-  }
+template <typename... args_t>
+void ios::fprintf(
+    std::FILE *out,
+    std::string_view fmt,
+    const args_t &...args)
+{
+  ios::fprint(out, fmt::format(fmt, args...));
+}
 
-  template <
-      typename C,
-      typename... args_t>
-  void fprintfln(
-      std::FILE *out,
-      const C *fmt,
-      const args_t &...args)
-  {
-    fprintfln(out, std::basic_string_view<C>(fmt), args...);
-  }
+template <typename... args_t>
+void ios::fprintfln(
+    std::FILE *out,
+    std::string_view fmt,
+    const args_t &...args)
+{
+  ios::fprintln(out, fmt::format(fmt, args...));
+}
 
-  template <
-      typename C,
-      typename... args_t>
-  void printf(
-      std::basic_string_view<C> fmt,
-      args_t &&...args)
-  {
-    fprintf(stdout, fmt, args...);
-  }
+template <typename... args_t>
+void ios::printf(
+    std::string_view fmt,
+    args_t &&...args)
+{
+  ios::fprintf(stdout, fmt, args...);
+}
 
-  template <
-      typename C,
-      typename... args_t>
-  void printfln(
-      std::basic_string_view<C> fmt,
-      args_t &&...args)
-  {
-    fprintfln(stdout, fmt, args...);
-  }
-
-  template <
-      typename C,
-      typename... args_t>
-  void printf(
-      const C *fmt,
-      args_t &&...args)
-  {
-    fprintf(stdout, std::basic_string_view<C>(fmt), args...);
-  }
-
-  template <
-      typename C,
-      typename... args_t>
-  void printfln(
-      const C *fmt,
-      args_t &&...args)
-  {
-    fprintfln(stdout, std::basic_string_view<C>(fmt), args...);
-  }
+template <typename... args_t>
+void ios::printfln(
+    std::string_view fmt,
+    args_t &&...args)
+{
+  ios::fprintfln(stdout, fmt, args...);
 }
 
 #endif

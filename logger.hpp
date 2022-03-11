@@ -34,11 +34,9 @@ namespace logger
     using minute = intpad2dig;
     using second = intpad2dig;
 
-    template <typename C,
-              typename... params_t>
     void logging(level l,
-                 std::basic_string_view<C> msg,
-                 const params_t &...pms)
+                 std::string_view msg,
+                 const auto &...pms)
     {
       std::time_t tnow = std::time(nullptr);
       std::tm *now = std::localtime(&tnow);
@@ -93,48 +91,6 @@ namespace logger
   {
     impl::logging(level::fatal, msg, pms...);
   }
-
-  void trace(
-      std::wstring_view msg,
-      const auto &...pms)
-  {
-    impl::logging(level::trace, msg, pms...);
-  }
-
-  void debug(
-      std::wstring_view msg,
-      const auto &...pms)
-  {
-    impl::logging(level::debug, msg, pms...);
-  }
-
-  void info(
-      std::wstring_view msg,
-      const auto &...pms)
-  {
-    impl::logging(level::info, msg, pms...);
-  }
-
-  void warn(
-      std::wstring_view msg,
-      const auto &...pms)
-  {
-    impl::logging(level::warn, msg, pms...);
-  }
-
-  void error(
-      std::wstring_view msg,
-      const auto &...pms)
-  {
-    impl::logging(level::error, msg, pms...);
-  }
-
-  void fatal(
-      std::wstring_view msg,
-      const auto &...pms)
-  {
-    impl::logging(level::fatal, msg, pms...);
-  }
 }
 
 namespace fmt
@@ -142,13 +98,12 @@ namespace fmt
   template <>
   struct formatter<logger::impl::intpad2dig>
   {
-    template <typename C>
     void operator()(
-        std::basic_string<C> &buff,
-        const logger::impl::intpad2dig &ipad2)
+        std::string &buff,
+        logger::impl::intpad2dig ipad2)
     {
       if (0 <= ipad2.i and ipad2.i <= 9)
-        formatter<C>{}(buff, '0');
+        formatter<char>{}(buff, '0');
 
       formatter<int>{}(buff, ipad2.i);
     }
@@ -157,14 +112,13 @@ namespace fmt
   template <>
   struct formatter<logger::level>
   {
-    template <typename C>
     void operator()(
-        std::basic_string<C> &buff,
+        std::string &buff,
         logger::level l)
     {
-      constexpr static std::basic_string_view<C> ltable[] = {
+      constexpr static std::string_view ltable[] = {
           "trace", "debug", "info", "warn", "error", "fatal"};
-      formatter<std::basic_string_view<C>>{}(buff, ltable[(int)l]);
+      formatter<std::string_view>{}(buff, ltable[(int)l]);
     }
   };
 }

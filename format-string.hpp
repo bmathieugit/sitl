@@ -22,7 +22,7 @@ namespace fmt
   {
     void operator()(
         std::string &buff,
-        const std::string_view &s)
+        std::string_view s)
     {
       buff.append(s);
     }
