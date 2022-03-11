@@ -1,0 +1,6 @@
+#ifndef __util_std_tuple_hpp__
+#define __util_std_tuple_hpp__
+
+#include <tuple>
+
+#endif

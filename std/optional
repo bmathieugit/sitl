@@ -1,0 +1,12 @@
+#ifndef __util_std_optional_hpp__
+#define __util_std_optional_hpp__
+
+#include <optional>
+
+namespace std
+{
+  template <typename T>
+  using opt = std::optional<T>;
+}
+
+#endif

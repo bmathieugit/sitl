@@ -3,7 +3,7 @@
 
 namespace fmt
 {
-  template <typename C>
+  template <typename T>
   struct formatter;
 }
 

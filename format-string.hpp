@@ -6,45 +6,45 @@
 
 namespace fmt
 {
-  template <is_character C>
-  struct formatter<std::basic_string<C>>
+  template <>
+  struct formatter<std::string>
   {
     void operator()(
-        std::basic_string<C> &buff,
-        const std::basic_string<C> &s)
+        std::string &buff,
+        const std::string &s)
     {
       buff.append(s);
     }
   };
 
-  template <is_character C>
-  struct formatter<std::basic_string_view<C>>
+  template <>
+  struct formatter<std::string_view>
   {
     void operator()(
-        std::basic_string<C> &buff,
-        const std::basic_string_view<C> &s)
+        std::string &buff,
+        const std::string_view &s)
     {
       buff.append(s);
     }
   };
 
-  template <is_character C, size_t n>
-  struct formatter<C[n]>
+  template <size_t n>
+  struct formatter<char[n]>
   {
     void operator()(
-        std::basic_string<C> &buff,
-        const C (&s)[n])
+        std::string &buff,
+        const char (&s)[n])
     {
-      buff.append(std::basic_string_view<C>(s, n));
+      buff.append(std::string_view(s, n));
     }
   };
 
-  template <is_character C>
-  struct formatter<C>
+  template <>
+  struct formatter<char>
   {
     void operator()(
-        std::basic_string<C> &buff,
-        C c)
+        std::basic_string<char> &buff,
+        char c)
     {
       buff.push_back(c);
     }

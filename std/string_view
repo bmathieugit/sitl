@@ -1,0 +1,12 @@
+#ifndef __util_std_string_view_hpp__
+#define __util_std_string_view_hpp__
+
+#include <string_view>
+
+namespace std
+{
+  template <typename C>
+  using sv = std::basic_string_view<C>;
+}
+
+#endif

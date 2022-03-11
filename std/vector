@@ -1,0 +1,12 @@
+#ifndef __util_std_vector_hpp__
+#define __util_std_vector_hpp__
+
+#include <vector>
+
+namespace std
+{
+  template <typename T, typename... O>
+  using vec = std::vector<T, O...>;
+}
+
+#endif

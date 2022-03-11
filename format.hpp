@@ -8,59 +8,33 @@
 
 #include "format-core.hpp"
 
-namespace fmt::impl
+namespace fmt
 {
-  template <typename C>
-  std::basic_string_view<C>
-  bfmt(
-      std::basic_string<C> &buff,
-      std::basic_string_view<C> fmt)
-  {
-    auto htag = fmt.find('#');
-    auto part = fmt.substr(0, htag);
-
-    buff.append(part);
-
-    return fmt.substr(
-        htag != fmt.size()
-            ? htag + 1
-            : htag);
-  }
-
-  template <typename C,
-            typename... args_t>
+  template <typename... args_t>
   constexpr auto format(
-      std::basic_string_view<C> fm,
+      std::string_view fm,
       const args_t &...args)
   {
-    std::basic_string<C> buff;
+    auto bfmt = [](std::string &buff,
+                   std::string_view fmt)
+    {
+      auto htag = fmt.find('#');
+      auto part = fmt.substr(0, htag);
+
+      buff.append(part);
+
+      return fmt.substr(htag != fmt.size() ? htag + 1 : htag);
+    };
+
+    std::string buff;
 
     ((fm = bfmt(buff, fm),
-      formatter<args_t>{}(buff, args)),
+      format_to(buff, args)),
      ...);
     bfmt(buff, fm);
 
     return buff;
   };
-}
-
-namespace fmt
-{
-  template <typename... args_t>
-  constexpr auto
-  format(std::basic_string_view<char> fmt,
-         const args_t &...args)
-  {
-    return impl::format(fmt, args...);
-  }
-
-  template <typename... args_t>
-  constexpr auto
-  format(std::basic_string_view<wchar_t> fmt,
-         const args_t &...args)
-  {
-    return impl::format(fmt, args...);
-  }
 }
 
 #include "format-string.hpp"

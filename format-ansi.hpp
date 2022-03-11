@@ -103,11 +103,6 @@ namespace fmt
     }
   };
 
-  template <
-      typename C,
-      size_t n,
-      typename T>
-
   constexpr style black{"\u001b[30m"};
   constexpr style red{"\u001b[31m"};
   constexpr style green{"\u001b[32m"};
