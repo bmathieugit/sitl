@@ -1,5 +1,5 @@
-#ifndef __clon_format_hpp__
-#define __clon_format_hpp__
+#ifndef __sitl_fmt_format_hpp__
+#define __sitl_fmt_format_hpp__
 
 #include <string_view>
 #include <string>
@@ -15,40 +15,41 @@ namespace fmt
   bfmt(std::string &buff,
        std::string_view fmt);
 
-  template <
-      typename arg_t,
-      typename... args_t>
-  void format(
+  template <typename arg_t>
+  std::string_view format(
       std::string &buff,
       std::string_view fm,
-      const arg_t &arg,
-      const args_t &...args)
-  {
-    fm = bfmt(buff, fm);
-    formatter<arg_t>{}(buff, arg);
+      const arg_t &arg);
 
-    if constexpr (sizeof...(args_t) > 0)
-      format(buff, fm, args...);
-    else
-      buff.append(fm);
-  }
-
-  template <
-      typename... args_t>
+  template <typename... args_t>
   std::string format(
       std::string_view fm,
-      const args_t &...args)
-  {
-    std::string buff;
-
-    if constexpr (sizeof...(args_t) > 0)
-      format(buff, fm, args...);
-    else
-      buff.append(fm);
-
-    return buff;
-  };
+      const args_t &...args);
 }
+
+template <typename arg_t>
+std::string_view fmt::format(
+    std::string &buff,
+    std::string_view fm,
+    const arg_t &arg)
+{
+  fm = fmt::bfmt(buff, fm);
+  fmt::formatter<arg_t>{}.format(buff, arg);
+  return fm;
+}
+
+template <typename... args_t>
+std::string fmt::format(
+    std::string_view fm,
+    const args_t &...args)
+{
+  std::string buff;
+
+  ((fm = fmt::format(buff, fm, args)), ...);
+  buff.append(fm);
+
+  return buff;
+};
 
 #include "format-integer.hpp"
 #include "format-bool.hpp"

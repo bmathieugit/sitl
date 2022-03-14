@@ -1,21 +1,25 @@
+#ifndef __sitl_fmt_format_bool_hpp__
+#define __sitl_fmt_format_bool_hpp__
+
 #include <array>
 #include <string>
 #include <concepts>
 
 #include "meta.hpp"
 #include "format-core.hpp"
+#include "format-string.hpp"
 
-namespace fmt
+template <>
+struct fmt::formatter<bool>
+    : fmt::formatter<std::string_view>
 {
-  template <is_boolean B>
-  struct formatter<B>
+  void format(
+      std::string &buff,
+      const bool &b) const
   {
-    template <typename C>
-    void operator()(
-        std::basic_string<C> &buff,
-        const B &b)
-    {
-      buff.append(b ? "true" : "false");
-    }
-  };
-}
+    fmt::formatter<std::string_view>::
+        format(buff, (b ? "true" : "false"));
+  }
+};
+
+#endif

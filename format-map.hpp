@@ -4,32 +4,33 @@
 #include <string>
 #include <map>
 
-#include "format-core.hpp"
 #include "meta.hpp"
+#include "format-core.hpp"
+#include "format-string.hpp"
 
-namespace fmt
+template <typename K, typename V>
+struct fmt::formatter<std::map<K, V>>
+    : fmt::formatter<K>,
+      fmt::formatter<V>,
+      fmt::formatter<char>,
+      fmt::formatter<std::string_view>
 {
-  template <typename K, typename V>
-  struct formatter<std::map<K, V>>
+  void format(
+      std::string &buff,
+      const std::map<K, V> &m) const
   {
-    template <is_character C>
-    void operator()(
-        std::basic_string<C> &buff,
-        const std::map<K, V> &m)
+    fmt::formatter<char>::format(buff, '{');
+
+    for (const auto &p : m)
     {
-      buff.push_back('{');
-
-      for (const auto& p: m)
-      {
-        formatter<K>{}(buff, p.first);
-        buff.append(": ");
-        formatter<V>{}(buff, p.second);
-        buff.push_back(';');
-      }
-
-      buff.push_back('}');
+      fmt::formatter<K>::format(buff, p.first);
+      fmt::formatter<std::string_view>::format(buff, ": ");
+      fmt::formatter<V>::format(buff, p.second);
+      fmt::formatter<char>::format(buff, ';');
     }
-  };
-}
+
+    fmt::formatter<char>::format(buff, '}');
+  }
+};
 
 #endif

@@ -4,6 +4,9 @@
 #include <string_view>
 #include <array>
 
+#include "format-core.hpp"
+#include "format-string.hpp"
+
 namespace fmt
 {
   struct style
@@ -89,17 +92,18 @@ namespace fmt
 
   template <size_t n, typename T>
   struct formatter<styled_object<n, T>>
+      : formatter<T>,
+        formatter<std::string_view>
   {
-    template <typename C>
-    void operator()(
-        std::basic_string<C> &buff,
-        const styled_object<n, T> &so)
+    void format(
+        std::string &buff,
+        const styled_object<n, T> &so) const
     {
       for (auto &&s : so.styles)
-        formatter<styled_object<n, T>>{}(buff, s.code);
+        formatter<std::string_view>::format(buff, s.code);
 
-      formatter<T>{}(buff, so.obj);
-      formatter<styled_object<n, T>>{}(buff, reset.code);
+      formatter<T>::format(buff, so.obj);
+      formatter<std::string_view>::format(buff, reset.code);
     }
   };
 

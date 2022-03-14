@@ -1,53 +1,55 @@
+#ifndef __sitl_fmt_format_string_hpp__
+#define __sitl_fmt_format_string_hpp__
+
 #include <string_view>
 #include <string>
 
 #include "format-core.hpp"
 #include "meta.hpp"
 
-namespace fmt
+template <>
+struct fmt::formatter<char>
 {
-  template <>
-  struct formatter<std::string>
+  void format(
+      std::string &buff, char c) const
   {
-    void operator()(
-        std::string &buff,
-        const std::string &s)
-    {
-      buff.append(s);
-    }
-  };
+    buff.push_back(c);
+  }
+};
 
-  template <>
-  struct formatter<std::string_view>
+template <>
+struct fmt::formatter<std::string_view>
+{
+  void format(
+      std::string &buff,
+      std::string_view s) const
   {
-    void operator()(
-        std::string &buff,
-        std::string_view s)
-    {
-      buff.append(s);
-    }
-  };
+    buff.append(s);
+  }
+};
 
-  template <size_t n>
-  struct formatter<char[n]>
+template <>
+struct fmt::formatter<std::string>
+    : fmt::formatter<std::string_view>
+{
+  void format(
+      std::string &buff,
+      const std::string &s) const
   {
-    void operator()(
-        std::string &buff,
-        const char (&s)[n])
-    {
-      buff.append(std::string_view(s, n));
-    }
-  };
+    fmt::formatter<std::string_view>::format(buff, s);
+  }
+};
 
-  template <>
-  struct formatter<char>
+template <size_t n>
+struct fmt::formatter<char[n]>
+    : fmt::formatter<std::string_view>
+{
+  void format(
+      std::string &buff,
+      const char (&s)[n]) const
   {
-    void operator()(
-        std::basic_string<char> &buff,
-        char c)
-    {
-      buff.push_back(c);
-    }
-  };
+    fmt::formatter<std::string_view>::format(buff, s);
+  }
+};
 
-}
+#endif

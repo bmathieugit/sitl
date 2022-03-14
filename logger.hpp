@@ -34,6 +34,11 @@ namespace logger
     using minute = intpad2dig;
     using second = intpad2dig;
 
+    struct DD_MM_YY__hh_mm_ss
+    {
+      std::tm *tm;
+    };
+
     void logging(level l,
                  std::string_view msg,
                  const auto &...pms)
@@ -97,28 +102,30 @@ namespace fmt
 {
   template <>
   struct formatter<logger::impl::intpad2dig>
+      : formatter<int>
   {
-    void operator()(
+    void format(
         std::string &buff,
         logger::impl::intpad2dig ipad2)
     {
       if (0 <= ipad2.i and ipad2.i <= 9)
-        formatter<char>{}(buff, '0');
+        formatter<char>::format(buff, '0');
 
-      formatter<int>{}(buff, ipad2.i);
+      formatter<int>::format(buff, ipad2.i);
     }
   };
 
   template <>
   struct formatter<logger::level>
+      : formatter<std::string_view>
   {
-    void operator()(
+    void format(
         std::string &buff,
         logger::level l)
     {
-      constexpr static std::string_view ltable[] = {
+      constexpr std::string_view ltable[] = {
           "trace", "debug", "info", "warn", "error", "fatal"};
-      formatter<std::string_view>{}(buff, ltable[(int)l]);
+      formatter<std::string_view>::format(buff, ltable[(int)l]);
     }
   };
 }
