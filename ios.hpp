@@ -14,23 +14,19 @@ namespace sitl::ios
   void fprint(std::FILE *out, std::string_view s);
   void fprintln(std::FILE *out, std::string_view s);
 
-  template <typename... args_t>
   void fprintf(std::FILE *out,
                std::string_view fmt,
-               const args_t &...args);
+               const auto &...args);
 
-  template <typename... args_t>
   void fprintfln(std::FILE *out,
                  std::string_view fmt,
-                 const args_t &...args);
+                 const auto &...args);
 
-  template <typename... args_t>
   void printf(std::string_view fmt,
-              args_t &&...args);
+              const auto &...args);
 
-  template <typename... args_t>
   void printfln(std::string_view fmt,
-                args_t &&...args);
+                const auto &...args);
 }
 
 template <typename T>
@@ -39,36 +35,32 @@ size_t sitl::ios::fwrite(std::FILE *f, T *data, size_t count)
   return std::fwrite(data, sizeof(T), count, f);
 }
 
-template <typename... args_t>
 void sitl::ios::fprintf(
     std::FILE *out,
     std::string_view fmt,
-    const args_t &...args)
+    const auto &...args)
 {
   sitl::ios::fprint(out, sitl::fmt::format(fmt, args...));
 }
 
-template <typename... args_t>
 void sitl::ios::fprintfln(
     std::FILE *out,
     std::string_view fmt,
-    const args_t &...args)
+    const auto &...args)
 {
   sitl::ios::fprintln(out, sitl::fmt::format(fmt, args...));
 }
 
-template <typename... args_t>
 void sitl::ios::printf(
     std::string_view fmt,
-    args_t &&...args)
+    const auto &...args)
 {
   sitl::ios::fprintf(stdout, fmt, args...);
 }
 
-template <typename... args_t>
 void sitl::ios::printfln(
     std::string_view fmt,
-    args_t &&...args)
+    const auto &...args)
 {
   sitl::ios::fprintfln(stdout, fmt, args...);
 }
