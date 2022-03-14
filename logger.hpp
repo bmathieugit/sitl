@@ -22,21 +22,9 @@ namespace logger
 
   namespace impl
   {
-    struct intpad2dig
+    struct pad2d
     {
       int i;
-    };
-
-    using day = intpad2dig;
-    using month = intpad2dig;
-    using year = intpad2dig;
-    using hour = intpad2dig;
-    using minute = intpad2dig;
-    using second = intpad2dig;
-
-    struct DD_MM_YY__hh_mm_ss
-    {
-      std::tm *tm;
     };
 
     void logging(level l,
@@ -46,12 +34,11 @@ namespace logger
       std::time_t tnow = std::time(nullptr);
       std::tm *now = std::localtime(&tnow);
 
-      ios::fprintfln(
-          stdout, "#/#/# #:#:# : [#] : #",
-          day{now->tm_mday}, month{now->tm_mon},
-          1900 + now->tm_year, hour{now->tm_hour},
-          minute{now->tm_min}, second{now->tm_sec}, l,
-          fmt::format(msg, pms...));
+      ios::fprintf(stdout, "#/#/# #:#:# : [#] : ",
+                   pad2d{now->tm_mday}, pad2d{now->tm_mon},
+                   1900 + now->tm_year, pad2d{now->tm_hour},
+                   pad2d{now->tm_min}, pad2d{now->tm_sec}, l);
+      ios::fprintln(stdout, fmt::format(msg, pms...));
     }
   }
 
@@ -101,17 +88,17 @@ namespace logger
 namespace fmt
 {
   template <>
-  struct formatter<logger::impl::intpad2dig>
+  struct formatter<logger::impl::pad2d>
       : formatter<int>
   {
     void format(
         std::string &buff,
-        logger::impl::intpad2dig ipad2)
+        logger::impl::pad2d p2)
     {
-      if (0 <= ipad2.i and ipad2.i <= 9)
+      if (0 <= p2.i and p2.i <= 9)
         formatter<char>::format(buff, '0');
 
-      formatter<int>::format(buff, ipad2.i);
+      formatter<int>::format(buff, p2.i);
     }
   };
 
