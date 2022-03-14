@@ -1,6 +1,9 @@
+#include <string_view>
+#include <string>
+
 #include "format.hpp"
 
-std::string_view fmt::bfmt(
+std::string_view sitl::fmt::bfmt(
     std::string &buff,
     std::string_view fmt)
 {
@@ -11,3 +14,4 @@ std::string_view fmt::bfmt(
 
   return fmt.substr(htag != fmt.size() ? htag + 1 : htag);
 };
+

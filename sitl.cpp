@@ -4,10 +4,9 @@
 #include <string_view>
 #include <vector>
 
-#include "ios.hpp"
 #include "args.hpp"
-//#include "tokens.hpp"
 #include "logger.hpp"
+//#include "tokens.hpp"
 
 //#include "syntax.hpp"
 //#include <iostream>
@@ -18,9 +17,9 @@
 int main(int argc, char **argv)
 try
 {
-  lib::cmdline aparse("--", "=", ",", argc, argv);
+  sitl::cmdline aparse("--", "=", ",", argc, argv);
   std::string_view fname = aparse.string("file");
-  logger::info("filename found '#'", fname);
+  sitl::logger::info("filename found '#'", fname);
 
   std::ifstream src(fname.data());
 
@@ -38,5 +37,5 @@ try
 }
 catch (std::exception &e)
 {
-  ios::printf("exception #", std::string_view(e.what()));
+  sitl::logger::error("exception #", std::string_view(e.what()));
 }
