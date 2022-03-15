@@ -6,95 +6,110 @@
 #include <string_view>
 #include <exception>
 
+#include "logger.hpp"
+
 namespace sitl::test
 {
-  namespace constraints
-  {
-    template <typename exception_t>
-    struct will_throw
-    {
-    };
-
-    template <typename exception_t>
-    struct wont_throw
-    {
-    };
-
-    struct succeed
-    {
-    };
-    
-    struct failure
-    {
-    };
-  }
-
-  namespace check
-  {
-    template <typename action_t,
-              typename constraint_t>
-    void that(const action_t &a, const constraint_t &c)
-    {
-    }
-  }
-
-  namespace assert
-  {
-    template <typename action_t,
-              typename constraint_t>
-    void that(const action_t &a,
-              const constraint_t &c)
-    {
-    }
-
-    template <typename T, typename O>
-    void equals(const T &t, const O &o)
-    {
-    }
-
-  }
 
   struct test
   {
-    std::string descr;
-    void (*t)();
+    std::string_view descr;
+    void (*fn)();
+
+    void run() const
+    try
+    {
+      logger::info("test");
+      fn();
+    }
+    catch (const std::exception &e)
+    {
+      sitl::logger::error(" # : test failed #  ", std::string_view(e.what()), descr);
+    }
   };
 
-  class fixture
+  template <size_t n>
+  struct test_suite
   {
-    std::string descr;
-    std::vector<test> tests;
+    std::string_view descr;
+    std::array<test, n> tests;
 
-  public:
-    template <typename... test_t>
-    explicit fixture(std::string_view descr,
-                     const test_t &...ts)
-        : tests({ts...})
+    void run() const
     {
+      for (const test &t : tests)
+        t.run();
     }
+  };
 
-  public:
-    void run_all()
+  struct test_definition
+  {
+    std::string_view descr;
+
+    test operator()(void (*fn)())
     {
-      for (const test t : tests)
+      return {descr, fn};
+    }
+  };
+
+  struct test_suite_definition
+  {
+    std::string_view descr;
+
+    auto operator()(const auto... tests)
+        -> test_suite<sizeof...(tests)>
+    {
+      return {descr, {tests...}};
+    }
+  };
+
+  struct asserterror : std::exception
+  {
+    virtual const char*
+    what() const noexcept{
+      return "assertion failed";
+    }
+  };
+
+}
+
+sitl::test::test_definition operator""_test(const char *descr, size_t n)
+{
+  return {{descr, n}};
+}
+
+sitl::test::test_suite_definition operator""_suite(const char *descr, size_t n)
+{
+  return {{descr, n}};
+}
+
+namespace sitl::test::is
+{
+  struct equals
+  {
+    template <typename T, typename O>
+    void operator()(const T &t, const O &o)
+    {
+      sitl::logger::info("coucou # == #", t, o);
+      if (not(t == o))
       {
-        t.t();
+        logger::error("yoooo");
+        throw sitl::test::asserterror();
       }
     }
   };
 }
 
-sitl::test::test test(std::string_view descr, void (*t)())
+namespace sitl::test::assert
 {
-  return sitl::test::test{descr, t};
-}
+  void that(auto is, const auto &...args)
+  {
+    is(args...);
+  }
 
-sitl::test::fixture describe(
-    "test dsl",
-    test(" is a good idea")
-        .that([]
-              { assert::that([]
-                             { throw std::exception(); },
-                             will_throw<std::exception>{}); }));
+  void equals(const auto &a, const auto &b)
+  {
+    that(sitl::test::is::equals{}, a, b);
+  }
+}
 
 #endif

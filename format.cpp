@@ -15,3 +15,8 @@ std::string_view sitl::fmt::bfmt(
   return fmt.substr(htag != fmt.size() ? htag + 1 : htag);
 };
 
+sitl::fmt::literal_format
+operator""_fmt(const char *f, size_t n)
+{
+  return {{f, n}};
+}

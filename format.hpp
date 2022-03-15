@@ -13,6 +13,7 @@ namespace sitl::fmt
 {
   template <typename T>
   struct formatter;
+
 }
 
 template <>
@@ -38,25 +39,23 @@ struct sitl::fmt::formatter<std::string_view>
 
 template <>
 struct sitl::fmt::formatter<std::string>
-    : sitl::fmt::formatter<std::string_view>
 {
   void format(
       std::string &buff,
       const std::string &s) const
   {
-    sitl::fmt::formatter<std::string_view>::format(buff, s);
+    sitl::fmt::formatter<std::string_view>{}.format(buff, s);
   }
 };
 
 template <size_t n>
 struct sitl::fmt::formatter<char[n]>
-    : sitl::fmt::formatter<std::string_view>
 {
   void format(
       std::string &buff,
       const char (&s)[n]) const
   {
-    sitl::fmt::formatter<std::string_view>::format(buff, s);
+    sitl::fmt::formatter<std::string_view>{}.format(buff, s);
   }
 };
 
@@ -76,7 +75,20 @@ namespace sitl::fmt
   std::string format(
       std::string_view fm,
       const args_t &...args);
+
+  struct literal_format
+  {
+    std::string_view fmt;
+
+    std::string operator()(const auto &...args)
+    {
+      return sitl::fmt::format(fmt, args...);
+    }
+  };
 }
+
+sitl::fmt::literal_format
+operator"" _fmt(const char *f, size_t n);
 
 template <typename arg_t>
 std::string_view sitl::fmt::format(
@@ -104,7 +116,6 @@ std::string sitl::fmt::format(
 
 template <is_integer T>
 struct sitl::fmt::formatter<T>
-    : sitl::fmt::formatter<char>
 {
   class stack_array
   {
@@ -126,7 +137,7 @@ struct sitl::fmt::formatter<T>
     stack_array tbuff;
 
     if (t == 0)
-      sitl::fmt::formatter<char>::format(buff, '0');
+      sitl::fmt::formatter<char>{}.format(buff, '0');
     else
       while (t != 0)
       {
@@ -138,20 +149,19 @@ struct sitl::fmt::formatter<T>
       tbuff.push('-');
 
     while (not tbuff.empty())
-      sitl::fmt::formatter<char>::format(buff, tbuff.pop());
+      sitl::fmt::formatter<char>{}.format(buff, tbuff.pop());
   }
 };
 
 template <>
 struct sitl::fmt::formatter<bool>
-    : sitl::fmt::formatter<std::string_view>
 {
   void format(
       std::string &buff,
       const bool &b) const
   {
-    sitl::fmt::formatter<std::string_view>::
-        format(buff, (b ? "true" : "false"));
+    sitl::fmt::formatter<std::string_view>{}
+        .format(buff, (b ? "true" : "false"));
   }
 };
 
@@ -279,67 +289,79 @@ operator|(sitl::fmt::combined_style<n> s, const T &o)
 
 template <size_t n, typename T>
 struct sitl::fmt::formatter<sitl::fmt::styled_object<n, T>>
-    : sitl::fmt::formatter<T>,
-      sitl::fmt::formatter<std::string_view>
 {
   void format(
       std::string &buff,
       const sitl::fmt::styled_object<n, T> &so) const
   {
     for (auto &&s : so.styles)
-      sitl::fmt::formatter<std::string_view>::format(buff, s.code);
+      sitl::fmt::formatter<std::string_view>{}.format(buff, s.code);
 
     sitl::fmt::formatter<T>::format(buff, so.obj);
-    sitl::fmt::formatter<std::string_view>::format(buff, reset.code);
+    sitl::fmt::formatter<std::string_view>{}.format(buff, reset.code);
   }
 };
 
 template <typename T>
 struct sitl::fmt::formatter<std::vector<T>>
-    : sitl::fmt::formatter<T>,
-      sitl::fmt::formatter<std::string_view>,
-      sitl::fmt::formatter<char>
 {
   void format(
       std::string &buff,
       const std::vector<T> &v) const
   {
-    sitl::fmt::formatter<char>::format(buff, '{');
+    sitl::fmt::formatter<char>{}.format(buff, '{');
 
     for (size_t i = 0; i < v.size(); ++i)
     {
-      sitl::fmt::formatter<T>::format(buff, v[i]);
+      sitl::fmt::formatter<T>{}.format(buff, v[i]);
 
       if (i < v.size() - 1)
-        sitl::fmt::formatter<std::string_view>::format(buff, ", ");
+        sitl::fmt::formatter<std::string_view>{}.format(buff, ", ");
     }
 
-    sitl::fmt::formatter<char>::format(buff, '}');
+    sitl::fmt::formatter<char>{}.format(buff, '}');
+  }
+};
+
+template <typename T, size_t n>
+struct sitl::fmt::formatter<std::array<T, n>>
+{
+  void format(
+      std::string &buff,
+      const std::array<T, n> &v) const
+  {
+    sitl::fmt::formatter<char>{}.format(buff, '{');
+
+    for (size_t i = 0; i < v.size(); ++i)
+    {
+      sitl::fmt::formatter<T>{}.format(buff, v[i]);
+
+      if (i < v.size() - 1)
+        sitl::fmt::formatter<std::string_view>{}.format(buff, ", ");
+    }
+
+    sitl::fmt::formatter<char>{}.format(buff, '}');
   }
 };
 
 template <typename K, typename V>
 struct sitl::fmt::formatter<std::map<K, V>>
-    : sitl::fmt::formatter<K>,
-      sitl::fmt::formatter<V>,
-      sitl::fmt::formatter<char>,
-      sitl::fmt::formatter<std::string_view>
 {
   void format(
       std::string &buff,
       const std::map<K, V> &m) const
   {
-    sitl::fmt::formatter<char>::format(buff, '{');
+    sitl::fmt::formatter<char>{}.format(buff, '{');
 
     for (const auto &p : m)
     {
-      sitl::fmt::formatter<K>::format(buff, p.first);
-      sitl::fmt::formatter<std::string_view>::format(buff, ": ");
-      sitl::fmt::formatter<V>::format(buff, p.second);
-      sitl::fmt::formatter<char>::format(buff, ';');
+      sitl::fmt::formatter<K>{}.format(buff, p.first);
+      sitl::fmt::formatter<std::string_view>{}.format(buff, ": ");
+      sitl::fmt::formatter<V>{}.format(buff, p.second);
+      sitl::fmt::formatter<char>{}.format(buff, ';');
     }
 
-    sitl::fmt::formatter<char>::format(buff, '}');
+    sitl::fmt::formatter<char>{}.format(buff, '}');
   }
 };
 

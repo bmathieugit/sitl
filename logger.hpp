@@ -50,22 +50,20 @@ namespace sitl::logger
 
 template <>
 struct sitl::fmt::formatter<sitl::logger::pad2d>
-    : sitl::fmt::formatter<int>
 {
   void format(
       std::string &buff,
       sitl::logger::pad2d p2)
   {
     if (0 <= p2.i and p2.i <= 9)
-      sitl::fmt::formatter<char>::format(buff, '0');
+      sitl::fmt::formatter<char>{}.format(buff, '0');
 
-    sitl::fmt::formatter<int>::format(buff, p2.i);
+    sitl::fmt::formatter<int>{}.format(buff, p2.i);
   }
 };
 
 template <>
 struct sitl::fmt::formatter<sitl::logger::level>
-    : sitl::fmt::formatter<std::string_view>
 {
   void format(
       std::string &buff,
@@ -73,7 +71,7 @@ struct sitl::fmt::formatter<sitl::logger::level>
   {
     constexpr std::string_view ltable[] = {
         "trace", "debug", "info", "warn", "error", "fatal"};
-    sitl::fmt::formatter<std::string_view>::format(buff, ltable[(int)l]);
+    sitl::fmt::formatter<std::string_view>{}.format(buff, ltable[(int)l]);
   }
 };
 
