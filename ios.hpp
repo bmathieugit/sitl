@@ -11,8 +11,6 @@ namespace sitl::ios
   template <typename T>
   size_t fwrite(std::FILE *f, T *data, size_t count);
 
-  void fprint(std::FILE *out, std::string_view s);
-  void fprintln(std::FILE *out, std::string_view s);
 
   void fprintf(std::FILE *out,
                std::string_view fmt,
@@ -30,7 +28,10 @@ namespace sitl::ios
 }
 
 template <typename T>
-size_t sitl::ios::fwrite(std::FILE *f, T *data, size_t count)
+size_t sitl::ios::fwrite(
+    std::FILE *f,
+    T *data,
+    size_t count)
 {
   return std::fwrite(data, sizeof(T), count, f);
 }
@@ -40,7 +41,7 @@ void sitl::ios::fprintf(
     std::string_view fmt,
     const auto &...args)
 {
-  sitl::ios::fprint(out, sitl::fmt::format(fmt, args...));
+  sitl::fmt::format_to(out, fmt, args...);
 }
 
 void sitl::ios::fprintfln(
@@ -48,7 +49,8 @@ void sitl::ios::fprintfln(
     std::string_view fmt,
     const auto &...args)
 {
-  sitl::ios::fprintln(out, sitl::fmt::format(fmt, args...));
+  sitl::fmt::format_to(out, fmt, args...);
+  std::fputc('\n', out);
 }
 
 void sitl::ios::printf(

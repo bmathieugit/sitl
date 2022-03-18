@@ -42,7 +42,7 @@ try
           {
             std::array<int, 3> i = {1, 2, 3};
             sitl::logger::debug("nous avons un soucis #", i);
-            sitl::test::assert::equals(i.size(), (size_t)4);
+            sitl::test::assert::equals(i.size(), (size_t)4  );
           }),
       "this is a third test"_test(
           []

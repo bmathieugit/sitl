@@ -52,7 +52,7 @@ template <>
 struct sitl::fmt::formatter<sitl::logger::pad2d>
 {
   void format(
-      std::string &buff,
+      is_buffer auto &buff,
       sitl::logger::pad2d p2)
   {
     if (0 <= p2.i and p2.i <= 9)
@@ -66,7 +66,7 @@ template <>
 struct sitl::fmt::formatter<sitl::logger::level>
 {
   void format(
-      std::string &buff,
+      is_buffer auto &buff,
       sitl::logger::level l)
   {
     constexpr std::string_view ltable[] = {
@@ -81,8 +81,7 @@ void sitl::logger::log(sitl::logger::level l,
 {
   std::time_t tnow = std::time(nullptr);
   std::tm *now = std::localtime(&tnow);
-
-  sitl::ios::fprintf(stdout, "#/#/# #:#:# : [#] : ",
+  sitl::ios::fprintf(stdout, "[#/#/# #:#:#]:[#]:",
                      sitl::logger::pad2d{now->tm_mday},
                      sitl::logger::pad2d{now->tm_mon},
                      1900 + now->tm_year,

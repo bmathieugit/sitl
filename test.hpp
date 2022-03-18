@@ -10,21 +10,26 @@
 
 namespace sitl::test
 {
+  struct result
+  {
+  };
 
   struct test
   {
     std::string_view descr;
     void (*fn)();
 
-    void run() const
+    result run() const
     try
     {
       logger::info("test");
       fn();
+      return {};
     }
     catch (const std::exception &e)
     {
       sitl::logger::error(" # : test failed #  ", std::string_view(e.what()), descr);
+      return {};
     }
   };
 
@@ -33,6 +38,7 @@ namespace sitl::test
   {
     std::string_view descr;
     std::array<test, n> tests;
+    std::array<result, n> results;
 
     void run() const
     {
@@ -64,8 +70,9 @@ namespace sitl::test
 
   struct asserterror : std::exception
   {
-    virtual const char*
-    what() const noexcept{
+    virtual const char *
+    what() const noexcept
+    {
       return "assertion failed";
     }
   };
