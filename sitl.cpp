@@ -10,7 +10,6 @@
 
 //#include "syntax.hpp"
 //#include <iostream>
-#include <lib/test.hpp>
 
 int main(int argc, char **argv)
 try

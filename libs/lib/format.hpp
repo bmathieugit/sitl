@@ -8,6 +8,7 @@
 #include <map>
 
 #include <lib/meta.hpp>
+#include <lib/enumerate.hpp>
 
 namespace lib::fmt
 {
@@ -94,6 +95,17 @@ struct lib::fmt::formatter<char[n]>
   void format(
       is_buffer auto &buff,
       const char (&s)[n]) const
+  {
+    lib::fmt::formatter<std::string_view>{}.format(buff, s);
+  }
+};
+
+template <>
+struct lib::fmt::formatter<const char *>
+{
+  void format(
+      is_buffer auto &buff,
+      const char *s) const
   {
     lib::fmt::formatter<std::string_view>{}.format(buff, s);
   }
@@ -246,143 +258,6 @@ struct lib::fmt::formatter<bool>
   }
 };
 
-namespace lib::fmt
-{
-  struct style
-  {
-    std::string_view code;
-  };
-
-  template <size_t n>
-  struct combined_style
-  {
-    std::array<style, n> styles;
-  };
-
-  template <
-      size_t n,
-      typename T>
-  struct styled_object
-  {
-    std::array<style, n> styles;
-    const T &obj;
-  };
-
-  consteval combined_style<2>
-  operator|(style s1, style s2);
-
-  template <size_t n>
-  consteval combined_style<n + 1>
-  operator|(combined_style<n> s1, style s2);
-
-  template <size_t n>
-  consteval combined_style<n + 1>
-  operator|(style s1, combined_style<n> s2);
-
-  template <typename T>
-  constexpr styled_object<1, T>
-  operator|(style s, const T &o);
-
-  template <size_t n, typename T>
-  constexpr styled_object<n, T>
-  operator|(combined_style<n> s,
-            const T &o);
-
-  constexpr style reset{"\u001b[0m"};
-  constexpr style black{"\u001b[30m"};
-  constexpr style red{"\u001b[31m"};
-  constexpr style green{"\u001b[32m"};
-  constexpr style yellow{"\u001b[33m"};
-  constexpr style blue{"\u001b[34m"};
-  constexpr style magenta{"\u001b[35m"};
-  constexpr style cyan{"\u001b[36m"};
-  constexpr style white{"\u001b[37m"};
-
-  constexpr style bblack{"\u001b[40m"};
-  constexpr style bred{"\u001b[41m"};
-  constexpr style bgreen{"\u001b[42m"};
-  constexpr style byellow{"\u001b[43m"};
-  constexpr style bblue{"\u001b[44m"};
-  constexpr style bmagenta{"\u001b[45m"};
-  constexpr style bcyan{"\u001b[46m"};
-  constexpr style bwhite{"\u001b[47m"};
-
-  constexpr style bold{"\u001b[1m"};
-  constexpr style underline{"\u001b[4m"};
-  constexpr style reversed{"\u001b[7m"};
-
-  constexpr style cup{"\u001b[1A"};
-  constexpr style cdown{"\u001b[1B"};
-  constexpr style cright{"\u001b[1C"};
-  constexpr style cleft{"\u001b[1D"};
-
-}
-
-consteval lib::fmt::combined_style<2>
-operator|(
-    lib::fmt::style s1,
-    lib::fmt::style s2)
-{
-  return {{s1, s2}};
-}
-
-template <size_t n>
-consteval lib::fmt::combined_style<n + 1>
-operator|(lib::fmt::combined_style<n> s1,
-          lib::fmt::style s2)
-{
-  lib::fmt::combined_style<n + 1> s;
-
-  for (size_t i = 0; i < n; ++i)
-    s.styles[i] = s1.styles[i];
-  s.styles[n] = s2;
-
-  return s;
-}
-
-template <size_t n>
-consteval lib::fmt::combined_style<n + 1>
-operator|(lib::fmt::style s1,
-          lib::fmt::combined_style<n> s2)
-{
-  lib::fmt::combined_style<n + 1> s;
-
-  s.styles[0] = s;
-  for (size_t i = 1; i < n; ++i)
-    s.styles[i] = s2.styles[i];
-
-  return s;
-}
-
-template <typename T>
-constexpr lib::fmt::styled_object<1, T>
-operator|(lib::fmt::style s, const T &o)
-{
-  return {{s}, o};
-}
-
-template <size_t n, typename T>
-constexpr lib::fmt::styled_object<n, T>
-operator|(lib::fmt::combined_style<n> s, const T &o)
-{
-  return {s.styles, o};
-}
-
-template <size_t n, typename T>
-struct lib::fmt::formatter<lib::fmt::styled_object<n, T>>
-{
-  void format(
-      is_buffer auto &buff,
-      const lib::fmt::styled_object<n, T> &so) const
-  {
-    for (auto &&s : so.styles)
-      lib::fmt::formatter<std::string_view>{}.format(buff, s.code);
-
-    lib::fmt::formatter<T>::format(buff, so.obj);
-    lib::fmt::formatter<std::string_view>{}.format(buff, reset.code);
-  }
-};
-
 template <typename T>
 struct lib::fmt::formatter<std::vector<T>>
 {
@@ -434,12 +309,16 @@ struct lib::fmt::formatter<std::map<K, V>>
   {
     lib::fmt::formatter<char>{}.format(buff, '{');
 
-    for (const auto &p : m)
+    for (const auto &[p, i] : lib::enumerate(m))
     {
+      lib::fmt::formatter<char>{}.format(buff, '{');
       lib::fmt::formatter<K>{}.format(buff, p.first);
-      lib::fmt::formatter<std::string_view>{}.format(buff, ": ");
+      lib::fmt::formatter<char>{}.format(buff, ',');
       lib::fmt::formatter<V>{}.format(buff, p.second);
-      lib::fmt::formatter<char>{}.format(buff, ';');
+      lib::fmt::formatter<char>{}.format(buff, '}');
+
+      if (i < m.size() - 1)
+        lib::fmt::formatter<char>{}.format(buff, ',');
     }
 
     lib::fmt::formatter<char>{}.format(buff, '}');

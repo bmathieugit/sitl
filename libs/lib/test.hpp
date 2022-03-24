@@ -5,26 +5,53 @@
 #include <string>
 #include <string_view>
 #include <exception>
+#include <array>
+#include <typeinfo>
 
 #include <lib/logger.hpp>
 
 namespace lib::test
 {
+  struct asserterror
+  {
+    std::string r;
+
+    std::string reason() const noexcept
+    {
+      return r;
+    }
+  };
+
   struct result
   {
     std::string_view descr;
     bool success;
+    std::string reason;
   };
 
   template <size_t n>
   struct results
   {
+    std::string_view descr;
     std::array<result, n> res;
 
     void print() const
     {
-      for (const result r : res)
-        logger::info("# : #", r.descr, r.success);
+      logger::info("|-Test suite '#'", descr);
+
+      for (const result &r : res)
+      {
+        logger::info("  |- # : #", r.descr, r.success);
+
+        if (not r.success)
+          logger::info("    |- /!\\ #", r.reason);
+      }
+
+      size_t total = res.size();
+      size_t succeed = std::count_if(
+          res.begin(), res.end(), [](const result &r)
+          { return r.success; });
+      logger::info("  |->>> tests #/# succeed", succeed, total);
     }
   };
 
@@ -39,10 +66,20 @@ namespace lib::test
       fn();
       return {descr, true};
     }
+    catch (const asserterror &e)
+    {
+      logger::error("oops #", e.reason());
+      return {descr, false, e.reason()};
+    }
     catch (const std::exception &e)
     {
-      lib::logger::error(" # : test failed #  ", std::string_view(e.what()), descr);
-      return {descr, false};
+      logger::error("oops2");
+      return {descr, false, e.what()};
+    }
+    catch (...)
+    {
+      logger::error("oops3");
+      return {descr, false, "unknown error"};
     }
   };
 
@@ -55,6 +92,7 @@ namespace lib::test
     results<n> run() const
     {
       results<n> res;
+      res.descr = descr;
 
       for (size_t i = 0; i < tests.size(); ++i)
         res.res[i] = tests[i].run();
@@ -83,13 +121,6 @@ namespace lib::test
       return {descr, {tests...}};
     }
   };
-
-  struct asserterror : std::exception
-  {
-    virtual const char *
-    what() const noexcept
-    { return "assertion failed"; }
-  };
 }
 
 lib::test::test_definition operator""_test(const char *descr, size_t n)
@@ -106,11 +137,48 @@ namespace lib::test::is
 {
   struct equals
   {
-    template <typename T, typename O>
-    void operator()(const T &t, const O &o)
+    template <typename A, typename E>
+    void operator()(const A &actual,
+                    const E &expected) const
     {
-      if (not(t == o))
-        throw lib::test::asserterror();
+      if (not(actual == expected))
+        throw asserterror{
+            lib::fmt::format(
+                "(actual: #) != (expected: #)",
+                actual, expected)};
+    }
+  };
+
+  template <typename Ex>
+  struct throws
+  {
+    template <typename F>
+    void operator()(F &&f)
+    try
+    {
+      f();
+      throw asserterror(
+          lib::fmt::format(
+              "expected thrown exception : #",
+              typeid(Ex).name()));
+    }
+    catch (const Ex &e)
+    {
+      // nothing
+    }
+    catch (const std::exception &e)
+    {
+      throw asserterror(
+          lib::fmt::format(
+              "expected thrown exception : #, but actual : #",
+              typeid(Ex).name(), e.what()));
+    }
+    catch (...)
+    {
+      throw asserterror(
+          lib::fmt::format(
+              "expected thrown exception : #, but actual : (...)",
+              typeid(Ex).name()));
     }
   };
 }
@@ -125,6 +193,12 @@ namespace lib::test::assert
   void equals(const auto &a, const auto &b)
   {
     that(lib::test::is::equals{}, a, b);
+  }
+
+  template <typename Ex>
+  void throws(auto &&f)
+  {
+    that(is::throws<Ex>{}, f);
   }
 }
 
