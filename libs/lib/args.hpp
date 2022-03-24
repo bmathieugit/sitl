@@ -1,11 +1,11 @@
-#ifndef __sitl_args_hpp__
-#define __sitl_args_hpp__
+#ifndef __lib_args_hpp__
+#define __lib_args_hpp__
 
 #include <string_view>
 #include <filesystem>
 #include <span>
 
-namespace sitl
+namespace lib
 {
   class cmdline
   {

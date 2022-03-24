@@ -1,5 +1,5 @@
-#ifndef __sitl_fmt_format_hpp__
-#define __sitl_fmt_format_hpp__
+#ifndef __lib_fmt_format_hpp__
+#define __lib_fmt_format_hpp__
 
 #include <string_view>
 #include <string>
@@ -9,7 +9,7 @@
 
 #include <lib/meta.hpp>
 
-namespace sitl::fmt
+namespace lib::fmt
 {
   template <typename T>
   struct formatter;
@@ -57,7 +57,7 @@ namespace sitl::fmt
 }
 
 template <>
-struct sitl::fmt::formatter<char>
+struct lib::fmt::formatter<char>
 {
   void format(
       is_buffer auto &buff, char c) const
@@ -67,7 +67,7 @@ struct sitl::fmt::formatter<char>
 };
 
 template <>
-struct sitl::fmt::formatter<std::string_view>
+struct lib::fmt::formatter<std::string_view>
 {
   void format(
       is_buffer auto &buff,
@@ -78,28 +78,28 @@ struct sitl::fmt::formatter<std::string_view>
 };
 
 template <>
-struct sitl::fmt::formatter<std::string>
+struct lib::fmt::formatter<std::string>
 {
   void format(
       is_buffer auto &buff,
       const std::string &s) const
   {
-    sitl::fmt::formatter<std::string_view>{}.format(buff, s);
+    lib::fmt::formatter<std::string_view>{}.format(buff, s);
   }
 };
 
 template <size_t n>
-struct sitl::fmt::formatter<char[n]>
+struct lib::fmt::formatter<char[n]>
 {
   void format(
       is_buffer auto &buff,
       const char (&s)[n]) const
   {
-    sitl::fmt::formatter<std::string_view>{}.format(buff, s);
+    lib::fmt::formatter<std::string_view>{}.format(buff, s);
   }
 };
 
-namespace sitl::fmt
+namespace lib::fmt
 {
 
   std::string_view bfmt(
@@ -129,7 +129,7 @@ namespace sitl::fmt
 
     std::string operator()(const auto &...args)
     {
-      return sitl::fmt::format(fmt, args...);
+      return lib::fmt::format(fmt, args...);
     }
   };
 
@@ -139,18 +139,18 @@ namespace sitl::fmt
 
     std::string operator()(std::FILE *out, const auto &...args)
     {
-      return sitl::fmt::format_to(out, fmt, args...);
+      return lib::fmt::format_to(out, fmt, args...);
     }
   };
 }
 
-sitl::fmt::literal_format
+lib::fmt::literal_format
 operator"" _fmt(const char *f, size_t n);
 
-sitl::fmt::literal_format_to
+lib::fmt::literal_format_to
 operator"" _fmtto(const char *f, size_t n);
 
-std::string_view sitl::fmt::bfmt(
+std::string_view lib::fmt::bfmt(
     is_buffer auto &buff,
     std::string_view fmt)
 {
@@ -163,40 +163,40 @@ std::string_view sitl::fmt::bfmt(
 };
 
 template <typename arg_t>
-std::string_view sitl::fmt::format(
+std::string_view lib::fmt::format(
     is_buffer auto &buff,
     std::string_view fm,
     const arg_t &arg)
 {
-  fm = sitl::fmt::bfmt(buff, fm);
-  sitl::fmt::formatter<arg_t>{}.format(buff, arg);
+  fm = lib::fmt::bfmt(buff, fm);
+  lib::fmt::formatter<arg_t>{}.format(buff, arg);
   return fm;
 }
 
 template <typename... args_t>
-void sitl::fmt::format_to(
+void lib::fmt::format_to(
     std::FILE *out,
     std::string_view fm,
     const args_t &...args)
 {
-  sitl::fmt::buffer<std::FILE *> buff{out};
-  ((fm = sitl::fmt::format(buff, fm, args)), ...);
+  lib::fmt::buffer<std::FILE *> buff{out};
+  ((fm = lib::fmt::format(buff, fm, args)), ...);
   buff.append(fm);
 }
 
 template <typename... args_t>
-std::string sitl::fmt::format(
+std::string lib::fmt::format(
     std::string_view fm,
     const args_t &...args)
 {
-  sitl::fmt::buffer<std::string> buff;
-  ((fm = sitl::fmt::format(buff, fm, args)), ...);
+  lib::fmt::buffer<std::string> buff;
+  ((fm = lib::fmt::format(buff, fm, args)), ...);
   buff.append(fm);
   return buff.buff;
 };
 
 template <is_integer T>
-struct sitl::fmt::formatter<T>
+struct lib::fmt::formatter<T>
 {
   class stack_array
   {
@@ -218,7 +218,7 @@ struct sitl::fmt::formatter<T>
     stack_array tbuff;
 
     if (t == 0)
-      sitl::fmt::formatter<char>{}.format(buff, '0');
+      lib::fmt::formatter<char>{}.format(buff, '0');
     else
       while (t != 0)
       {
@@ -230,23 +230,23 @@ struct sitl::fmt::formatter<T>
       tbuff.push('-');
 
     while (not tbuff.empty())
-      sitl::fmt::formatter<char>{}.format(buff, tbuff.pop());
+      lib::fmt::formatter<char>{}.format(buff, tbuff.pop());
   }
 };
 
 template <>
-struct sitl::fmt::formatter<bool>
+struct lib::fmt::formatter<bool>
 {
   void format(
       is_buffer auto &buff,
       const bool &b) const
   {
-    sitl::fmt::formatter<std::string_view>{}
+    lib::fmt::formatter<std::string_view>{}
         .format(buff, (b ? "true" : "false"));
   }
 };
 
-namespace sitl::fmt
+namespace lib::fmt
 {
   struct style
   {
@@ -318,20 +318,20 @@ namespace sitl::fmt
 
 }
 
-consteval sitl::fmt::combined_style<2>
+consteval lib::fmt::combined_style<2>
 operator|(
-    sitl::fmt::style s1,
-    sitl::fmt::style s2)
+    lib::fmt::style s1,
+    lib::fmt::style s2)
 {
   return {{s1, s2}};
 }
 
 template <size_t n>
-consteval sitl::fmt::combined_style<n + 1>
-operator|(sitl::fmt::combined_style<n> s1,
-          sitl::fmt::style s2)
+consteval lib::fmt::combined_style<n + 1>
+operator|(lib::fmt::combined_style<n> s1,
+          lib::fmt::style s2)
 {
-  sitl::fmt::combined_style<n + 1> s;
+  lib::fmt::combined_style<n + 1> s;
 
   for (size_t i = 0; i < n; ++i)
     s.styles[i] = s1.styles[i];
@@ -341,11 +341,11 @@ operator|(sitl::fmt::combined_style<n> s1,
 }
 
 template <size_t n>
-consteval sitl::fmt::combined_style<n + 1>
-operator|(sitl::fmt::style s1,
-          sitl::fmt::combined_style<n> s2)
+consteval lib::fmt::combined_style<n + 1>
+operator|(lib::fmt::style s1,
+          lib::fmt::combined_style<n> s2)
 {
-  sitl::fmt::combined_style<n + 1> s;
+  lib::fmt::combined_style<n + 1> s;
 
   s.styles[0] = s;
   for (size_t i = 1; i < n; ++i)
@@ -355,94 +355,94 @@ operator|(sitl::fmt::style s1,
 }
 
 template <typename T>
-constexpr sitl::fmt::styled_object<1, T>
-operator|(sitl::fmt::style s, const T &o)
+constexpr lib::fmt::styled_object<1, T>
+operator|(lib::fmt::style s, const T &o)
 {
   return {{s}, o};
 }
 
 template <size_t n, typename T>
-constexpr sitl::fmt::styled_object<n, T>
-operator|(sitl::fmt::combined_style<n> s, const T &o)
+constexpr lib::fmt::styled_object<n, T>
+operator|(lib::fmt::combined_style<n> s, const T &o)
 {
   return {s.styles, o};
 }
 
 template <size_t n, typename T>
-struct sitl::fmt::formatter<sitl::fmt::styled_object<n, T>>
+struct lib::fmt::formatter<lib::fmt::styled_object<n, T>>
 {
   void format(
       is_buffer auto &buff,
-      const sitl::fmt::styled_object<n, T> &so) const
+      const lib::fmt::styled_object<n, T> &so) const
   {
     for (auto &&s : so.styles)
-      sitl::fmt::formatter<std::string_view>{}.format(buff, s.code);
+      lib::fmt::formatter<std::string_view>{}.format(buff, s.code);
 
-    sitl::fmt::formatter<T>::format(buff, so.obj);
-    sitl::fmt::formatter<std::string_view>{}.format(buff, reset.code);
+    lib::fmt::formatter<T>::format(buff, so.obj);
+    lib::fmt::formatter<std::string_view>{}.format(buff, reset.code);
   }
 };
 
 template <typename T>
-struct sitl::fmt::formatter<std::vector<T>>
+struct lib::fmt::formatter<std::vector<T>>
 {
   void format(
       is_buffer auto &buff,
       const std::vector<T> &v) const
   {
-    sitl::fmt::formatter<char>{}.format(buff, '{');
+    lib::fmt::formatter<char>{}.format(buff, '{');
 
     for (size_t i = 0; i < v.size(); ++i)
     {
-      sitl::fmt::formatter<T>{}.format(buff, v[i]);
+      lib::fmt::formatter<T>{}.format(buff, v[i]);
 
       if (i < v.size() - 1)
-        sitl::fmt::formatter<std::string_view>{}.format(buff, ", ");
+        lib::fmt::formatter<std::string_view>{}.format(buff, ", ");
     }
 
-    sitl::fmt::formatter<char>{}.format(buff, '}');
+    lib::fmt::formatter<char>{}.format(buff, '}');
   }
 };
 
 template <typename T, size_t n>
-struct sitl::fmt::formatter<std::array<T, n>>
+struct lib::fmt::formatter<std::array<T, n>>
 {
   void format(
       is_buffer auto &buff,
       const std::array<T, n> &v) const
   {
-    sitl::fmt::formatter<char>{}.format(buff, '{');
+    lib::fmt::formatter<char>{}.format(buff, '{');
 
     for (size_t i = 0; i < v.size(); ++i)
     {
-      sitl::fmt::formatter<T>{}.format(buff, v[i]);
+      lib::fmt::formatter<T>{}.format(buff, v[i]);
 
       if (i < v.size() - 1)
-        sitl::fmt::formatter<std::string_view>{}.format(buff, ", ");
+        lib::fmt::formatter<std::string_view>{}.format(buff, ", ");
     }
 
-    sitl::fmt::formatter<char>{}.format(buff, '}');
+    lib::fmt::formatter<char>{}.format(buff, '}');
   }
 };
 
 template <typename K, typename V>
-struct sitl::fmt::formatter<std::map<K, V>>
+struct lib::fmt::formatter<std::map<K, V>>
 {
   void format(
       is_buffer auto &buff,
       const std::map<K, V> &m) const
   {
-    sitl::fmt::formatter<char>{}.format(buff, '{');
+    lib::fmt::formatter<char>{}.format(buff, '{');
 
     for (const auto &p : m)
     {
-      sitl::fmt::formatter<K>{}.format(buff, p.first);
-      sitl::fmt::formatter<std::string_view>{}.format(buff, ": ");
-      sitl::fmt::formatter<V>{}.format(buff, p.second);
-      sitl::fmt::formatter<char>{}.format(buff, ';');
+      lib::fmt::formatter<K>{}.format(buff, p.first);
+      lib::fmt::formatter<std::string_view>{}.format(buff, ": ");
+      lib::fmt::formatter<V>{}.format(buff, p.second);
+      lib::fmt::formatter<char>{}.format(buff, ';');
     }
 
-    sitl::fmt::formatter<char>{}.format(buff, '}');
+    lib::fmt::formatter<char>{}.format(buff, '}');
   }
 };
 

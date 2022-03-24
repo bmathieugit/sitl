@@ -32,7 +32,7 @@ static int __toint(std::string_view s)
   return neg ? -res : res;
 }
 
-sitl::cmdline::cmdline(
+lib::cmdline::cmdline(
     std::string_view _prefix,
     std::string_view _key_value_sep,
     std::string_view _value_sep,
@@ -44,13 +44,13 @@ sitl::cmdline::cmdline(
 {
 }
 
-bool sitl::cmdline::has(
+bool lib::cmdline::has(
     std::string_view arg)
 {
   return not get(arg).empty();
 }
 
-std::string_view sitl::cmdline::get(
+std::string_view lib::cmdline::get(
     std::string_view arg)
 {
   auto found =
@@ -66,7 +66,7 @@ std::string_view sitl::cmdline::get(
   return found != args.end() ? *found : "";
 }
 
-std::string_view sitl::cmdline::val(
+std::string_view lib::cmdline::val(
     std::string_view arg)
 {
   std::string_view fullv = get(arg);
@@ -78,7 +78,7 @@ std::string_view sitl::cmdline::val(
     return fullv.substr(i + key_value_sep.size());
 }
 
-int sitl::cmdline::integer(
+int lib::cmdline::integer(
     std::string_view arg, int def)
 {
   std::string_view v = val(arg);
@@ -86,7 +86,7 @@ int sitl::cmdline::integer(
   return isint ? __toint(v) : def;
 }
 
-bool sitl::cmdline::boolean(
+bool lib::cmdline::boolean(
     std::string_view arg, bool def)
 {
   std::string_view v = val(arg);
@@ -99,14 +99,14 @@ bool sitl::cmdline::boolean(
     return def;
 }
 
-std::string_view sitl::cmdline::string(
+std::string_view lib::cmdline::string(
     std::string_view arg, std::string_view def)
 {
   std::string_view v = val(arg);
   return v.empty() ? def : v;
 }
 
-std::filesystem::path sitl::cmdline::path(
+std::filesystem::path lib::cmdline::path(
     std::string_view arg,
     std::string_view def)
 {

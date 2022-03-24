@@ -15,11 +15,11 @@
 int main(int argc, char **argv)
 try
 {
-  sitl::logger::info("# #"_fmt(1, 2));
+  lib::logger::info("# #"_fmt(1, 2));
 
-  sitl::cmdline aparse("--", "=", ",", argc, argv);
+  lib::cmdline aparse("--", "=", ",", argc, argv);
   std::string_view fname = aparse.string("file");
-  sitl::logger::info("filename found '#'", fname);
+  lib::logger::info("filename found '#'", fname);
 
   std::ifstream src(fname.data());
 
@@ -37,5 +37,5 @@ try
 }
 catch (std::exception &e)
 {
-  sitl::logger::error("exception #", std::string_view(e.what()));
+  lib::logger::error("exception #", std::string_view(e.what()));
 }

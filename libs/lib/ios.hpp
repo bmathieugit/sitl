@@ -1,12 +1,12 @@
-#ifndef __sitl_ios_hpp__
-#define __sitl_ios_hpp__
+#ifndef __lib_ios_hpp__
+#define __lib_ios_hpp__
 
 #include <string_view>
 #include <cstdio>
 
 #include <lib/format.hpp>
 
-namespace sitl::ios
+namespace lib::ios
 {
   template <typename T>
   size_t fwrite(std::FILE *f, T *data, size_t count);
@@ -28,7 +28,7 @@ namespace sitl::ios
 }
 
 template <typename T>
-size_t sitl::ios::fwrite(
+size_t lib::ios::fwrite(
     std::FILE *f,
     T *data,
     size_t count)
@@ -36,35 +36,35 @@ size_t sitl::ios::fwrite(
   return std::fwrite(data, sizeof(T), count, f);
 }
 
-void sitl::ios::fprintf(
+void lib::ios::fprintf(
     std::FILE *out,
     std::string_view fmt,
     const auto &...args)
 {
-  sitl::fmt::format_to(out, fmt, args...);
+  lib::fmt::format_to(out, fmt, args...);
 }
 
-void sitl::ios::fprintfln(
+void lib::ios::fprintfln(
     std::FILE *out,
     std::string_view fmt,
     const auto &...args)
 {
-  sitl::fmt::format_to(out, fmt, args...);
+  lib::fmt::format_to(out, fmt, args...);
   std::fputc('\n', out);
 }
 
-void sitl::ios::printf(
+void lib::ios::printf(
     std::string_view fmt,
     const auto &...args)
 {
-  sitl::ios::fprintf(stdout, fmt, args...);
+  lib::ios::fprintf(stdout, fmt, args...);
 }
 
-void sitl::ios::printfln(
+void lib::ios::printfln(
     std::string_view fmt,
     const auto &...args)
 {
-  sitl::ios::fprintfln(stdout, fmt, args...);
+  lib::ios::fprintfln(stdout, fmt, args...);
 }
 
 #endif

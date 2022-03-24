@@ -1,9 +1,9 @@
-#ifndef __sitl_tree_hpp__
-#define __sitl_tree_hpp__
+#ifndef __lib_tree_hpp__
+#define __lib_tree_hpp__
 
 #include <vector>
 
-namespace sitl
+namespace lib
 {
   template <typename T>
   class tree;

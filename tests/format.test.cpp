@@ -7,23 +7,24 @@ int main()
       "should be equals to \"hello world!\""_test(
           []()
           {
-            sitl::test::assert::equals(
+            lib::test::assert::equals(
                 "# #!"_fmt("hello", "world"),
                 "hello world!");
           }),
       "should be equals to 0"_test(
           []
           {
-            sitl::test::assert::equals("#"_fmt(0), "0");
+            lib::test::assert::equals("#"_fmt(0), "0");
           }),
       "should be equals to 12"_test(
-          [] {
-            sitl::test::assert::equals("#"_fmt(12), "12");
-
+          []
+          {
+            lib::test::assert::equals("#"_fmt(12), "12");
           }),
       "should be equals to 'a'"_test(
-          [] {
-            sitl::test::assert::equals("#"_fmt('a'), "a");
+          []
+          {
+            lib::test::assert::equals("#"_fmt('a'), "a");
           }))
       .run()
       .print();

@@ -8,7 +8,7 @@
 #include <lib/ios.hpp>
 #include <lib/format.hpp>
 
-namespace sitl::logger
+namespace lib::logger
 {
   enum class level : int
   {
@@ -49,82 +49,82 @@ namespace sitl::logger
 }
 
 template <>
-struct sitl::fmt::formatter<sitl::logger::pad2d>
+struct lib::fmt::formatter<lib::logger::pad2d>
 {
   void format(
       is_buffer auto &buff,
-      sitl::logger::pad2d p2)
+      lib::logger::pad2d p2)
   {
     if (0 <= p2.i and p2.i <= 9)
-      sitl::fmt::formatter<char>{}.format(buff, '0');
+      lib::fmt::formatter<char>{}.format(buff, '0');
 
-    sitl::fmt::formatter<int>{}.format(buff, p2.i);
+    lib::fmt::formatter<int>{}.format(buff, p2.i);
   }
 };
 
 template <>
-struct sitl::fmt::formatter<sitl::logger::level>
+struct lib::fmt::formatter<lib::logger::level>
 {
   void format(
       is_buffer auto &buff,
-      sitl::logger::level l)
+      lib::logger::level l)
   {
     constexpr std::string_view ltable[] = {
         "trace", "debug", "info", "warn", "error", "fatal"};
-    sitl::fmt::formatter<std::string_view>{}.format(buff, ltable[(int)l]);
+    lib::fmt::formatter<std::string_view>{}.format(buff, ltable[(int)l]);
   }
 };
 
-void sitl::logger::log(sitl::logger::level l,
+void lib::logger::log(lib::logger::level l,
                        std::string_view msg,
                        const auto &...pms)
 {
   std::time_t tnow = std::time(nullptr);
   std::tm *now = std::localtime(&tnow);
-  sitl::ios::fprintf(stdout, "[#/#/# #:#:#]:[#]:",
-                     sitl::logger::pad2d{now->tm_mday},
-                     sitl::logger::pad2d{now->tm_mon},
+  lib::ios::fprintf(stdout, "[#/#/# #:#:#]:[#]:",
+                     lib::logger::pad2d{now->tm_mday},
+                     lib::logger::pad2d{now->tm_mon},
                      1900 + now->tm_year,
-                     sitl::logger::pad2d{now->tm_hour},
-                     sitl::logger::pad2d{now->tm_min},
-                     sitl::logger::pad2d{now->tm_sec}, l);
-  sitl::ios::fprintfln(stdout, msg, pms...);
+                     lib::logger::pad2d{now->tm_hour},
+                     lib::logger::pad2d{now->tm_min},
+                     lib::logger::pad2d{now->tm_sec}, l);
+  lib::ios::fprintfln(stdout, msg, pms...);
 }
 
-void sitl::logger::trace(std::string_view msg,
+void lib::logger::trace(std::string_view msg,
                          const auto &...pms)
 {
-  sitl::logger::log(level::trace, msg, pms...);
+  lib::logger::log(level::trace, msg, pms...);
 }
 
-void sitl::logger::debug(std::string_view msg,
+void lib::logger::debug(std::string_view msg,
                          const auto &...pms)
 {
-  sitl::logger::log(level::debug, msg, pms...);
+  lib::logger::log(level::debug, msg, pms...);
 }
 
-void sitl::logger::info(std::string_view msg,
+void lib::logger::info(std::string_view msg,
                         const auto &...pms)
 {
-  sitl::logger::log(level::info, msg, pms...);
+  lib::logger::log(level::info, msg, pms...);
 }
 
-void sitl::logger::warn(std::string_view msg,
+void lib::logger::warn(std::string_view msg,
                         const auto &...pms)
 {
-  sitl::logger::log(level::warn, msg, pms...);
+  lib::logger::log(level::warn, msg, pms...);
 }
 
-void sitl::logger::error(std::string_view msg,
+void lib::logger::error(std::string_view msg,
                          const auto &...pms)
 {
-  sitl::logger::log(level::error, msg, pms...);
+  lib::logger::log(level::error, msg, pms...);
 }
 
-void sitl::logger::fatal(std::string_view msg,
+void lib::logger::fatal(std::string_view msg,
                          const auto &...pms)
 {
-  sitl::logger::log(level::fatal, msg, pms...);
+  lib::logger::log(level::fatal, msg, pms...);
 }
 
 #endif

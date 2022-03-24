@@ -8,7 +8,7 @@
 
 #include <lib/logger.hpp>
 
-namespace sitl::test
+namespace lib::test
 {
   struct result
   {
@@ -41,7 +41,7 @@ namespace sitl::test
     }
     catch (const std::exception &e)
     {
-      sitl::logger::error(" # : test failed #  ", std::string_view(e.what()), descr);
+      lib::logger::error(" # : test failed #  ", std::string_view(e.what()), descr);
       return {descr, false};
     }
   };
@@ -92,17 +92,17 @@ namespace sitl::test
   };
 }
 
-sitl::test::test_definition operator""_test(const char *descr, size_t n)
+lib::test::test_definition operator""_test(const char *descr, size_t n)
 {
   return {{descr, n}};
 }
 
-sitl::test::test_suite_definition operator""_suite(const char *descr, size_t n)
+lib::test::test_suite_definition operator""_suite(const char *descr, size_t n)
 {
   return {{descr, n}};
 }
 
-namespace sitl::test::is
+namespace lib::test::is
 {
   struct equals
   {
@@ -110,12 +110,12 @@ namespace sitl::test::is
     void operator()(const T &t, const O &o)
     {
       if (not(t == o))
-        throw sitl::test::asserterror();
+        throw lib::test::asserterror();
     }
   };
 }
 
-namespace sitl::test::assert
+namespace lib::test::assert
 {
   void that(auto is, const auto &...args)
   {
@@ -124,7 +124,7 @@ namespace sitl::test::assert
 
   void equals(const auto &a, const auto &b)
   {
-    that(sitl::test::is::equals{}, a, b);
+    that(lib::test::is::equals{}, a, b);
   }
 }
 
