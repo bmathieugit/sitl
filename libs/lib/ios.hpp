@@ -4,7 +4,7 @@
 #include <string_view>
 #include <cstdio>
 
-#include "format.hpp"
+#include <lib/format.hpp>
 
 namespace sitl::ios
 {

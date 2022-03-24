@@ -5,8 +5,8 @@
 #include <string_view>
 #include <ctime>
 
-#include "ios.hpp"
-#include "format.hpp"
+#include <lib/ios.hpp>
+#include <lib/format.hpp>
 
 namespace sitl::logger
 {

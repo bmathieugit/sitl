@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <span>
 
-#include "args.hpp"
+#include <lib/args.hpp>
 
 static bool __isinteger(std::string_view s)
 {

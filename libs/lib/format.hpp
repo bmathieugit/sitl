@@ -7,7 +7,7 @@
 #include <array>
 #include <map>
 
-#include "meta.hpp"
+#include <lib/meta.hpp>
 
 namespace sitl::fmt
 {

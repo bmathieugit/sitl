@@ -6,12 +6,26 @@
 #include <string_view>
 #include <exception>
 
-#include "logger.hpp"
+#include <lib/logger.hpp>
 
 namespace sitl::test
 {
   struct result
   {
+    std::string_view descr;
+    bool success;
+  };
+
+  template <size_t n>
+  struct results
+  {
+    std::array<result, n> res;
+
+    void print() const
+    {
+      for (const result r : res)
+        logger::info("# : #", r.descr, r.success);
+    }
   };
 
   struct test
@@ -22,14 +36,13 @@ namespace sitl::test
     result run() const
     try
     {
-      logger::info("test");
       fn();
-      return {};
+      return {descr, true};
     }
     catch (const std::exception &e)
     {
       sitl::logger::error(" # : test failed #  ", std::string_view(e.what()), descr);
-      return {};
+      return {descr, false};
     }
   };
 
@@ -38,12 +51,15 @@ namespace sitl::test
   {
     std::string_view descr;
     std::array<test, n> tests;
-    std::array<result, n> results;
 
-    void run() const
+    results<n> run() const
     {
-      for (const test &t : tests)
-        t.run();
+      results<n> res;
+
+      for (size_t i = 0; i < tests.size(); ++i)
+        res.res[i] = tests[i].run();
+
+      return res;
     }
   };
 
@@ -72,11 +88,8 @@ namespace sitl::test
   {
     virtual const char *
     what() const noexcept
-    {
-      return "assertion failed";
-    }
+    { return "assertion failed"; }
   };
-
 }
 
 sitl::test::test_definition operator""_test(const char *descr, size_t n)
@@ -96,12 +109,8 @@ namespace sitl::test::is
     template <typename T, typename O>
     void operator()(const T &t, const O &o)
     {
-      sitl::logger::info("coucou # == #", t, o);
       if (not(t == o))
-      {
-        logger::error("yoooo");
         throw sitl::test::asserterror();
-      }
     }
   };
 }

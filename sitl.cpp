@@ -4,13 +4,13 @@
 #include <string_view>
 #include <vector>
 
-#include "args.hpp"
-#include "logger.hpp"
+#include <lib/args.hpp>
+#include <lib/logger.hpp>
 //#include "tokens.hpp"
 
 //#include "syntax.hpp"
 //#include <iostream>
-#include "test.hpp"
+#include <lib/test.hpp>
 
 int main(int argc, char **argv)
 try
@@ -26,31 +26,6 @@ try
   std::string strsrc{
       std::istreambuf_iterator<char>(src),
       std::istreambuf_iterator<char>()};
-
-  "this is a test suite"_suite(
-      "this is a test"_test(
-          []
-          {
-            std::array<int, 3> i = {1, 2, 3};
-            sitl::logger::info("#", i);
-            sitl::test::assert::that(
-                sitl::test::is::equals{},
-                i.size(), (size_t)3);
-          }),
-      "this is a second test"_test(
-          []
-          {
-            std::array<int, 3> i = {1, 2, 3};
-            sitl::logger::debug("nous avons un soucis #", i);
-            sitl::test::assert::equals(i.size(), (size_t)4  );
-          }),
-      "this is a third test"_test(
-          []
-          {
-            std::array<int, 4> i = {1, 2, 2, 4};
-            sitl::logger::debug("nous avons un soucis # 2", i);
-          }))
-      .run();
 
   // std::vector<sitl::token<char>> tks = sitl::tokens(std::string_view(strsrc));
   // sitl::tree<sitl::node> ast;
