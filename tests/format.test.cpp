@@ -58,14 +58,17 @@ int main()
             std::map<int, int> ints = {{1, 1}, {2, 2}, {3, 3}};
             lib::test::assert::equals("#"_fmt(ints), "{{1,1},{2,2},{3,3}}");
           }),
-      "<std::map:int:std::map> should be equals to {{1,{{1,1}}},{2,{{2,2}}},{3,{{3,3}}}}"_test(
+      "<std::map:int:std::map> should be equals to"
+      "{{1,{{1,1}}},{2,{{2,2}}},{3,{{3,3}}}}"_test(
           []
           {
             std::map<int, std::map<int, int>> ints =
                 {{1, {{1, 1}}},
                  {2, {{2, 2}}},
                  {3, {{3, 3}}}};
-            lib::test::assert::equals("#"_fmt(ints), "{{1,{{1,1}}},{2,{{2,2}}},{3,{{3,3}}}}");
+            lib::test::assert::equals(
+                "#"_fmt(ints),
+                "{{1,{{1,1}}},{2,{{2,2}}},{3,{{3,3}}}}");
           }))
       .run()
       .print();

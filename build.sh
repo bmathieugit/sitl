@@ -117,6 +117,12 @@ if [ $buildmain = true ]; then
   ./$objectsdir/$program
 fi
 
+echo "###########################"
+echo "# Mesure des fichiers asm"
+echo "###########################"
+wc -l $objectsdir/*.s;
+
+
 if [ $buildclean = true ]; then
 
   echo "###########################"
