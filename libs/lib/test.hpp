@@ -142,10 +142,9 @@ namespace lib::test::is
                     const E &expected) const
     {
       if (not(actual == expected))
-        throw asserterror{
-            lib::fmt::format(
-                "(actual: #) != (expected: #)",
-                actual, expected)};
+        throw asserterror(
+            "(actual: #) != (expected: #)"_fmt(
+                actual, expected));
     }
   };
 
@@ -158,8 +157,7 @@ namespace lib::test::is
     {
       f();
       throw asserterror(
-          lib::fmt::format(
-              "expected thrown exception : #",
+          "expected thrown exception : #"_fmt(
               typeid(Ex).name()));
     }
     catch (const Ex &e)
@@ -169,15 +167,13 @@ namespace lib::test::is
     catch (const std::exception &e)
     {
       throw asserterror(
-          lib::fmt::format(
-              "expected thrown exception : #, but actual : #",
+          "expected thrown exception : #, but actual : #"_fmt(
               typeid(Ex).name(), e.what()));
     }
     catch (...)
     {
       throw asserterror(
-          lib::fmt::format(
-              "expected thrown exception : #, but actual : (...)",
+          "expected thrown exception : #, but actual : (...)"_fmt(
               typeid(Ex).name()));
     }
   };

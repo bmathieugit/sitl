@@ -30,7 +30,6 @@ libsdirs="$libsdir/lib"
 compiler="g++"
 program="sitl.exe"
 main="sitl.cpp"
-4
 cflags="-Wall -Werror -pedantic -O3 -std=c++20 -save-temps"
 
 cilibs="-Ilibs"
