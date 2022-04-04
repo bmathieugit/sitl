@@ -128,5 +128,5 @@ if [ $buildclean = true ]; then
   echo "# Clean des fichiers temporaires"
   echo "###########################"
 
-  rm -rf $tempsdirs
+  # rm -rf $tempsdirs
 fi
