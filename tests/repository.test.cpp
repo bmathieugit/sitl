@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 
-class myrepo : public lib::rsv::repository<int>
+class myrepo : public lib::rsv::repository<int, int>
 {
   std::vector<int> ints;
 
@@ -11,6 +11,11 @@ public:
   explicit myrepo(std::vector<int> &&is) : ints{is} {}
 
 public:
+  virtual const int& pk(const int &i)
+  {
+    return i;
+  }
+
   virtual int insert(const int &i)
   {
     ints.push_back(i);
@@ -58,16 +63,16 @@ public:
     return std::nullopt;
   }
 
-  virtual lib::rsv::cursor<int> select_many(lib::rsv::predicate<int> pred)
+  virtual lib::rsv::cursor<int, int> select_many(lib::rsv::predicate<int> pred)
   {
-    return lib::rsv::cursor<int>{this, pred};
+    return lib::rsv::cursor<int, int>{this, pred};
   }
 };
 
 int main()
 {
   myrepo mr(std::vector<int>{1, 2, 3, 4, 5});
-  lib::rsv::repository<int> &repo = mr;
+  lib::rsv::repository<int, int> &repo = mr;
 
   for (int &i : repo.select_many([](const int &i) -> bool
                                  { return i > 0; }))
