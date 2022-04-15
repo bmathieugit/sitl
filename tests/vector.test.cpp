@@ -1,8 +1,6 @@
 #include <lib/vector.hpp>
 #include <lib/test.hpp>
 
-#include <iostream>
-
 int main()
 {
   "Test of vector"_suite(

@@ -1,8 +1,8 @@
 #include <fstream>
 #include <streambuf>
-#include <string>
-#include <string_view>
-#include <vector>
+#include <lib/string.hpp>
+#include <lib/string_view.hpp>
+#include <lib/vector.hpp>
 
 #include <lib/args.hpp>
 #include <lib/logger.hpp>
@@ -17,12 +17,12 @@ try
   lib::logger::info("# #"_fmt(1, 2));
 
   lib::cmdline aparse("--", "=", ",", argc, argv);
-  std::string_view fname = aparse.string("file");
+  lib::StringView fname = aparse.string("file");
   lib::logger::info("filename found '#'", fname);
 
   std::ifstream src(fname.data());
 
-  std::string strsrc{
+  lib::String strsrc{
       std::istreambuf_iterator<char>(src),
       std::istreambuf_iterator<char>()};
 
@@ -36,5 +36,5 @@ try
 }
 catch (std::exception &e)
 {
-  lib::logger::error("exception #", std::string_view(e.what()));
+  lib::logger::error("exception #", "coucou");
 }
