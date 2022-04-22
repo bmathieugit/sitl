@@ -75,6 +75,13 @@ int main()
             lib::Vector<int> ints({1, 2, 3, 4, 5});
             ints.clear();
             lib::test::assert::equals(ints.size(), lib::Size(0));
+          }),
+      "test of vector equality of two same vector"_test(
+          []
+          {
+            lib::Vector<int> ints({1, 2, 3, 4, 5});
+            lib::Vector<int> ints2({1, 2, 3, 4, 5});
+            lib::test::assert::equals(ints, ints2);
           }))
       .run()
       .print();
