@@ -1,38 +1,18 @@
-#include <lib/test.hpp>
 #include <lib/format.hpp>
-#include <lib/vector.hpp>
+#include <lib/basic_types.hpp>
+#include <cstdio>
 
 int main()
 {
-  "format"_suite(
-      "<char*> should be equals to \"hello world!\""_test(
-          []()
-          {
-            lib::test::assert::equals("# #!"_fmt("hello", "world"), "hello world!");
-          }),
-      "<int-0> should be equals to 0"_test(
-          []
-          {
-            lib::test::assert::equals("#"_fmt(0), "0");
-          }),
-      "<int-12> should be equals to 12"_test(
-          []
-          {
-            lib::test::assert::equals("#"_fmt(12), "12");
-          }),
-      "<char-'a'> should be equals to 'a'"_test(
-          []
-          {
-            lib::test::assert::equals("#"_fmt('a'), "a");
-          }),
-      "<Vector> should be equals to {1, 2, 3}"_test(
-          []
-          {
-            lib::Vector<int> ints = {1, 2, 3};
-            lib::test::assert::equals("#"_fmt(ints), "{1, 2, 3}");
-          }))
-      .run()
-      .print();
+  lib::Size nbsucceed = 0;
+  lib::Size nbtotal = 0;
+  
+  (nbtotal++, nbsucceed += lib::fmt::format("#"_sv, 12).size() == 2 ? 1 : 0);
+  (nbtotal++, nbsucceed += "# #!"_fmt("hello", "world").size() == 12 ? 1 : 0);
+  (nbtotal++, nbsucceed += "#"_fmt(12).size() == 2 ? 1 : 0);
+  (nbtotal++, nbsucceed += "#"_fmt('a').size() == 1 ? 1 : 0);
+
+  std::printf("test OK %d/%d\n", nbsucceed, nbtotal);
 
   return 0;
 }

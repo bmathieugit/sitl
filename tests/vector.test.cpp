@@ -38,13 +38,6 @@ int main()
             ints.push_back(4);
             lib::test::assert::equals(ints.size(), lib::Size(4));
           }),
-      "test of vector build and remove an item"_test(
-          []
-          {
-            lib::Vector<int> ints({1, 2, 3, 4, 5});
-            ints.remove(2);
-            lib::test::assert::equals(ints.size(), lib::Size(4));
-          }),
       "test of vector build and random access"_test(
           []
           {
@@ -54,20 +47,6 @@ int main()
             lib::test::assert::equals(ints[2], 3);
             lib::test::assert::equals(ints[3], 4);
             lib::test::assert::equals(ints[4], 5);
-          }),
-      "test of vector build and pop_back"_test(
-          []
-          {
-            lib::Vector<int> ints({1, 2, 3, 4, 5});
-            ints.pop_back();
-            lib::test::assert::equals(ints.size(), lib::Size(4));
-          }),
-      "test of vector build and pop_front"_test(
-          []
-          {
-            lib::Vector<int> ints({1, 2, 3, 4, 5});
-            ints.pop_back();
-            lib::test::assert::equals(ints.size(), lib::Size(4));
           }),
       "test of vector build and clear"_test(
           []
@@ -82,7 +61,8 @@ int main()
             lib::Vector<int> ints({1, 2, 3, 4, 5});
             lib::Vector<int> ints2({1, 2, 3, 4, 5});
             lib::test::assert::equals(ints, ints2);
-          }))
+          })
+      )
       .run()
       .print();
 }
