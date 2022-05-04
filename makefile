@@ -33,9 +33,10 @@ objects/set.test.exe: tests/set.test.cpp
 objects/strong.test.exe: tests/strong.test.cpp
 	g++ -o objects/strong.test.exe tests/strong.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
-test: objects objects/algorithm.test.exe objects/array_view.test.exe objects/string_view.test.exe objects/vector.test.exe objects/string.test.exe objects/format.test.exe objects/list.test.exe objects/set.test.exe objects/strong.test.exe
+test: objects objects/algorithm.test.exe objects/strong.test.exe objects/array_view.test.exe objects/string_view.test.exe objects/vector.test.exe objects/string.test.exe objects/format.test.exe objects/list.test.exe objects/set.test.exe
 	wc -l objects/*.s
-	./objects/algorithm.test.exe
+	./objects/algorithm.test.exe 
+	./objects/strong.test.exe
 	./objects/array_view.test.exe
 	./objects/string_view.test.exe
 	./objects/vector.test.exe
@@ -43,7 +44,6 @@ test: objects objects/algorithm.test.exe objects/array_view.test.exe objects/str
 	./objects/format.test.exe
 	./objects/list.test.exe
 	./objects/set.test.exe
-	./objects/strong.test.exe
 
 clean:
 	rm -rf objects

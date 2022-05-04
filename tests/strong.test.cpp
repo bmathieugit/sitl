@@ -1,4 +1,5 @@
 #include <lib/strong.hpp>
+#include <lib/utility.hpp>
 
 #include <cstdio>
 
@@ -7,14 +8,14 @@ int main()
   lib::Size nsucceed = 0;
   lib::Size ntotal = 0;
 
-  lib::Strong<int> i = new int(10);
+  lib::Strong<int> i1 = new int(10);
 
-  (++ntotal, nsucceed += static_cast<bool>(i) ? 1 : 0);
-  (++ntotal, nsucceed += *i == 10 ? 1 : 0);
+  (++ntotal, nsucceed += static_cast<bool>(i1) ? 1 : 0);
+  (++ntotal, nsucceed += *i1 == 10 ? 1 : 0);
   
-  i.destruct();
+  i1 = lib::move(lib::Strong<int>());
   
-  (++ntotal, nsucceed += !static_cast<bool>(i) ? 1 : 0);
+  (++ntotal, nsucceed += !static_cast<bool>(i1) ? 1 : 0);
 
   lib::Strong<int[]> is = new int[10];
   
