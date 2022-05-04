@@ -12,13 +12,13 @@ int main()
 
   (++ntotal, nsucceed += static_cast<bool>(i1) ? 1 : 0);
   (++ntotal, nsucceed += *i1 == 10 ? 1 : 0);
-  
+
   i1 = lib::move(lib::Strong<int>());
-  
+
   (++ntotal, nsucceed += !static_cast<bool>(i1) ? 1 : 0);
 
   lib::Strong<int[]> is = new int[10];
-  
+
   for (int i = 0; i < 10; ++i)
     is[i] = i;
 

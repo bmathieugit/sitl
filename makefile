@@ -18,6 +18,9 @@ objects/string_view.test.exe: tests/string_view.test.cpp
 objects/vector.test.exe: tests/vector.test.cpp
 	g++ -o objects/vector.test.exe tests/vector.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
+objects/fixed_vector.test.exe: tests/fixed_vector.test.cpp
+	g++ -o objects/fixed_vector.test.exe tests/fixed_vector.test.cpp ${CCINCLUDES} ${CCFLAGS}
+
 objects/string.test.exe: tests/string.test.cpp
 	g++ -o objects/string.test.exe tests/string.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
@@ -33,13 +36,14 @@ objects/set.test.exe: tests/set.test.cpp
 objects/strong.test.exe: tests/strong.test.cpp
 	g++ -o objects/strong.test.exe tests/strong.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
-test: objects objects/algorithm.test.exe objects/strong.test.exe objects/array_view.test.exe objects/string_view.test.exe objects/vector.test.exe objects/string.test.exe objects/format.test.exe objects/list.test.exe objects/set.test.exe
+test: objects objects/algorithm.test.exe objects/strong.test.exe objects/array_view.test.exe objects/string_view.test.exe objects/vector.test.exe objects/fixed_vector.test.exe objects/string.test.exe objects/format.test.exe objects/list.test.exe objects/set.test.exe
 	wc -l objects/*.s
 	./objects/algorithm.test.exe 
 	./objects/strong.test.exe
 	./objects/array_view.test.exe
 	./objects/string_view.test.exe
 	./objects/vector.test.exe
+	./objects/fixed_vector.test.exe
 	./objects/string.test.exe
 	./objects/format.test.exe
 	./objects/list.test.exe

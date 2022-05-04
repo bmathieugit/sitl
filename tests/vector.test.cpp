@@ -26,14 +26,14 @@ int main()
       "test of vector build by {1, 2, 3}"_test(
           []
           {
-            lib::Vector<int> ints({1, 2, 3});
+            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3));
             lib::test::assert::equals(ints.size(), lib::Size(3));
             lib::test::assert::equals(ints.capacity(), lib::Size(3));
           }),
       "test of vector build and push_back with 4"_test(
           []
           {
-            lib::Vector<int> ints({1, 2, 3});
+            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3));
             lib::test::assert::equals(ints.size(), lib::Size(3));
             ints.push_back(4);
             lib::test::assert::equals(ints.size(), lib::Size(4));
@@ -41,7 +41,7 @@ int main()
       "test of vector build and random access"_test(
           []
           {
-            lib::Vector<int> ints({1, 2, 3, 4, 5});
+            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3, 4,5));
             lib::test::assert::equals(ints[0], 1);
             lib::test::assert::equals(ints[1], 2);
             lib::test::assert::equals(ints[2], 3);
@@ -51,15 +51,15 @@ int main()
       "test of vector build and clear"_test(
           []
           {
-            lib::Vector<int> ints({1, 2, 3, 4, 5});
+            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3, 4,5));
             ints.clear();
             lib::test::assert::equals(ints.size(), lib::Size(0));
           }),
       "test of vector equality of two same vector"_test(
           []
           {
-            lib::Vector<int> ints({1, 2, 3, 4, 5});
-            lib::Vector<int> ints2({1, 2, 3, 4, 5});
+            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3, 4,5));
+            lib::Vector<int> ints2(lib::Vector<int>::from(1, 2, 3, 4,5));
             lib::test::assert::equals(ints, ints2);
           })
       )
