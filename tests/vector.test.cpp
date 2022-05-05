@@ -1,68 +1,41 @@
 #include <lib/vector.hpp>
-#include <lib/test.hpp>
+#include "tests.cpp"
 
 int main()
 {
-  "Test of vector"_suite(
-      "test of vector default build"_test(
-          []
-          {
-            lib::Vector<int> ints;
+  TestResult result;
 
-            lib::test::assert::equals(ints.size(), lib::Size(0));
-            lib::test::assert::equals(ints.capacity(), lib::Size(0));
-          }),
-      "test of vector size"_test(
-          []
-          {
-            lib::Vector<int> ints(12);
+  lib::Vector<int> ints;
 
-            for (lib::Size i = 0; i < 12; ++i)
-              ints.push_back(i);
+  test(ints.size() == 0, result);
+  test(ints.empty(), result);
 
-            lib::test::assert::equals(ints.size(), lib::Size(12));
-            lib::test::assert::equals(ints.capacity(), lib::Size(12));
-          }),
-      "test of vector build by {1, 2, 3}"_test(
-          []
-          {
-            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3));
-            lib::test::assert::equals(ints.size(), lib::Size(3));
-            lib::test::assert::equals(ints.capacity(), lib::Size(3));
-          }),
-      "test of vector build and push_back with 4"_test(
-          []
-          {
-            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3));
-            lib::test::assert::equals(ints.size(), lib::Size(3));
-            ints.push_back(4);
-            lib::test::assert::equals(ints.size(), lib::Size(4));
-          }),
-      "test of vector build and random access"_test(
-          []
-          {
-            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3, 4,5));
-            lib::test::assert::equals(ints[0], 1);
-            lib::test::assert::equals(ints[1], 2);
-            lib::test::assert::equals(ints[2], 3);
-            lib::test::assert::equals(ints[3], 4);
-            lib::test::assert::equals(ints[4], 5);
-          }),
-      "test of vector build and clear"_test(
-          []
-          {
-            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3, 4,5));
-            ints.clear();
-            lib::test::assert::equals(ints.size(), lib::Size(0));
-          }),
-      "test of vector equality of two same vector"_test(
-          []
-          {
-            lib::Vector<int> ints(lib::Vector<int>::from(1, 2, 3, 4,5));
-            lib::Vector<int> ints2(lib::Vector<int>::from(1, 2, 3, 4,5));
-            lib::test::assert::equals(ints, ints2);
-          })
-      )
-      .run()
-      .print();
+  lib::Vector<int> ints2 = lib::Vector<int>::from(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+  test(ints2.size() == 9, result);
+  test(!ints2.empty(), result);
+  test(ints2 == ints2, result);
+  test(ints2 == lib::Vector<int>::from(1, 2, 3, 4, 5, 6, 7, 8, 9), result);
+  test(ints2[0] = 1, result);
+  test(ints2[1] = 2, result);
+  test(ints2[2] = 3, result);
+  test(ints2[3] = 4, result);
+  test(ints2[4] = 5, result);
+  test(ints2[5] = 6, result);
+  test(ints2[6] = 7, result);
+  test(ints2[7] = 8, result);
+  test(ints2[8] = 9, result);
+
+  ints2.push_back(10);
+
+  test(ints2.size() == 10, result);
+  test(ints2[9] = 10, result);
+
+  ints2.push_front(-1);
+
+  test(ints2[0] == -1, result);
+  test(ints2.size() == 11, result);
+  test(ints2[10] = 10, result);
+
+  print_result(result);
 }

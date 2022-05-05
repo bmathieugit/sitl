@@ -1,29 +1,47 @@
 #include <lib/string.hpp>
-#include <lib/test.hpp>
+#include "tests.cpp"
+#include <cstdio>
 
 int main()
 {
+  TestResult result;
+  lib::String str("cou");
+  lib::String str2("cou");
 
-  "String test suite"_suite(
-      "test string build"_test(
-          []
-          {
-            lib::String str("cou");
-            lib::test::assert::equals(str.size(), lib::Size(3));
-          }),
-      "test string build and compare to 'cou'"_test(
-          []
-          {
-            lib::String str("cou");
-            lib::String str2("cou");
-            lib::test::assert::equals(str, str2);
-          }),
-      "test string build"_test(
-          []
-          {
-            lib::String str("cou");
-            lib::test::assert::equals(str.size(), lib::Size(3));
-          }))
-      .run()
-      .print();
+  test(str.size() == 3, result);
+  test(str == str2, result);
+
+  str.push_front('c');
+
+  test(str.size() == 4, result);
+  test(str[0] == 'c', result);
+  test(str[1] == 'c', result);
+  test(str[2] == 'o', result);
+  test(str[3] == 'u', result);
+  test(str.begin() != str.end(), result);
+  test(str.begin() == str.data(), result);
+  test(!str.empty(), result);
+
+  str2.clear();
+
+  test(str2.size() == 0, result);
+  test(str2.empty(), result);
+
+  str2.push_back('c');
+
+  test(str2.size() == 1, result);
+  test(!str2.empty(), result);
+  
+  str2.append("ou"_sv); 
+  
+
+  test(str2.size() == 3, result);
+
+  str2.append("c");
+
+  test(str2.size() == 4, result);
+
+  print_result(result);
+
+  return 0;
 }

@@ -1,11 +1,9 @@
 #include <lib/algorithm.hpp>
-
-#include <cstdio>
+#include "tests.cpp"
 
 int main()
 {
-  int testok = 0;
-  const int totaltest = 14;
+  TestResult result;
 
   int i[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   int *b = i;
@@ -23,20 +21,20 @@ int main()
   int *bp = prefix;
   int *ep = prefix + 4;
 
-  testok += *lib::FindAlgorithm()(b, e, 2) == 2 ? 1 : 0;
-  testok += lib::FindAlgorithm()(b, e, 2) == i + 2 ? 1 : 0;
-  testok += lib::FindAlgorithm()(b, e, 15) == e ? 1 : 0;
-  testok += lib::AfterAlgorithm()(b, e, 15) == e ? 1 : 0;
-  testok += lib::AfterAlgorithm()(b, e, 2) == i + 3 ? 1 : 0;
-  testok += lib::CountAlgorithm()(b, e, 2) == 1 ? 1 : 0;
-  testok += lib::CountAlgorithm()(b, e, 15) == 0 ? 1 : 0;
-  testok += lib::EqualsAlgorithm()(b, e, b2, e2) ? 1 : 0;
-  testok += !lib::EqualsAlgorithm()(b, e, bj, ej) ? 1 : 0;
-  testok += lib::StartsWithAlgorithm()(b, e, bp, ep) ? 1 : 0;
-  testok += !lib::StartsWithAlgorithm()(bp, ep, b, e) ? 1 : 0;
-  testok += lib::AllOfAlgorithm()(b, e, lib::op::Greater(-1)) ? 1 : 0;
-  testok += lib::AnyOfAlgorithm()(b, e, lib::op::GreaterEquals(0)) ? 1 : 0;
-  testok += lib::NoneOfAlgorithm()(b, e, lib::op::Equals(-1)) ? 1 : 0;
+  test(*lib::FindAlgorithm()(b, e, 2) == 2, result);
+  test(lib::FindAlgorithm()(b, e, 2) == i + 2, result);
+  test(lib::FindAlgorithm()(b, e, 15) == e, result);
+  test(lib::AfterAlgorithm()(b, e, 15) == e, result);
+  test(lib::AfterAlgorithm()(b, e, 2) == i + 3, result);
+  test(lib::CountAlgorithm()(b, e, 2) == 1, result);
+  test(lib::CountAlgorithm()(b, e, 15) == 0, result);
+  test(lib::EqualsAlgorithm()(b, e, b2, e2), result);
+  test(!lib::EqualsAlgorithm()(b, e, bj, ej), result);
+  test(lib::StartsWithAlgorithm()(b, e, bp, ep), result);
+  test(!lib::StartsWithAlgorithm()(bp, ep, b, e), result);
+  test(lib::AllOfAlgorithm()(b, e, lib::op::Greater(-1)), result);
+  test(lib::AnyOfAlgorithm()(b, e, lib::op::GreaterEquals(0)), result);
+  test(lib::NoneOfAlgorithm()(b, e, lib::op::Equals(-1)), result);
 
-  std::printf("test OK %d/%d\n", testok, totaltest);
+  print_result(result);
 }

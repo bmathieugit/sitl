@@ -1,28 +1,26 @@
 #include <lib/set.hpp>
-#include <lib/test.hpp>
+#include "tests.cpp"
 
 int main()
 {
-  "Test suite 'set'"_suite(
-      "test a simple build of set"_test(
-          []
-          {
-            lib::Set<int> i = lib::Set<int>::from(1, 2, 3, 4, 5);
-            lib::test::assert::equals(i.size(), lib::Size(5));
-          }), 
-      "test a build set step by step"_test(
-        []
-        {
-          lib::Set<int> ints=lib::Set<int>::from(1);
-          ints.push(0); 
-          ints.push(4); 
-          ints.push(2); 
-          ints.push(2); 
-          ints.push(3);
+  TestResult result;
 
-          lib::test::assert::equals(ints.size(), lib::Size(5));
-        }
-      ))
-      .run()
-      .print();
+  lib::Set<int> s = lib::Set<int>::from(1, 2, 3, 4, 5);
+
+  test(s.size() == 5, result);
+  test(!s.empty(), result);
+
+  s.push(5);
+
+  test(s.size() == 5, result);
+  test(!s.empty(), result);
+
+  s.push(6);
+
+  test(s.size() == 6, result);
+  test(!s.empty(), result);
+
+  test(lib::Set<int>::from(1, 2, 3, 4, 5) == lib::Set<int>::from(1, 2, 3, 4, 5), result);
+
+  print_result(result);
 }

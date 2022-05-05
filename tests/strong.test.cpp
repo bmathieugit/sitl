@@ -1,41 +1,39 @@
 #include <lib/strong.hpp>
 #include <lib/utility.hpp>
-
-#include <cstdio>
+#include "tests.cpp"
 
 int main()
 {
-  lib::Size nsucceed = 0;
-  lib::Size ntotal = 0;
+  TestResult result;
 
   lib::Strong<int> i1 = new int(10);
 
-  (++ntotal, nsucceed += static_cast<bool>(i1) ? 1 : 0);
-  (++ntotal, nsucceed += *i1 == 10 ? 1 : 0);
+  test(static_cast<bool>(i1), result);
+  test(*i1 == 10, result);
 
   i1 = lib::move(lib::Strong<int>());
 
-  (++ntotal, nsucceed += !static_cast<bool>(i1) ? 1 : 0);
+  test(!static_cast<bool>(i1), result);
 
   lib::Strong<int[]> is = new int[10];
 
   for (int i = 0; i < 10; ++i)
     is[i] = i;
 
-  (++ntotal, nsucceed += is[0] == 0 ? 1 : 0);
-  (++ntotal, nsucceed += is[1] == 1 ? 1 : 0);
-  (++ntotal, nsucceed += is[2] == 2 ? 1 : 0);
-  (++ntotal, nsucceed += is[3] == 3 ? 1 : 0);
-  (++ntotal, nsucceed += is[4] == 4 ? 1 : 0);
-  (++ntotal, nsucceed += is[5] == 5 ? 1 : 0);
-  (++ntotal, nsucceed += is[6] == 6 ? 1 : 0);
-  (++ntotal, nsucceed += is[7] == 7 ? 1 : 0);
-  (++ntotal, nsucceed += is[8] == 8 ? 1 : 0);
-  (++ntotal, nsucceed += is[9] == 9 ? 1 : 0);
+  test(is[0] == 0, result);
+  test(is[1] == 1, result);
+  test(is[2] == 2, result);
+  test(is[3] == 3, result);
+  test(is[4] == 4, result);
+  test(is[5] == 5, result);
+  test(is[6] == 6, result);
+  test(is[7] == 7, result);
+  test(is[8] == 8, result);
+  test(is[9] == 9, result);
 
   is = nullptr;
 
-  (++ntotal, nsucceed += !static_cast<bool>(is) ? 1 : 0);
+  test(!static_cast<bool>(is), result);
 
-  std::printf("test OK %d/%d\n", nsucceed, ntotal);
+  print_result(result);
 }
