@@ -10,7 +10,7 @@
 
 bool starts_with_file(const char *arg)
 {
-  return lib::StringView::from(arg, lib::StrLen<char>())
+  return lib::StringView(arg)
       .range()
       .starts_with("--file="_sv);
 }
@@ -22,11 +22,12 @@ int main(int argc, char **argv)
 
   if (found != args.end())
   {
-    auto fname = lib::StringView::from(*found, lib::StrLen<char>())
+    auto fname = lib::StringView(*found)
                      .range()
                      .after('=')
                      .as<lib::StringView>();
-    lib::logger::info("file name found #", fname);
+    lib::StringView fileFoundMessage = "file name found #";
+    lib::logger::info(fileFoundMessage, fname);
   }
 
   // std::vector<sitl::token<char>> tks = sitl::tokens(std::string_view(strsrc));
