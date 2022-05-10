@@ -7,7 +7,7 @@
 int main()
 {
 
-  lib::StringSpan key = "lkqjsdijazd";
+  lib::StringView key = "lkqjsdijazd";
   lib::String clear = "Ut tempor dolor nec libero laoreet imperdiet."
                       " Integer at tortor sapien. Etiam accumsan vel ipsum blandit pellentesque."
                       " Nullam elementum, dui ac fermentum bibendum, neque mauris dignissim sapien,"
