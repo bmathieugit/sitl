@@ -16,6 +16,7 @@ int main()
   test("# #!"_fmt("hello", "world") == "hello world!"_sv, result);
   test("#"_fmt(-12) == "-12"_sv, result);
   test("#"_fmt('a') == "a"_sv, result);
+  test("#"_fmt(true) == "true"_sv, result);
 
   print_result(result);
 
