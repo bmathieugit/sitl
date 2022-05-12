@@ -2,7 +2,7 @@
 #include <lib/basic_types.hpp>
 #include "tests.cpp"
 #include <cstdio>
-#include <lib/logger.hpp>
+
 int main()
 {
   TestResult result;
@@ -11,13 +11,12 @@ int main()
   test("# #!"_fmt("hello", "world").size() == 12, result);
   test("#"_fmt(-12).size() == 3, result);
   test("#"_fmt('a').size() == 1, result);
-
   test("#"_fmt(12) == "12"_sv, result);
   test("# #!"_fmt("hello", "world") == "hello world!"_sv, result);
   test("#"_fmt(-12) == "-12"_sv, result);
   test("#"_fmt('a') == "a"_sv, result);
-  test("#"_fmt(true) == "true"_sv, result);
-
+  test("#"_fmt(true) == "Y"_sv, result);
+  test("#"_fmt(false) == "N"_sv, result);
 
   print_result(result);
 
