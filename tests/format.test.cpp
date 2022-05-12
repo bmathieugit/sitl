@@ -3,6 +3,7 @@
 #include "tests.cpp"
 #include <cstdio>
 
+
 int main()
 {
   TestResult result;
@@ -11,7 +12,7 @@ int main()
   test("# #!"_fmt("hello", "world").size() == 12, result);
   test("#"_fmt(-12).size() == 3, result);
   test("#"_fmt('a').size() == 1, result);
-  
+
   test("#"_fmt(12) == "12"_sv, result);
   test("# #!"_fmt("hello", "world") == "hello world!"_sv, result);
   test("#"_fmt(-12) == "-12"_sv, result);
