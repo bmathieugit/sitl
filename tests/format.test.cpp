@@ -2,8 +2,7 @@
 #include <lib/basic_types.hpp>
 #include "tests.cpp"
 #include <cstdio>
-
-
+#include <lib/logger.hpp>
 int main()
 {
   TestResult result;
@@ -18,6 +17,7 @@ int main()
   test("#"_fmt(-12) == "-12"_sv, result);
   test("#"_fmt('a') == "a"_sv, result);
   test("#"_fmt(true) == "true"_sv, result);
+
 
   print_result(result);
 
