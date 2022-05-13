@@ -1,12 +1,10 @@
 #include <fstream>
 #include <streambuf>
+
 #include <lib/string.hpp>
 #include <lib/range.hpp>
 #include <lib/logger.hpp>
-//#include "tokens.hpp"
 
-//#include "syntax.hpp"
-//#include <iostream>
 
 struct hexs
 {
@@ -54,8 +52,7 @@ int main(int argc, char **argv)
                      .range()
                      .after('=')
                      .as<lib::StringView>();
-    lib::StringView fileFoundMessage = "file name found #";
-    lib::logger::info(fileFoundMessage, fname);
+    lib::logger::info("file name found ", fname);
   }
 
   lib::String clear = "Ut tempor dolor nec libero laoreet imperdiet."
@@ -69,7 +66,7 @@ int main(int argc, char **argv)
                       " eleifend eget. Proin sit amet ullamcorper nisl, quis congue turpis. Sed auctor"
                       " nisl nec sapien rhoncus, at blandit sapien scelerisque.";
 
-  lib::logger::info("#", to_hex(clear));
+  lib::logger::info(to_hex(clear));
   // std::vector<sitl::token<char>> tks = sitl::tokens(std::string_view(strsrc));
   // sitl::tree<sitl::node> ast;
 

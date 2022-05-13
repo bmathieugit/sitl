@@ -2,7 +2,7 @@
 #define __test_tests_tpp__
 
 #include <lib/basic_types.hpp>
-#include <cstdio>
+#include <lib/iostream.hpp>
 
 struct TestResult
 {
@@ -19,7 +19,7 @@ constexpr void test(bool expression, TestResult &result)
 
 inline void print_result(const TestResult &result)
 {
-  std::printf("test OK %d/%d\n", result.nbsucceed, result.nbtotal);
+  lib::println("test OK ", result.nbsucceed, '/', result.nbtotal);
 }
 
 #endif

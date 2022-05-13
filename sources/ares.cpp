@@ -49,7 +49,7 @@ int main()
     utail = tl;
   }
 
-  lib::logger::info("clear '#'", clear);
-  lib::logger::info("crypted '#'", crypted);
-  lib::logger::info("uncrypted '#'", uncrypted);
+  lib::logger::info("clear : ", clear);
+  lib::logger::info("crypted : ", crypted);
+  lib::logger::info("uncrypted : ", uncrypted);
 }

@@ -18,8 +18,8 @@ objects/vector.test.exe: tests/vector.test.cpp
 objects/string.test.exe: tests/string.test.cpp
 	g++ -o objects/string.test.exe tests/string.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
-objects/format.test.exe: tests/format.test.cpp
-	g++ -o objects/format.test.exe tests/format.test.cpp ${CCINCLUDES} ${CCFLAGS}
+objects/iostream.test.exe: tests/iostream.test.cpp
+	g++ -o objects/iostream.test.exe tests/iostream.test.cpp ${CCINCLUDES} ${CCFLAGS}
 	
 objects/list.test.exe: tests/list.test.cpp
 	g++ -o objects/list.test.exe tests/list.test.cpp ${CCINCLUDES} ${CCFLAGS}
@@ -30,14 +30,14 @@ objects/set.test.exe: tests/set.test.cpp
 objects/strong.test.exe: tests/strong.test.cpp
 	g++ -o objects/strong.test.exe tests/strong.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
-test: objects objects/algorithm.test.exe objects/strong.test.exe objects/array.test.exe objects/vector.test.exe objects/string.test.exe objects/format.test.exe objects/list.test.exe objects/set.test.exe
+test: objects objects/algorithm.test.exe objects/strong.test.exe objects/array.test.exe objects/vector.test.exe objects/string.test.exe objects/iostream.test.exe objects/list.test.exe objects/set.test.exe
 	wc -l objects/*.test.s
 	./objects/algorithm.test.exe 
 	./objects/strong.test.exe
 	./objects/array.test.exe
 	./objects/vector.test.exe
 	./objects/string.test.exe
-	./objects/format.test.exe
+	./objects/iostream.test.exe
 	./objects/list.test.exe
 	./objects/set.test.exe
 
