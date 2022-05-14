@@ -1,4 +1,4 @@
-CCFLAGS=-O3 -std=c++20 -save-temps
+CCFLAGS=-O3 -std=c++2a -save-temps
 CCINCLUDES=-Ilibs
 
 all: ares test sitl
