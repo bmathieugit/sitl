@@ -32,12 +32,12 @@ int main()
   test(str2.size() == 1, result);
   test(!str2.empty(), result);
   
-  str2.append("ou"_sv); 
+  str2.append(sv("ou")); 
   
 
   test(str2.size() == 3, result);
 
-  str2.append("c");
+  str2.append(sv("c"));
 
   test(str2.size() == 4, result);
 
