@@ -7,28 +7,28 @@ objects:
 	mkdir -p objects
 
 objects/algorithm.test.exe: tests/algorithm.test.cpp
-	g++-10 -o objects/algorithm.test.exe tests/algorithm.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/algorithm.test.exe tests/algorithm.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
 objects/array.test.exe: tests/array.test.cpp
-	g++-10 -o objects/array.test.exe tests/array.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/array.test.exe tests/array.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
 objects/vector.test.exe: tests/vector.test.cpp
-	g++-10 -o objects/vector.test.exe tests/vector.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/vector.test.exe tests/vector.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
 objects/string.test.exe: tests/string.test.cpp
-	g++-10 -o objects/string.test.exe tests/string.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/string.test.exe tests/string.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
 objects/iostream.test.exe: tests/iostream.test.cpp
-	g++-10 -o objects/iostream.test.exe tests/iostream.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/iostream.test.exe tests/iostream.test.cpp ${CCINCLUDES} ${CCFLAGS}
 	
 objects/list.test.exe: tests/list.test.cpp
-	g++-10 -o objects/list.test.exe tests/list.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/list.test.exe tests/list.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
 objects/set.test.exe: tests/set.test.cpp
-	g++-10 -o objects/set.test.exe tests/set.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/set.test.exe tests/set.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
 objects/strong.test.exe: tests/strong.test.cpp
-	g++-10 -o objects/strong.test.exe tests/strong.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/strong.test.exe tests/strong.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
 test: objects objects/algorithm.test.exe objects/strong.test.exe objects/array.test.exe objects/vector.test.exe objects/string.test.exe objects/iostream.test.exe objects/list.test.exe objects/set.test.exe
 	wc -l objects/*.test.s
@@ -42,14 +42,14 @@ test: objects objects/algorithm.test.exe objects/strong.test.exe objects/array.t
 	./objects/set.test.exe
 
 objects/ares.exe: sources/ares.cpp
-	g++-10 -o objects/ares.exe sources/ares.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/ares.exe sources/ares.cpp ${CCINCLUDES} ${CCFLAGS}
 
 ares: objects objects/ares.exe
 	wc -l objects/ares.s
 	./objects/ares.exe
 
 objects/sitl.exe: sources/sitl.cpp
-	g++-10 -o objects/sitl.exe sources/sitl.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++-11 -o objects/sitl.exe sources/sitl.cpp ${CCINCLUDES} ${CCFLAGS}
 
 sitl: objects objects/sitl.exe
 	wc -l objects/sitl.s
