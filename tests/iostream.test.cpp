@@ -16,13 +16,13 @@ int main()
   test(sw.write(' ').size() == 1, result);
   test(sw.write("hello", ' ', "world !").size() == 13, result);
 
-  test(sw.write(-12) == "-12"_sv, result);
-  test(sw.write(12) == "12"_sv, result);
-  test(sw.write(true) == "true"_sv, result);
-  test(sw.write(false) == "false"_sv, result);
-  test(sw.write("coucou") == "coucou"_sv, result);
-  test(sw.write(' ') == " "_sv, result);
-  test(sw.write("hello", ' ', "world !") == "hello world !"_sv, result);
+  test(sw.write(-12) == sv("-12") , result);
+  test(sw.write(12) == sv("12") , result);
+  test(sw.write(true) == sv("true") , result);
+  test(sw.write(false) == sv("false") , result);
+  test(sw.write("coucou") == sv("coucou") , result);
+  test(sw.write(' ') == sv(" ") , result);
+  test(sw.write("hello", ' ', "world !") == sv("hello world !") , result);
 
   print_result(result);
 
