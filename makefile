@@ -3,6 +3,7 @@ CCINCLUDES=-Ilibs
 
 all: ares test sitl
 
+
 objects:
 	mkdir -p objects
 
