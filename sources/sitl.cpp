@@ -73,41 +73,5 @@ int main(int argc, char **argv)
 
   // logger::info("resultat of syntax : #", stype);
 
-  lib::Array<lib::Size, 19> units =
-      {
-          1000000000000000000,
-          100000000000000000,
-          10000000000000000,
-          1000000000000000,
-          100000000000000,
-          10000000000000,
-          1000000000000,
-          100000000000,
-          10000000000,
-          1000000000,
-          100000000,
-          10000000,
-          1000000,
-          100000,
-          10000,
-          1000,
-          100,
-          10, 
-          1};
-  char str[40];
-  char idx = 0;
-
-  int i = 2124;
-  lib::Size tmp = i;
-
-  for (lib::Size unit : units)
-  {
-    tmp = i / unit;
-    i = i - tmp * unit;
-
-    if (tmp != 0)
-      lib::logger::info("current digit ", tmp);
-  } //   1020
-
   return EXIT_SUCCESS;
 }
