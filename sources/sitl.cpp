@@ -54,18 +54,6 @@ int main(int argc, char **argv)
     lib::logger::info("file name found ", fname);
   }
 
-  lib::String clear = "Ut tempor dolor nec libero laoreet imperdiet."
-                      " Integer at tortor sapien. Etiam accumsan vel ipsum blandit pellentesque."
-                      " Nullam elementum, dui ac fermentum bibendum, neque mauris dignissim sapien,"
-                      " in ullamcorper dui orci ut arcu. Aenean vehicula consequat nisl, ut tristique"
-                      " nisi congue sed. Praesent ante nulla, condimentum congue tempor vel, luctus in"
-                      " dui. Proin at ipsum vulputate, faucibus urna sed, vulputate ex. Etiam tristique"
-                      " orci vel dui aliquam tincidunt id ut risus. Morbi eget ipsum massa. Proin pretium"
-                      " vestibulum metus vel molestie. Donec laoreet pretium augue, eget porta neque"
-                      " eleifend eget. Proin sit amet ullamcorper nisl, quis congue turpis. Sed auctor"
-                      " nisl nec sapien rhoncus, at blandit sapien scelerisque.";
-
-  lib::logger::info(to_hex(clear));
   // std::vector<sitl::token<char>> tks = sitl::tokens(std::string_view(strsrc));
   // sitl::tree<sitl::node> ast;
 
