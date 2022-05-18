@@ -20,7 +20,6 @@ constexpr void test(bool expression, TestResult &result)
 inline void print_result(const TestResult &result)
 {
   lib::println("test OK ", result.nbsucceed, '/', result.nbtotal);
-  
 }
 
 #endif

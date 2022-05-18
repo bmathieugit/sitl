@@ -31,7 +31,14 @@ objects/set.test.exe: tests/set.test.cpp
 objects/strong.test.exe: tests/strong.test.cpp
 	g++ -o objects/strong.test.exe tests/strong.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
-test: objects objects/algorithm.test.exe objects/strong.test.exe objects/array.test.exe objects/vector.test.exe objects/string.test.exe objects/iostream.test.exe objects/list.test.exe objects/set.test.exe
+objects/args.test.exe: tests/args.test.cpp
+	g++ -o objects/args.test.exe tests/args.test.cpp ${CCINCLUDES} ${CCFLAGS}
+
+
+test: objects objects/algorithm.test.exe objects/strong.test.exe \
+			objects/array.test.exe objects/vector.test.exe objects/string.test.exe \
+			objects/iostream.test.exe objects/list.test.exe objects/set.test.exe \
+			objects/args.test.exe
 	wc -l objects/*.test.s
 	./objects/algorithm.test.exe 
 	./objects/strong.test.exe
@@ -41,6 +48,7 @@ test: objects objects/algorithm.test.exe objects/strong.test.exe objects/array.t
 	./objects/iostream.test.exe
 	./objects/list.test.exe
 	./objects/set.test.exe
+	./objects/args.test.exe
 
 objects/ares.exe: sources/ares.cpp
 	g++ -o objects/ares.exe sources/ares.cpp ${CCINCLUDES} ${CCFLAGS}
