@@ -1,38 +1,43 @@
+# $@ : nom de la cible
+# $< : nom de la première dépendance
+# $ˆ : liste des dépendances
+# $? : liste des dépendances plus récentes que la cible
+# $* : nom d’un fichier sans son suffixe
+
 CCFLAGS=-O3 -std=c++2a -save-temps
-CCINCLUDES=-Ilibs
+CCINCLUDES=-Isources
 
 all: ares test sitl
-
 
 objects:
 	mkdir -p objects
 
 objects/algorithm.test.exe: tests/algorithm.test.cpp
-	g++ -o objects/algorithm.test.exe tests/algorithm.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++ -o $@ tests/algorithm.test.cpp ${CCINCLUDES} ${CCFLAGS}
 
 objects/array.test.exe: tests/array.test.cpp
-	g++ -o objects/array.test.exe tests/array.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
 objects/vector.test.exe: tests/vector.test.cpp
-	g++ -o objects/vector.test.exe tests/vector.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
 objects/string.test.exe: tests/string.test.cpp
-	g++ -o objects/string.test.exe tests/string.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
 objects/iostream.test.exe: tests/iostream.test.cpp
-	g++ -o objects/iostream.test.exe tests/iostream.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 	
 objects/list.test.exe: tests/list.test.cpp
-	g++ -o objects/list.test.exe tests/list.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
 objects/set.test.exe: tests/set.test.cpp
-	g++ -o objects/set.test.exe tests/set.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
 objects/strong.test.exe: tests/strong.test.cpp
-	g++ -o objects/strong.test.exe tests/strong.test.cpp ${CCINCLUDES} ${CCFLAGS}
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
-objects/args.test.exe: tests/args.test.cpp
-	g++ -o objects/args.test.exe tests/args.test.cpp ${CCINCLUDES} ${CCFLAGS}
+objects/args.test.exe: tests/args.test.cpp sources/lib/args.cpp
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
 
 test: objects objects/algorithm.test.exe objects/strong.test.exe \
