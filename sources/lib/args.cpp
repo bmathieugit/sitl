@@ -42,7 +42,7 @@ static Size touint(StringView s) noexcept
 }
 
 CommandLine::CommandLine(
-    int argc, const char **argv) noexcept
+    int argc, char **argv) noexcept
     : args(argv, argc) {}
 
 Size CommandLine::size() const noexcept
@@ -69,7 +69,7 @@ StringView CommandLine::value(StringView wanted) const noexcept
       { return arg.range().starts_with(wanted); });
 
   return found != args.end()
-             ? (StringView(*found)).range().after('=').as<StringView>()
+             ? (StringView(*found)).range().after('=')
              : StringView();
 }
 

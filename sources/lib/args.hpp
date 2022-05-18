@@ -7,14 +7,13 @@
 
 namespace lib
 {
-
   class CommandLine
   {
   private:
-    ArrayView<const char *> args;
+    ArraySpan<char *> args;
 
   public:
-    CommandLine(int argc, const char **argv) noexcept;
+    CommandLine(int argc, char **argv) noexcept;
     CommandLine(const CommandLine &) noexcept = default;
     CommandLine(CommandLine &&) noexcept = default;
     CommandLine &operator=(const CommandLine &) noexcept = default;

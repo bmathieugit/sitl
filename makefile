@@ -7,7 +7,7 @@
 CCFLAGS=-O3 -std=c++2a -save-temps
 CCINCLUDES=-Isources
 
-all: ares test sitl
+all: test sitl
 
 objects:
 	mkdir -p objects
@@ -44,7 +44,7 @@ test: objects objects/algorithm.test.exe objects/strong.test.exe \
 			objects/array.test.exe objects/vector.test.exe objects/string.test.exe \
 			objects/iostream.test.exe objects/list.test.exe objects/set.test.exe \
 			objects/args.test.exe
-	wc -l objects/*.test.s
+	wc -l objects/*test*.s
 	./objects/algorithm.test.exe 
 	./objects/strong.test.exe
 	./objects/array.test.exe
@@ -55,19 +55,14 @@ test: objects objects/algorithm.test.exe objects/strong.test.exe \
 	./objects/set.test.exe
 	./objects/args.test.exe
 
-objects/ares.exe: sources/ares.cpp
-	g++ -o objects/ares.exe sources/ares.cpp ${CCINCLUDES} ${CCFLAGS}
-
-ares: objects objects/ares.exe
-	wc -l objects/ares.s
-	./objects/ares.exe
-
-objects/sitl.exe: sources/sitl.cpp
-	g++ -o objects/sitl.exe sources/sitl.cpp ${CCINCLUDES} ${CCFLAGS}
+objects/sitl.exe: sources/sitl.cpp  sources/backend/bytecodes.cpp sources/lib/args.cpp
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
 sitl: objects objects/sitl.exe
-	wc -l objects/sitl.s
+	wc -l objects/sitl*.s
 	./objects/sitl.exe --file=toto.sitl
 
 clean:
 	rm -rf objects
+
+.PHONY: clean sitl all test

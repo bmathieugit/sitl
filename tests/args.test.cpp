@@ -1,13 +1,24 @@
 #include <lib/args.hpp>
 #include <lib/logger.hpp>
+#include <lib/string.hpp>
+
 #include "tests.cpp"
 
 int main()
 {
   TestResult result;
-  const char *argv[] = {"file=toto.sitl", "verbose",
-                        "int=-1200", "uint=1200"};
 
+  lib::String arg1 = "file=toto.sitl";
+  arg1.push_back('\0');
+  lib::String arg2 = "verbose";
+  arg2.push_back('\0');
+  lib::String arg3 = "int=-1200";
+  arg3.push_back('\0');
+  lib::String arg4 = "uint=1200";
+  arg4.push_back('\0');
+
+  char *argv[] = {arg1.data(), arg2.data(),
+                  arg3.data(), arg4.data()};
   int argc = 4;
 
   lib::CommandLine cmdl(argc, argv);
@@ -26,6 +37,7 @@ int main()
   test(cmdl.uinteger("int") == 0, result);
   test(cmdl.uinteger("verbose") == 0, result);
   test(cmdl.integer("verbose") == 0, result);
+
 
   print_result(result);
 }

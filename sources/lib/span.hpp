@@ -33,9 +33,17 @@ namespace lib
         : b(_b), lgth(_lght) {}
     constexpr Span(T *_b, T *_e) noexcept
         : b(_b), lgth(_e - _b) {}
+    constexpr Span(Range<T *> r) noexcept
+        : Span(r.begin(), r.end()) {}
     constexpr Span(const Span &) noexcept = default;
     constexpr Span(Span &&) noexcept = default;
     constexpr ~Span() noexcept = default;
+    constexpr Span &operator=(Range<T *> r) noexcept
+    {
+      b = r.begin();
+      lgth = r.end() - r.begin();
+      return *this;
+    }
     constexpr Span &operator=(const Span &) noexcept = default;
     constexpr Span &operator=(Span &&) noexcept = default;
 
@@ -145,7 +153,7 @@ namespace lib
 
     constexpr DelimitedSpan(T *_b, Size _lgth) noexcept
         : Span<T>(_b, _lgth) {}
-        
+
     constexpr DelimitedSpan(T *_b) noexcept
         : DelimitedSpan{_b, L()(_b)} {}
 
@@ -156,9 +164,17 @@ namespace lib
     constexpr DelimitedSpan(T *_b, T *_e) noexcept
         : Span<T>(_b, _e) {}
 
+    constexpr DelimitedSpan(Range<T *> r) noexcept
+        : Span<T>(r.begin(), r.end()) {}
+
     constexpr DelimitedSpan(const DelimitedSpan &) noexcept = default;
     constexpr DelimitedSpan(DelimitedSpan &&) noexcept = default;
     constexpr ~DelimitedSpan() noexcept = default;
+    constexpr DelimitedSpan &operator=(Range<T *> r) noexcept
+    {
+      Span<T>::operator=(r);
+      return *this;
+    }
     constexpr DelimitedSpan &operator=(const DelimitedSpan &) noexcept = default;
     constexpr DelimitedSpan &operator=(DelimitedSpan &&) noexcept = default;
   };

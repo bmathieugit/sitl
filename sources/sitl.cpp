@@ -2,64 +2,28 @@
 #include <streambuf>
 
 #include <lib/string.hpp>
-#include <lib/range.hpp>
 #include <lib/logger.hpp>
+#include <lib/args.hpp>
 
-struct hexs
-{
-  char c1;
-  char c2;
-};
-
-constexpr hexs to_hex(const char c) noexcept
-{
-  constexpr lib::StringView hextable = "0123456789ABCDEF";
-  return {
-      hextable[(c & 0b11110000) >> 4],
-      hextable[(c & 0b00001111)]};
-}
-
-constexpr lib::String to_hex(lib::StringView s)
-{
-  lib::String shex(s.size() * 2);
-
-  for (auto c : s)
-  {
-    auto [c1, c2] = to_hex(c);
-    shex.push_back(c1);
-    shex.push_back(c2);
-  }
-
-  return shex;
-}
-
-bool starts_with_file(const char *arg)
-{
-  return lib::StringView(arg)
-      .range()
-      .starts_with(sv("--file="));
-}
+#include <backend/bytecodes.hpp>
 
 int main(int argc, char **argv)
 {
-  auto args = lib::rangeof(argv, argc);
-  auto found = args.find_if(starts_with_file);
+  lib::CommandLine args(argc, argv);
 
-  if (found != args.end())
+  if (args.contains("file"))
   {
-    auto fname = lib::StringView(*found)
-                     .range()
-                     .after('=')
-                     .as<lib::StringView>();
-    lib::logger::info("file name found ", fname);
+    lib::StringView fname = args.value("file");
+    lib::logger::debug("file name found, fname");
   }
 
-  // std::vector<sitl::token<char>> tks = sitl::tokens(std::string_view(strsrc));
-  // sitl::tree<sitl::node> ast;
+  sitl::backend::Bytecode bytes(
+    ".string S1 'hello world'\n"
+    ".print stdout S1\n");
 
-  // bool stype = sitl::syntax_type(tks.begin(), tks.end());
-
-  // logger::info("resultat of syntax : #", stype);
+  sitl::backend::BytecodeInterpreter interpreter;
+  auto prepared = interpreter.prepare(bytes);
+  interpreter.interpret(prepared);
 
   return EXIT_SUCCESS;
 }

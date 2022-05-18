@@ -169,6 +169,38 @@ namespace lib
     }
   };
 
+  template <typename R>
+  struct InsideAlgorithm
+  {
+    template <typename IT, typename T>
+    constexpr R operator()(IT b, IT e, const T &bt, const T &et) const noexcept
+    {
+      IT it1 = FindAlgorithm()(b, e, bt);
+      IT it2 = FindAlgorithm()(it1, e, et);
+
+      return it1 == e || it2 == e ? R(e, e) : R(it1, it2);
+    }
+  };
+
+  template <typename R>
+  struct OutsideAlgorithm
+  {
+    struct OutsideResult
+    {
+      R before;
+      R after;
+    };
+
+    template <typename IT, typename T>
+    constexpr R operator()(IT b, IT e, const T &bt, const T &et) const noexcept
+    {
+      R inside = InsideAlgorithm<R>()(b, e, bt, et);
+      return {
+          R(b, inside.begin()),
+          R(inside.end(), e)};
+    }
+  };
+
   struct CountIfAlgorithm
   {
     template <typename IT, typename P>
@@ -464,6 +496,30 @@ namespace lib
     constexpr decltype(auto) around(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
     {
       return apply(AroundAlgorithm<const Range>(), t);
+    }
+
+    constexpr Range inside(const RemoveReference<decltype(*declval<IT>())> &t1,
+                           const RemoveReference<decltype(*declval<IT>())> &t2) noexcept
+    {
+      return apply(InsideAlgorithm<Range>(), t1, t2);
+    }
+
+    constexpr Range inside(const RemoveReference<decltype(*declval<IT>())> &t1,
+                           const RemoveReference<decltype(*declval<IT>())> &t2) const noexcept
+    {
+      return apply(InsideAlgorithm<Range>(), t1, t2);
+    }
+
+    constexpr decltype(auto) outside(const RemoveReference<decltype(*declval<IT>())> &t1,
+                                     const RemoveReference<decltype(*declval<IT>())> &t2) noexcept
+    {
+      return apply(OutsideAlgorithm<Range>(), t1, t2);
+    }
+
+    constexpr decltype(auto) outside(const RemoveReference<decltype(*declval<IT>())> &t1,
+                                     const RemoveReference<decltype(*declval<IT>())> &t2) const noexcept
+    {
+      return apply(OutsideAlgorithm<Range>(), t1, t2);
     }
 
     constexpr bool all_of(auto &&pred) const noexcept
