@@ -5,6 +5,20 @@
 #include <lib/basic_types.hpp>
 #include <lib/utility.hpp>
 
+namespace lib
+{
+  template <typename T>
+  concept Iterator = requires(T t)
+  {
+    t++;
+    ++t;
+    t + 1;
+    *t;
+    t == t;
+    t != t;
+  };
+}
+
 namespace lib::op
 {
   constexpr auto Not = [](auto &&pred) noexcept
@@ -66,7 +80,7 @@ namespace lib
 
   struct FindIfAlgorithm
   {
-    template <typename IT, typename P>
+    template <Iterator IT, typename P>
     constexpr IT operator()(IT b, IT e, P pred) const noexcept
     {
       while (b != e)
@@ -81,7 +95,7 @@ namespace lib
 
   struct FindAlgorithm
   {
-    template <typename IT, typename T>
+    template <Iterator IT, typename T>
     constexpr IT operator()(IT b, IT e, const T &t) const noexcept
     {
       return FindIfAlgorithm()(b, e, lib::op::Equals(t));
@@ -90,7 +104,7 @@ namespace lib
 
   struct FindIfNotAlgorithm
   {
-    template <typename IT, typename P>
+    template <Iterator IT, typename P>
     constexpr IT operator()(IT b, IT e, P pred) const noexcept
     {
       while (b != e)
@@ -105,7 +119,7 @@ namespace lib
 
   struct AfterIfAlgorithm
   {
-    template <typename IT, typename P>
+    template <Iterator IT, typename P>
     constexpr IT operator()(IT b, IT e, P pred) const noexcept
     {
       auto tmp = FindIfAlgorithm()(b, e, pred);
@@ -115,7 +129,7 @@ namespace lib
 
   struct AfterAlgorithm
   {
-    template <typename IT, typename T>
+    template <Iterator IT, typename T>
     constexpr IT operator()(IT b, IT e, const T &t) const noexcept
     {
       return AfterIfAlgorithm()(b, e, lib::op::Equals(t));
@@ -124,7 +138,7 @@ namespace lib
 
   struct BeforeIfAlgorithm
   {
-    template <typename IT, typename P>
+    template <Iterator IT, typename P>
     constexpr IT operator()(IT b, IT e, P pred) const noexcept
     {
       auto tmp = FindIfAlgorithm()(b, e, pred);
@@ -134,7 +148,7 @@ namespace lib
 
   struct BeforeAlgorithm
   {
-    template <typename IT, typename T>
+    template <Iterator IT, typename T>
     constexpr IT operator()(IT b, IT e, const T &t) const noexcept
     {
       return BeforeIfAlgorithm()(b, e, lib::op::Equals(t));
@@ -150,7 +164,7 @@ namespace lib
       R after;
     };
 
-    template <typename IT, typename P>
+    template <Iterator IT, typename P>
     constexpr AroundResult operator()(IT b, IT e, P pred) const noexcept
     {
       IT fit = FindIfAlgorithm()(b, e, pred);
@@ -162,7 +176,7 @@ namespace lib
   template <typename R>
   struct AroundAlgorithm
   {
-    template <typename IT, typename T>
+    template <Iterator IT, typename T>
     constexpr decltype(auto) operator()(IT b, IT e, const T &t) const noexcept
     {
       return AroundIfAlgorithm<R>()(b, e, lib::op::Equals(t));
@@ -172,13 +186,17 @@ namespace lib
   template <typename R>
   struct InsideAlgorithm
   {
-    template <typename IT, typename T>
-    constexpr R operator()(IT b, IT e, const T &bt, const T &et) const noexcept
+    template <Iterator IT, typename T>
+    constexpr R operator()(IT b, IT e, const T &t1, const T &t2) const noexcept
     {
-      IT it1 = FindAlgorithm()(b, e, bt);
-      IT it2 = FindAlgorithm()(it1, e, et);
+      IT it1 = FindAlgorithm()(b, e, t1);
 
-      return it1 == e || it2 == e ? R(e, e) : R(it1, it2);
+      if (it1 == e)
+        return R(e, e);
+
+      IT it2 = FindAlgorithm()(it1 + 1, e, t2);
+
+      return it2 == e ? R(e, e) : R(it1, it2 + 1);
     }
   };
 
@@ -191,8 +209,8 @@ namespace lib
       R after;
     };
 
-    template <typename IT, typename T>
-    constexpr R operator()(IT b, IT e, const T &bt, const T &et) const noexcept
+    template <Iterator IT, typename T>
+    constexpr OutsideResult operator()(IT b, IT e, const T &bt, const T &et) const noexcept
     {
       R inside = InsideAlgorithm<R>()(b, e, bt, et);
       return {
@@ -203,7 +221,7 @@ namespace lib
 
   struct CountIfAlgorithm
   {
-    template <typename IT, typename P>
+    template <Iterator IT, typename P>
     constexpr Size operator()(IT b, IT e, P pred) const noexcept
     {
       Size cnt = 0;
@@ -222,7 +240,7 @@ namespace lib
 
   struct CountAlgorithm
   {
-    template <typename IT, typename T>
+    template <Iterator IT, typename T>
     constexpr Size operator()(IT b, IT e, const T &t) const noexcept
     {
       return CountIfAlgorithm()(b, e, lib::op::Equals(t));
@@ -231,14 +249,14 @@ namespace lib
 
   struct MismatchAlgorithm
   {
-    template <typename IT, typename IT2>
+    template <Iterator IT, Iterator IT2>
     struct Pair
     {
       IT first;
       IT2 second;
     };
 
-    template <typename IT, typename IT2>
+    template <Iterator IT, Iterator IT2>
     constexpr MismatchAlgorithm::Pair<IT, IT2> operator()(
         IT b, IT e, IT2 b2, IT2 e2) const noexcept
     {
@@ -257,7 +275,7 @@ namespace lib
 
   struct EqualsAlgorithm
   {
-    template <typename IT, typename IT2>
+    template <Iterator IT, Iterator IT2>
     constexpr bool operator()(IT b, IT e, IT2 b2, IT2 e2) const noexcept
     {
       auto &&[r1, r2] = MismatchAlgorithm()(b, e, b2, e2);
@@ -267,7 +285,7 @@ namespace lib
 
   struct StartsWithAlgorithm
   {
-    template <typename IT, typename IT2>
+    template <Iterator IT, Iterator IT2>
     constexpr bool operator()(IT b, IT e, IT2 b2, IT2 e2) const noexcept
     {
       return MismatchAlgorithm()(b, e, b2, e2).second == e2;
@@ -276,7 +294,7 @@ namespace lib
 
   struct AllOfAlgorithm
   {
-    template <typename IT, typename P>
+    template <Iterator IT, typename P>
     constexpr bool operator()(IT b, IT e, P pred) const noexcept
     {
       return FindIfNotAlgorithm()(b, e, pred) == e;
@@ -285,7 +303,7 @@ namespace lib
 
   struct AnyOfAlgorithm
   {
-    template <typename IT, typename P>
+    template <Iterator IT, typename P>
     constexpr bool operator()(IT b, IT e, P pred) const noexcept
     {
       return FindIfAlgorithm()(b, e, pred) != e;
@@ -294,7 +312,7 @@ namespace lib
 
   struct NoneOfAlgorithm
   {
-    template <typename IT, typename P>
+    template <Iterator IT, typename P>
     constexpr bool operator()(IT b, IT e, P pred) const noexcept
     {
       return FindIfAlgorithm()(b, e, pred) == e;
@@ -317,7 +335,7 @@ namespace lib
     t3.end();
   };
 
-  template <typename IT>
+  template <Iterator IT>
   class Range
   {
     IT b;

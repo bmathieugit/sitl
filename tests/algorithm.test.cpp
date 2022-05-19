@@ -2,10 +2,10 @@
 #include "tests.cpp"
 
 int main()
-{ 
+{
   TestResult result;
 
-  int  tmp[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  int tmp[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   auto i = lib::rangeof(tmp);
 
   int tmp2[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -25,7 +25,7 @@ int main()
   test(i.count(2) == 1, result);
   test(i.count(15) == 0, result);
   test(i == i2, result);
-  test(!(i== i3), result);
+  test(!(i == i3), result);
   test(i.starts_with(i4), result);
   test(!i4.starts_with(i), result);
   test(i.all_of(lib::op::Greater(-1)), result);

@@ -30,6 +30,12 @@ namespace lib
     Size uinteger(StringView wanted) const noexcept;
     long long integer(StringView wanted) const noexcept;
     bool flag(StringView wanted) const noexcept;
+
+  public:
+    StringView operator[](Size i) const noexcept
+    {
+      return args[i];
+    }
   };
 }
 

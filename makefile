@@ -4,10 +4,10 @@
 # $? : liste des dépendances plus récentes que la cible
 # $* : nom d’un fichier sans son suffixe
 
-CCFLAGS=-O3 -std=c++2a -save-temps
+CCFLAGS=-O3 -std=c++2a -save-temps -ffunction-sections -fdata-sections
 CCINCLUDES=-Isources
 
-all: test sitl
+all: test sitl base16
 
 objects:
 	mkdir -p objects
@@ -55,14 +55,22 @@ test: objects objects/algorithm.test.exe objects/strong.test.exe \
 	./objects/set.test.exe
 	./objects/args.test.exe
 
-objects/sitl.exe: sources/sitl.cpp  sources/backend/bytecodes.cpp sources/lib/args.cpp
+objects/sitl.exe: sources/sitl.cpp sources/lib/args.cpp
 	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
 sitl: objects objects/sitl.exe
 	wc -l objects/sitl*.s
 	./objects/sitl.exe --file=toto.sitl
 
+objects/base16.exe: sources/base16.cpp sources/lib/args.cpp
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
+
+base16: objects objects/base16.exe
+	wc -l objects/base16*.s
+	./objects/base16.exe prout
+
+
 clean:
 	rm -rf objects
 
-.PHONY: clean sitl all test
+.PHONY: clean sitl all test base16

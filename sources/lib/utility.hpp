@@ -6,6 +6,15 @@
 
 namespace lib
 {
+  constexpr int SUCCESS() noexcept
+  {
+    return 0;
+  }
+
+  constexpr int FAILURE() noexcept
+  {
+    return 1;
+  }
 
   template <typename T>
   requires NotConst<T>

@@ -48,6 +48,16 @@ namespace lib
         return !(*this == o);
       }
 
+      constexpr Iterator operator+(Size n) const noexcept
+      {
+        Iterator it = *this;
+
+        for (Size i = 0; i < n; ++i)
+          ++it;
+
+        return it;
+      }
+
       constexpr Size operator-(const Iterator &o) const noexcept
       {
         Size dist = 0;
@@ -109,6 +119,16 @@ namespace lib
         return tmp;
       }
 
+        constexpr ConstIterator operator+(Size n) const noexcept
+      {
+        ConstIterator it = *this;
+
+        for (Size i = 0; i < n; ++i)
+          ++it;
+
+        return it;
+      }
+
       constexpr Size operator-(const ConstIterator &o) const noexcept
       {
         Size dist = 0;
@@ -163,7 +183,7 @@ namespace lib
     constexpr List &operator=(List &&) noexcept = default;
 
   public:
-       constexpr  auto range() noexcept
+    constexpr auto range() noexcept
     {
       return rangeof(*this);
     }
