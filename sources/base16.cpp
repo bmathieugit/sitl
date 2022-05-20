@@ -20,6 +20,7 @@ HexCResult hexc(char c) noexcept
 
 char decc(char c1, char c2) noexcept
 {
+  // FIXME: correction de la fonction
   return 0b00000000 | (c1 << 4) | c2;
 }
 
@@ -83,15 +84,27 @@ int main(int argc, char **argv)
       }
       else
       {
-         char c1;
+        char c1;
         char c2;
         bool second = false;
+
         int c;
+
         while ((c = std::getchar()) != EOF)
         {
-          // lib::print((char)c);
-          auto [c1, c2] = hexc(c);
-          lib::print(c1, c2);
+          if (!second)
+          {
+            c1 = c;
+            second = true;
+          }
+          else
+            c2 = c;
+
+          if (second)
+          {
+            lib::print(decc(c1, c2));
+            second = false;
+          }
         }
       }
     }

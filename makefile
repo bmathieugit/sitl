@@ -7,7 +7,7 @@
 CCFLAGS=-O3 -std=c++2a -save-temps -ffunction-sections -fdata-sections
 CCINCLUDES=-Isources
 
-all: test sitl base16
+all: test sitl base16 dist
 
 objects:
 	mkdir -p objects
@@ -70,7 +70,12 @@ base16: objects objects/base16.exe
 	./objects/base16.exe prout
 
 
+dist: test objects/sitl.exe objects/base16.exe
+	mkdir -p dist
+	cp objects/sitl.exe dist/sitl.exe
+	cp objects/base16.exe dist/base16.exe
+
 clean:
-	rm -rf objects
+	rm -rf objects dist
 
 .PHONY: clean sitl all test base16
