@@ -5,8 +5,8 @@
 int main()
 {
   TestResult result;
-  lib::String str("cou");
-  lib::String str2("cou");
+  sitl::String str("cou");
+  sitl::String str2("cou");
 
   test(str.size() == 3, result);
   test(str == str2, result);
@@ -32,12 +32,11 @@ int main()
   test(str2.size() == 1, result);
   test(!str2.empty(), result);
   
-  str2.append(sv("ou")); 
+  str2.append(sitl::sr("ou")); 
   
-
   test(str2.size() == 3, result);
 
-  str2.append(sv("c"));
+  str2.append(sitl::sr("c"));
 
   test(str2.size() == 4, result);
 

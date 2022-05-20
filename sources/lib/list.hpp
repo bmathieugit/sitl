@@ -6,7 +6,7 @@
 #include <lib/vector.hpp>
 #include <lib/range.hpp>
 
-namespace lib
+namespace sitl
 {
   template <typename T>
   class List
@@ -56,6 +56,11 @@ namespace lib
           ++it;
 
         return it;
+      }
+
+      constexpr T &operator[](Size i) const noexcept
+      {
+        return *(*this + i);
       }
 
       constexpr Size operator-(const Iterator &o) const noexcept
@@ -119,7 +124,7 @@ namespace lib
         return tmp;
       }
 
-        constexpr ConstIterator operator+(Size n) const noexcept
+      constexpr ConstIterator operator+(Size n) const noexcept
       {
         ConstIterator it = *this;
 
@@ -127,6 +132,11 @@ namespace lib
           ++it;
 
         return it;
+      }
+
+      constexpr const T &operator[](Size i) const noexcept
+      {
+        return *(*this + i);
       }
 
       constexpr Size operator-(const ConstIterator &o) const noexcept

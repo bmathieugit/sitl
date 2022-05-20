@@ -4,7 +4,7 @@
 #include <lib/basic_types.hpp>
 #include <lib/meta.hpp>
 
-namespace lib
+namespace sitl
 {
   constexpr int SUCCESS() noexcept
   {

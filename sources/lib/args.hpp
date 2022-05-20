@@ -5,12 +5,12 @@
 #include <lib/array.hpp>
 #include <lib/basic_types.hpp>
 
-namespace lib
+namespace sitl
 {
   class CommandLine
   {
   private:
-    ArraySpan<char *> args;
+    Range<char **> args;
 
   public:
     CommandLine(int argc, char **argv) noexcept;
@@ -25,16 +25,16 @@ namespace lib
     bool empty() const noexcept;
 
   public:
-    bool contains(StringView wanted) const noexcept;
-    StringView value(StringView wanted) const noexcept;
-    Size uinteger(StringView wanted) const noexcept;
-    long long integer(StringView wanted) const noexcept;
-    bool flag(StringView wanted) const noexcept;
+    bool contains(StringCRange wanted) const noexcept;
+    StringCRange value(StringCRange wanted) const noexcept;
+    Size uinteger(StringCRange wanted) const noexcept;
+    long long integer(StringCRange wanted) const noexcept;
+    bool flag(StringCRange wanted) const noexcept;
 
   public:
-    StringView operator[](Size i) const noexcept
+    StringCRange operator[](Size i) const noexcept
     {
-      return args[i];
+      return sitl::sr(args[i]);
     }
   };
 }

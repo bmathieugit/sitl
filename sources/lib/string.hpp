@@ -5,19 +5,17 @@
 #include <lib/basic_types.hpp>
 #include <lib/utility.hpp>
 #include <lib/range.hpp>
-#include <lib/span.hpp>
 
-namespace lib
+namespace sitl
 {
   template <IsCharacter C>
-  using BasicStringView = DelimitedSpan<const C, StrLen<const C>>;
-
-  using StringView = BasicStringView<char>;
+  using BasicStringRange = Range<C *>;
 
   template <IsCharacter C>
-  using BasicStringSpan = DelimitedSpan<C, StrLen<C>>;
+  using BasicStringCRange = Range<const C *>;
 
-  using StringSpan = BasicStringSpan<char>;
+  using StringRange = BasicStringRange<char>;
+  using StringCRange = BasicStringCRange<char>;
 
   template <IsCharacter C>
   class BasicString
@@ -33,14 +31,14 @@ namespace lib
     {
     }
 
-    constexpr BasicString(BasicStringView<C> s) noexcept
+    constexpr BasicString(BasicStringCRange<C> s) noexcept
         : BasicString(s.size())
     {
       lappend(s);
     }
 
     constexpr BasicString(const C *o) noexcept
-        : BasicString(BasicStringView<C>(o))
+        : BasicString(BasicStringCRange<C>(o, o + StrLen<C>()(o)))
     {
     }
 
@@ -133,12 +131,12 @@ namespace lib
       storage.lappend(move(o.storage()));
     }
 
-    constexpr void lappend(BasicStringView<C> o) noexcept
+    constexpr void lappend(BasicStringCRange<C> o) noexcept
     {
       storage.lappend(o);
     }
 
-    constexpr void lappend(BasicStringSpan<C> o) noexcept
+    constexpr void lappend(BasicStringRange<C> o) noexcept
     {
       storage.lappend(o);
     }
@@ -164,12 +162,12 @@ namespace lib
       storage.append(move(o.storage));
     }
 
-    constexpr void append(BasicStringView<C> o) noexcept
+    constexpr void append(BasicStringCRange<C> o) noexcept
     {
       storage.append(o);
     }
 
-    constexpr void append(BasicStringSpan<C> o) noexcept
+    constexpr void append(BasicStringRange<C> o) noexcept
     {
       storage.append(o);
     }
@@ -180,14 +178,14 @@ namespace lib
     }
 
   public:
-    constexpr operator BasicStringView<C>() const noexcept
+    constexpr operator BasicStringCRange<C>() const noexcept
     {
-      return BasicStringView<C>(data(), size());
+      return BasicStringCRange<C>(data(), size());
     }
 
-    constexpr operator BasicStringSpan<C>() noexcept
+    constexpr operator BasicStringRange<C>() noexcept
     {
-      return BasicStringSpan<C>(data(), size());
+      return BasicStringRange<C>(data(), size());
     }
 
     constexpr C &operator[](Size i) noexcept
@@ -225,16 +223,18 @@ namespace lib
   using String = BasicString<char>;
 }
 
-template <lib::Size n>
-constexpr lib::String str(const char (&s) [n]) 
+namespace sitl
 {
-  return lib::String(s);
-}
+  template <Size n>
+  constexpr StringCRange sr(const char (&s)[n]) noexcept
+  {
+    return Range<const char *>(s, n - 1);
+  }
 
-template <lib::Size n>
-constexpr lib::StringView sv(const char (&s) [n])
-{
-  return lib::StringView(s);
+  constexpr StringCRange sr(const char *s) noexcept
+  {
+    return Range<const char *>(s, s + StrLen<char>()(s));
+  }
 }
 
 #endif

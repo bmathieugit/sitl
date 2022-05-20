@@ -6,16 +6,16 @@ int main()
 {
   TestResult result;
 
-  lib::Strong<int> i1 = new int(10);
+  sitl::Strong<int> i1 = new int(10);
 
   test(static_cast<bool>(i1), result);
   test(*i1 == 10, result);
 
-  i1 = lib::move(lib::Strong<int>());
+  i1 = move(sitl::Strong<int>());
 
   test(!static_cast<bool>(i1), result);
 
-  lib::Strong<int[]> is = new int[10];
+  sitl::Strong<int[]> is = new int[10];
 
   for (int i = 0; i < 10; ++i)
     is[i] = i;

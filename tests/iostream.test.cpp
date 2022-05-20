@@ -7,7 +7,7 @@ int main()
 {
   TestResult result;
 
-  lib::StringWriter sw;
+  sitl::StringWriter sw;
 
   auto ss1 = sw.write(-12);
   auto ss2 = sw.write(12);
@@ -25,13 +25,13 @@ int main()
   test(ss6.size() == 1, result);
   test(ss7.size() == 13, result);
 
-  constexpr auto s1 = sv("-12");
-  constexpr auto s2 = sv("12");
-  constexpr auto s3 = sv("true");
-  constexpr auto s4 = sv("false");
-  constexpr auto s5 = sv("coucou");
-  constexpr auto s6 = sv(" ");
-  constexpr auto s7 = sv("hello world !");
+  constexpr auto s1 = sitl::sr("-12");
+  constexpr auto s2 = sitl::sr("12");
+  constexpr auto s3 = sitl::sr("true");
+  constexpr auto s4 = sitl::sr("false");
+  constexpr auto s5 = sitl::sr("coucou");
+  constexpr auto s6 = sitl::sr(" ");
+  constexpr auto s7 = sitl::sr("hello world !");
 
   test(ss1 == s1, result);
   test(ss2 == s2, result);

@@ -5,17 +5,17 @@ int main()
 {
   TestResult result;
 
-  lib::Vector<int> ints;
+  sitl::Vector<int> ints;
 
   test(ints.size() == 0, result);
   test(ints.empty(), result);
 
-  lib::Vector<int> ints2 = lib::Vector<int>::from(1, 2, 3, 4, 5, 6, 7, 8, 9);
+  sitl::Vector<int> ints2 = sitl::Vector<int>::from(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
   test(ints2.size() == 9, result);
   test(!ints2.empty(), result);
   test(ints2 == ints2, result);
-  test(ints2 == lib::Vector<int>::from(1, 2, 3, 4, 5, 6, 7, 8, 9), result);
+  test(ints2 == sitl::Vector<int>::from(1, 2, 3, 4, 5, 6, 7, 8, 9), result);
   test(ints2[0] = 1, result);
   test(ints2[1] = 2, result);
   test(ints2[2] = 3, result);

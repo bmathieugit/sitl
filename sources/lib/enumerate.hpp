@@ -3,7 +3,7 @@
 
 #include <utility>
 
-namespace lib
+namespace sitl
 {
   template <typename T>
   struct EnumerateData

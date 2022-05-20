@@ -6,8 +6,8 @@
 
 struct TestResult
 {
-  lib::Size nbsucceed = 0;
-  lib::Size nbtotal = 0;
+  sitl::Size nbsucceed = 0;
+  sitl::Size nbtotal = 0;
 };
 
 constexpr void test(bool expression, TestResult &result)
@@ -19,7 +19,7 @@ constexpr void test(bool expression, TestResult &result)
 
 inline void print_result(const TestResult &result)
 {
-  lib::println("test OK ", result.nbsucceed, '/', result.nbtotal);
+  sitl::println("test OK ", result.nbsucceed, '/', result.nbtotal);
 }
 
 #endif

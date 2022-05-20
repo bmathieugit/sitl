@@ -1,21 +1,21 @@
 #include <lib/args.hpp>
 
-using namespace lib;
+using namespace sitl;
 
-static int toint(StringView s) noexcept
+static int toint(StringCRange s) noexcept
 {
   int res = 0;
 
-  bool neg = s.range().starts_with(sv("-"));
-  bool pos = s.range().starts_with(sv("+"));
+  bool neg = s.starts_with(sr("-"));
+  bool pos = s.starts_with(sr("+"));
 
   if (pos || neg)
   {
     auto tmp = s.sub(1);
-    s = StringView(tmp.begin(), tmp.end());
+    s = StringCRange(tmp.begin(), tmp.end());
   }
 
-  bool all_digits = s.range().all_of(
+  bool all_digits = s.all_of(
       [](char c)
       { return '0' <= c && c <= '9'; });
 
@@ -26,11 +26,11 @@ static int toint(StringView s) noexcept
   return neg ? -res : res;
 }
 
-static Size touint(StringView s) noexcept
+static Size touint(StringCRange s) noexcept
 {
   Size res = 0;
 
-  bool all_digits = s.range().all_of(
+  bool all_digits = s.all_of(
       [](char c)
       { return '0' <= c && c <= '9'; });
 
@@ -43,7 +43,7 @@ static Size touint(StringView s) noexcept
 
 CommandLine::CommandLine(
     int argc, char **argv) noexcept
-    : args(argv, argc) {}
+    : args(argv, argv + argc) {}
 
 Size CommandLine::size() const noexcept
 {
@@ -55,37 +55,37 @@ bool CommandLine::empty() const noexcept
   return args.empty();
 }
 
-bool CommandLine::contains(StringView wanted) const noexcept
+bool CommandLine::contains(StringCRange wanted) const noexcept
 {
-  return args.range().any_of(
-      [wanted](const StringView &arg)
-      { return arg.range().starts_with(wanted); });
+  return args.any_of(
+      [wanted](const char* arg)
+      { return sr(arg).starts_with(wanted); });
 }
 
-StringView CommandLine::value(StringView wanted) const noexcept
+StringCRange CommandLine::value(StringCRange wanted) const noexcept
 {
-  auto found = args.range().find_if(
-      [wanted](const StringView &arg)
-      { return arg.range().starts_with(wanted); });
+  auto found = args.find_if(
+      [wanted](const char* arg)
+      { return sr(arg).starts_with(wanted); });
 
   return found != args.end()
-             ? (StringView(*found)).range().after('=')
-             : StringView();
+             ? sr(*found).after('=')
+             : StringCRange();
 }
 
-Size CommandLine::uinteger(StringView wanted) const noexcept
+Size CommandLine::uinteger(StringCRange wanted) const noexcept
 {
-  StringView v = value(wanted);
+  StringCRange v = value(wanted);
   return touint(v);
 }
 
-long long CommandLine::integer(StringView wanted) const noexcept
+long long CommandLine::integer(StringCRange wanted) const noexcept
 {
-  StringView v = value(wanted);
+  StringCRange v = value(wanted);
   return toint(v);
 }
 
-bool CommandLine::flag(StringView wanted) const noexcept
+bool CommandLine::flag(StringCRange wanted) const noexcept
 {
   return contains(wanted);
 }

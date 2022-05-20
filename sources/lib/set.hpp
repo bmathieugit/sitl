@@ -5,7 +5,7 @@
 #include <lib/basic_types.hpp>
 #include <lib/range.hpp>
 
-namespace lib
+namespace sitl
 {
   template <typename T>
   concept LessComparable = requires(const T &t1, const T &t2)

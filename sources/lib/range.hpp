@@ -5,7 +5,7 @@
 #include <lib/basic_types.hpp>
 #include <lib/utility.hpp>
 
-namespace lib
+namespace sitl
 {
   template <typename T>
   concept Iterator = requires(T t)
@@ -13,13 +13,15 @@ namespace lib
     t++;
     ++t;
     t + 1;
+    t - t;
     *t;
+    t[0];
     t == t;
     t != t;
   };
 }
 
-namespace lib::op
+namespace op
 {
   constexpr auto Not = [](auto &&pred) noexcept
   {
@@ -75,7 +77,7 @@ namespace lib::op
   };
 }
 
-namespace lib
+namespace sitl
 {
 
   struct FindIfAlgorithm
@@ -98,7 +100,7 @@ namespace lib
     template <Iterator IT, typename T>
     constexpr IT operator()(IT b, IT e, const T &t) const noexcept
     {
-      return FindIfAlgorithm()(b, e, lib::op::Equals(t));
+      return FindIfAlgorithm()(b, e, op::Equals(t));
     }
   };
 
@@ -132,7 +134,7 @@ namespace lib
     template <Iterator IT, typename T>
     constexpr IT operator()(IT b, IT e, const T &t) const noexcept
     {
-      return AfterIfAlgorithm()(b, e, lib::op::Equals(t));
+      return AfterIfAlgorithm()(b, e, op::Equals(t));
     }
   };
 
@@ -151,7 +153,7 @@ namespace lib
     template <Iterator IT, typename T>
     constexpr IT operator()(IT b, IT e, const T &t) const noexcept
     {
-      return BeforeIfAlgorithm()(b, e, lib::op::Equals(t));
+      return BeforeIfAlgorithm()(b, e, op::Equals(t));
     }
   };
 
@@ -179,7 +181,7 @@ namespace lib
     template <Iterator IT, typename T>
     constexpr decltype(auto) operator()(IT b, IT e, const T &t) const noexcept
     {
-      return AroundIfAlgorithm<R>()(b, e, lib::op::Equals(t));
+      return AroundIfAlgorithm<R>()(b, e, op::Equals(t));
     }
   };
 
@@ -243,7 +245,7 @@ namespace lib
     template <Iterator IT, typename T>
     constexpr Size operator()(IT b, IT e, const T &t) const noexcept
     {
-      return CountIfAlgorithm()(b, e, lib::op::Equals(t));
+      return CountIfAlgorithm()(b, e, op::Equals(t));
     }
   };
 
@@ -320,7 +322,7 @@ namespace lib
   };
 }
 
-namespace lib
+namespace sitl
 {
   template <typename T>
   concept Rangeable = requires(const T &t, T &t2, T &&t3)
@@ -335,6 +337,21 @@ namespace lib
     t3.end();
   };
 
+  template <Iterator I>
+  struct DefaultIteratorValue;
+
+  template <typename T>
+  struct DefaultIteratorValue<T *>
+  {
+    static constexpr T* value = nullptr;
+  };
+
+  template <typename T>
+  struct DefaultIteratorValue<const T *>
+  {
+    static constexpr const T* value = nullptr;
+  };
+
   template <Iterator IT>
   class Range
   {
@@ -342,6 +359,9 @@ namespace lib
     IT e;
 
   public:
+    constexpr Range() noexcept
+        : b(DefaultIteratorValue<IT>::value),
+          e(DefaultIteratorValue<IT>::value) {}
     template <Rangeable R>
     constexpr Range(R &r) noexcept
         : b(r.begin()), e(r.end()) {}
@@ -354,9 +374,20 @@ namespace lib
     constexpr Range &operator=(Range &&) noexcept = default;
 
   public:
+    constexpr auto operator[](Size i) const noexcept
+        -> decltype(*(b + 1))
+    {
+      return *(b + i);
+    }
+
     constexpr bool empty() const noexcept
     {
       return b == e;
+    }
+
+    constexpr Size size() const noexcept
+    {
+      return e - b;
     }
 
     constexpr auto begin() noexcept
@@ -377,6 +408,17 @@ namespace lib
     constexpr auto end() const noexcept
     {
       return e;
+    }
+
+  public:
+    constexpr Range sub(Size i) noexcept
+    {
+      return Range(i < size() ? b + i : e, e);
+    }
+
+    constexpr const Range sub(Size i) const noexcept
+    {
+      return Range(i < size() ? b + i : e, e);
     }
 
   public:

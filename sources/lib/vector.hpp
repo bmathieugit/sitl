@@ -5,9 +5,8 @@
 #include <lib/range.hpp>
 #include <lib/strong.hpp>
 #include <lib/utility.hpp>
-#include <lib/span.hpp>
 
-namespace lib
+namespace sitl
 {
   template <typename T>
   class Vector
@@ -132,7 +131,7 @@ namespace lib
     {
       if (more == 0)
         return;
-        
+
       Strong<T[]> nstorage = new T[max + more];
 
       for (Size i = 0; i < lgth; ++i)
@@ -189,7 +188,7 @@ namespace lib
       if (lgth >= max)
         increase(max == 0 ? 10 : max * 2);
 
-      for (lib::Size i = lgth; i > 0; --i)
+      for (Size i = lgth; i > 0; --i)
         storage[i] = move(storage[i - 1]);
 
       storage[0] = t;
@@ -201,11 +200,21 @@ namespace lib
       if (lgth >= max)
         increase(max == 0 ? 10 : max * 2);
 
-      for (lib::Size i = lgth; i > 0; --i)
+      for (Size i = lgth; i > 0; --i)
         storage[i] = move(storage[i - 1]);
 
       storage[0] = move(t);
       lgth = lgth + 1;
+    }
+
+    constexpr void lappend(Range<T*> sp) noexcept
+    {
+      lappend(sp.begin(), sp.end());
+    }
+
+    constexpr void lappend(Range<const T*> sp) noexcept
+    {
+      lappend(sp.begin(), sp.end());
     }
 
     constexpr void lappend(const Vector &o) noexcept
@@ -230,14 +239,14 @@ namespace lib
       }
     }
 
-    constexpr void lappend(Span<T> sp) noexcept
+    constexpr void append(Range<T*> sp) noexcept
     {
-      lappend(sp.begin(), sp.end());
+      append(sp.begin(), sp.end());
     }
 
-    constexpr void lappend(Span<const T> sp) noexcept
+    constexpr void append(Range<const T*> sp) noexcept
     {
-      lappend(sp.begin(), sp.end());
+      append(sp.begin(), sp.end());
     }
 
     constexpr void append(const Vector &o) noexcept
@@ -260,16 +269,6 @@ namespace lib
         push_back(*b);
         ++b;
       }
-    }
-
-    constexpr void append(Span<T> sp) noexcept
-    {
-      append(sp.begin(), sp.end());
-    }
-
-    constexpr void append(Span<const T> sp) noexcept
-    {
-      append(sp.begin(), sp.end());
     }
 
     constexpr T &operator[](Size i) noexcept

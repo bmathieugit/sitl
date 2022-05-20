@@ -3,15 +3,9 @@
 
 #include <lib/basic_types.hpp>
 #include <lib/range.hpp>
-#include <lib/span.hpp>
 
-namespace lib
+namespace sitl
 {
-  template <typename T>
-  using ArrayView = Span<const T>;
-
-  template <typename T>
-  using ArraySpan = Span<T>;
 
   template <typename T, Size n>
   struct Array
@@ -19,7 +13,7 @@ namespace lib
     T b[n];
 
   public:
-    constexpr  auto range() noexcept
+    constexpr auto range() noexcept
     {
       return rangeof(*this);
     }
@@ -49,34 +43,34 @@ namespace lib
       return b;
     }
 
-    T &operator[](Size i) & noexcept
+    T &operator[](Size i) &noexcept
     {
       return b[i];
     }
 
-    constexpr const T &operator[](Size i) const & noexcept
+    constexpr const T &operator[](Size i) const &noexcept
     {
       return b[i];
     }
 
-    constexpr T &&operator[](Size i) && noexcept
+    constexpr T &&operator[](Size i) &&noexcept
     {
       return b[i];
     }
 
-    constexpr const T &&operator[](Size i) const && noexcept
+    constexpr const T &&operator[](Size i) const &&noexcept
     {
       return b[i];
     }
 
-    constexpr operator ArrayView<T>() const noexcept
+    constexpr operator Range<const T*>() const noexcept
     {
-      return ArrayView<T>(this->data(), this->size());
+      return Range<const T*>(this->data(), this->size());
     }
 
-    constexpr operator ArraySpan<T>() noexcept
+    constexpr operator Range<T*>() noexcept
     {
-      return ArraySpan<T>(this->data(), this->size());
+      return Range<T*>(this->data(), this->size());
     }
 
   public:

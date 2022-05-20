@@ -5,7 +5,7 @@
 #include <lib/basic_types.hpp>
 #include <lib/algorithm.hpp>
 
-namespace lib
+namespace sitl
 {
   // FIXME: finish this class !!!!!
   template <typename K, typename V>
@@ -77,7 +77,7 @@ namespace lib
 
     bool operator==(const Map &o) const
     {
-      return apply(lib::EqualsAlgorithm(), o.begin(), o.end());
+      return apply(EqualsAlgorithm(), o.begin(), o.end());
     }
 
     bool operator!=(const Map &o) const

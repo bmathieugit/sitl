@@ -6,7 +6,7 @@
 #include <lib/iostream.hpp>
 #include <lib/utility.hpp>
 
-namespace lib::logger
+namespace sitl::logger
 {
   enum class level : int
   {
@@ -21,8 +21,9 @@ namespace lib::logger
   template <Output OUT>
   constexpr OUT &operator<<(OUT &buff, level l) noexcept
   {
-    constexpr lib::Array<lib::StringView, 6> ltable = {
-        "trace", "debug", "info", "warn", "error", "fatal"};
+    constexpr Array<StringCRange, 6> ltable = {
+        sr("trace"), sr("debug"), sr("info"),
+        sr("warn"), sr("error"), sr("fatal")};
 
     return buff << ltable[(int)l];
   }

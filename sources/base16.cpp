@@ -3,7 +3,7 @@
 #include <lib/utility.hpp>
 #include <lib/iostream.hpp>
 
-using namespace lib;
+using namespace sitl;
 
 struct HexCResult
 {
@@ -30,18 +30,18 @@ int main(int argc, char **argv)
 
   if (cmdl.size() >= 2)
   {
-    StringView conv = cmdl[1];
+    StringCRange conv = cmdl[1];
 
-    if (conv == sv("b16"))
+    if (conv == sr("b16"))
     {
       if (cmdl.size() >= 3)
       {
-        StringView src = cmdl[2];
+        StringCRange src = cmdl[2];
 
         for (char c : src)
         {
           auto [c1, c2] = hexc(c);
-          lib::print(c1, c2);
+          print(c1, c2);
         }
       }
       else
@@ -49,17 +49,17 @@ int main(int argc, char **argv)
         int c;
         while ((c = std::getchar()) != EOF)
         {
-          // lib::print((char)c);
+          // print((char)c);
           auto [c1, c2] = hexc(c);
-          lib::print(c1, c2);
+          print(c1, c2);
         }
       }
     }
-    else if (conv == sv("b10"))
+    else if (conv == sr("b10"))
     {
       if (cmdl.size() >= 3)
       {
-        StringView src = cmdl[2];
+        StringCRange src = cmdl[2];
 
         char c1;
         char c2;
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
           if (second)
           {
-            lib::print(decc(c1, c2));
+            print(decc(c1, c2));
             second = false;
           }
         }
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 
           if (second)
           {
-            lib::print(decc(c1, c2));
+            print(decc(c1, c2));
             second = false;
           }
         }
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
     }
   }
 
-  lib::println();
+  println();
 
-  return lib::SUCCESS();
+  return SUCCESS();
 }

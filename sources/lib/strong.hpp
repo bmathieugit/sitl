@@ -4,7 +4,7 @@
 #include <lib/meta.hpp>
 #include <lib/basic_types.hpp>
 
-namespace lib
+namespace sitl
 {
   template <typename T>
   struct StrongDeleter

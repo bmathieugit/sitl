@@ -5,11 +5,11 @@ int main()
 {
   TestResult result;
 
-  lib::List<int> l;
+  sitl::List<int> l;
   
   test(l.size() == 0, result);
   
-  lib::List<int> l2 = lib::List<int>::from(1, 2, 3, 4);
+  sitl::List<int> l2 = sitl::List<int>::from(1, 2, 3, 4);
   
   test(l2.size() == 4, result);
   test(*l2.begin() == 1, result);
