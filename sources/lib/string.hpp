@@ -105,14 +105,9 @@ namespace sitl
       storage.lpush_back(c);
     }
 
-    constexpr void push_back(C c) noexcept
+    constexpr void push(C c) noexcept
     {
-      storage.push_back(c);
-    }
-
-    constexpr void push_front(C c) noexcept
-    {
-      storage.push_front(c);
+      storage.push(c);
     }
 
     template <typename IT>

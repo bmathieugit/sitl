@@ -91,6 +91,16 @@ namespace sitl
     }
 
   public:
+    constexpr operator Range<T *>() const noexcept
+    {
+      return range();
+    }
+
+    constexpr operator Range<const T *>() noexcept
+    {
+      return range();
+    }
+
     constexpr auto range() noexcept
     {
       return rangeof(*this);
@@ -165,7 +175,7 @@ namespace sitl
       }
     }
 
-    constexpr void push_back(const T &t) noexcept
+    constexpr void push(const T &t) noexcept
     {
       if (lgth >= max)
         increase(max == 0 ? 10 : max * 2);
@@ -174,7 +184,7 @@ namespace sitl
       lgth = lgth + 1;
     }
 
-    constexpr void push_back(T &&t) noexcept
+    constexpr void push(T &&t) noexcept
     {
       if (lgth >= max)
         increase(max == 0 ? 10 : max * 2);
@@ -183,36 +193,12 @@ namespace sitl
       lgth = lgth + 1;
     }
 
-    constexpr void push_front(const T &t) noexcept
-    {
-      if (lgth >= max)
-        increase(max == 0 ? 10 : max * 2);
-
-      for (Size i = lgth; i > 0; --i)
-        storage[i] = move(storage[i - 1]);
-
-      storage[0] = t;
-      lgth = lgth + 1;
-    }
-
-    constexpr void push_front(T &&t) noexcept
-    {
-      if (lgth >= max)
-        increase(max == 0 ? 10 : max * 2);
-
-      for (Size i = lgth; i > 0; --i)
-        storage[i] = move(storage[i - 1]);
-
-      storage[0] = move(t);
-      lgth = lgth + 1;
-    }
-
-    constexpr void lappend(Range<T*> sp) noexcept
+    constexpr void lappend(Range<T *> sp) noexcept
     {
       lappend(sp.begin(), sp.end());
     }
 
-    constexpr void lappend(Range<const T*> sp) noexcept
+    constexpr void lappend(Range<const T *> sp) noexcept
     {
       lappend(sp.begin(), sp.end());
     }
@@ -239,12 +225,12 @@ namespace sitl
       }
     }
 
-    constexpr void append(Range<T*> sp) noexcept
+    constexpr void append(Range<T *> sp) noexcept
     {
       append(sp.begin(), sp.end());
     }
 
-    constexpr void append(Range<const T*> sp) noexcept
+    constexpr void append(Range<const T *> sp) noexcept
     {
       append(sp.begin(), sp.end());
     }
@@ -252,13 +238,13 @@ namespace sitl
     constexpr void append(const Vector &o) noexcept
     {
       for (const T &t : o)
-        push_back(t);
+        push(t);
     }
 
     constexpr void append(Vector &&o) noexcept
     {
       for (T &&t : o)
-        push_back(move(t));
+        push(move(t));
     }
 
     template <typename IT>
@@ -266,7 +252,7 @@ namespace sitl
     {
       while (b != e)
       {
-        push_back(*b);
+        push(*b);
         ++b;
       }
     }

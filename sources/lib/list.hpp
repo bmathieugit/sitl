@@ -166,7 +166,7 @@ namespace sitl
     static constexpr List from(U &&...us) noexcept
     {
       List l(sizeof...(U));
-      (l.push_back(forward<U>(us)), ...);
+      (l.push(forward<U>(us)), ...);
       return l;
     }
 
@@ -236,7 +236,7 @@ namespace sitl
 
     constexpr void insert(ConstIterator it, T &&t) noexcept
     {
-      storage.push_back(Node{Size(-1), Size(-1), static_cast<T &&>(t)});
+      storage.push(Node{Size(-1), Size(-1), static_cast<T &&>(t)});
 
       if (first == Size(-1) &&
           last == Size(-1))
@@ -268,36 +268,26 @@ namespace sitl
       }
     }
 
-    constexpr void push_back(const T &t) noexcept
+    constexpr void push(const T &t) noexcept
     {
       insert(end(), t);
     }
 
-    constexpr void push_back(T &&t) noexcept
+    constexpr void push(T &&t) noexcept
     {
       insert(end(), t);
-    }
-
-    constexpr void push_front(const T &t) noexcept
-    {
-      insert(begin(), t);
-    }
-
-    constexpr void push_front(T &&t) noexcept
-    {
-      insert(begin(), t);
     }
 
     constexpr void append(const List &o) noexcept
     {
       for (const T &t : o)
-        push_back(t);
+        push(t);
     }
 
     constexpr void append(List &&o) noexcept
     {
       for (T &&t : o)
-        push_back(static_cast<T &&>(t));
+        push(static_cast<T &&>(t));
     }
 
     template <typename IT>
@@ -305,7 +295,7 @@ namespace sitl
     {
       while (b != e)
       {
-        push_back(*b);
+        push(*b);
         b = b + 1;
       }
     }

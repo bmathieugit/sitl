@@ -9,13 +9,13 @@ int main()
   TestResult result;
 
   sitl::String arg1 = "file=toto.sitl";
-  arg1.push_back('\0');
+  arg1.push('\0');
   sitl::String arg2 = "verbose";
-  arg2.push_back('\0');
+  arg2.push('\0');
   sitl::String arg3 = "int=-1200";
-  arg3.push_back('\0');
+  arg3.push('\0');
   sitl::String arg4 = "uint=1200";
-  arg4.push_back('\0');
+  arg4.push('\0');
 
   char *argv[] = {arg1.data(), arg2.data(),
                   arg3.data(), arg4.data()};

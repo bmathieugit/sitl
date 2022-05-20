@@ -164,7 +164,7 @@ namespace sitl
       {
         String token;
 
-        sline.push_back(move(token));
+        sline.push(move(token));
         
       }
 

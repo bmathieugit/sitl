@@ -26,16 +26,10 @@ int main()
   test(ints2[7] = 8, result);
   test(ints2[8] = 9, result);
 
-  ints2.push_back(10);
+  ints2.push(10);
 
   test(ints2.size() == 10, result);
   test(ints2[9] = 10, result);
-
-  ints2.push_front(-1);
-
-  test(ints2[0] == -1, result);
-  test(ints2.size() == 11, result);
-  test(ints2[10] = 10, result);
 
   print_result(result);
 }
