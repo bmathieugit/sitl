@@ -329,12 +329,13 @@ namespace sitl
   {
     t.begin();
     t.end();
-
+    t.size();
     t2.begin();
     t2.end();
-
+    t2.size();
     t3.begin();
     t3.end();
+    t3.size();
   };
 
   template <Iterator I>
@@ -343,13 +344,13 @@ namespace sitl
   template <typename T>
   struct DefaultIteratorValue<T *>
   {
-    static constexpr T* value = nullptr;
+    static constexpr T *value = nullptr;
   };
 
   template <typename T>
   struct DefaultIteratorValue<const T *>
   {
-    static constexpr const T* value = nullptr;
+    static constexpr const T *value = nullptr;
   };
 
   template <Iterator IT>
@@ -599,37 +600,37 @@ namespace sitl
   };
 
   template <Rangeable C>
-  constexpr auto rangeof(C &c) noexcept -> Range<decltype(declval<C>().begin())>
+  constexpr auto range(C &c) noexcept -> Range<decltype(declval<C>().begin())>
   {
     return {c};
   }
 
   template <Rangeable C>
-  constexpr auto rangeof(const C &c) noexcept -> const Range<decltype(declval<C>().begin())>
+  constexpr auto range(const C &c) noexcept -> const Range<decltype(declval<C>().begin())>
   {
     return {c};
   }
 
   template <typename T, Size n>
-  constexpr const Range<T *> rangeof(T (&o)[n]) noexcept
+  constexpr const Range<T *> range(T (&o)[n]) noexcept
   {
     return {o, o + n};
   }
 
   template <typename T, Size n>
-  constexpr const Range<const T *> rangeof(const T (&o)[n]) noexcept
+  constexpr const Range<const T *> range(const T (&o)[n]) noexcept
   {
     return {o, o + n};
   }
 
   template <typename T>
-  constexpr Range<T *> rangeof(T *o, Size n) noexcept
+  constexpr Range<T *> range(T *o, Size n) noexcept
   {
     return {o, o + n};
   }
 
   template <typename T>
-  constexpr const Range<const T *> rangeof(const T *o, Size n) noexcept
+  constexpr const Range<const T *> range(const T *o, Size n) noexcept
   {
     return {o, o + n};
   }
@@ -642,7 +643,7 @@ namespace sitl
   template <typename T, Size n>
   constexpr bool operator==(const Rangeable auto &r, const T (&o)[n]) noexcept
   {
-    return r == rangeof(o);
+    return r == range(o);
   }
 
   constexpr bool operator!=(const Rangeable auto &r, const Rangeable auto &o) noexcept
@@ -653,7 +654,7 @@ namespace sitl
   template <typename T, Size n>
   constexpr bool operator!=(const Rangeable auto &r, const T (&o)[n]) noexcept
   {
-    return !(r == rangeof(o));
+    return !(r == range(o));
   }
 }
 

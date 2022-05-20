@@ -13,9 +13,9 @@ int main()
 
 
   test(str.size() == 3, result);
-  test(str[1] == 'c', result);
-  test(str[2] == 'o', result);
-  test(str[3] == 'u', result);
+  test(str[0] == 'c', result);
+  test(str[1] == 'o', result);
+  test(str[2] == 'u', result);
   test(str.begin() != str.end(), result);
   test(str.begin() == str.data(), result);
   test(!str.empty(), result);

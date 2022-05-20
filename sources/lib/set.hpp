@@ -22,43 +22,41 @@ namespace sitl
     List<T> storage;
 
   public:
-    template <typename... U>
-    static constexpr Set from(U &&...us) noexcept
-    {
-      Set s(sizeof...(U));
-      (s.push(forward<U>(us)), ...);
-      return s;
-    }
-
-  public:
-    Set() noexcept = default;
-    Set(Size _max) noexcept
+    constexpr Set() noexcept = default;
+    constexpr Set(Size _max) noexcept
         : storage(_max)
     {
     }
 
     template <typename IT>
-    Set(IT b, IT e) noexcept
+    constexpr Set(IT b, IT e) noexcept
         : Set()
     {
       append(b, e);
     }
 
-    Set(const Set &) noexcept = default;
-    Set(Set &&) noexcept = default;
-    ~Set() noexcept = default;
-    Set &operator=(const Set &) noexcept = default;
-    Set &operator=(Set &&) noexcept = default;
+    template <Rangeable R>
+    constexpr Set(R r)
+        : Set(r.size())
+    {
+      append(r.begin(), r.end());
+    }
+
+    constexpr Set(const Set &) noexcept = default;
+    constexpr Set(Set &&) noexcept = default;
+    constexpr ~Set() noexcept = default;
+    constexpr Set &operator=(const Set &) noexcept = default;
+    constexpr Set &operator=(Set &&) noexcept = default;
 
   public:
     constexpr auto range() noexcept
     {
-      return rangeof(*this);
+      return sitl::range(*this);
     }
 
     constexpr auto range() const noexcept
     {
-      return rangeof(*this);
+      return sitl::range(*this);
     }
 
     Size size() const noexcept
@@ -78,7 +76,7 @@ namespace sitl
 
     void push(T &&t)
     {
-      auto it = rangeof(*this).find_if(
+      auto it = range().find_if(
           [&t](const T &o) noexcept
           { return t <= o; });
 

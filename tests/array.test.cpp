@@ -23,26 +23,26 @@ int main()
   test(ints[8] == 8, result);
   test(ints[9] == 9, result);
 
-  test(sitl::rangeof(ints).starts_with(ints), result);
-  test(sitl::rangeof(ints).count() == ints.size(), result);
-  test(sitl::rangeof(ints).count_if([](const int &i)
+  test(sitl::range(ints).starts_with(ints), result);
+  test(sitl::range(ints).count() == ints.size(), result);
+  test(sitl::range(ints).count_if([](const int &i)
                                     { return i % 2 == 0; }) == 5,
        result);
-  test(sitl::rangeof(ints).find(0) == ints.begin(), result);
-  test(sitl::rangeof(ints).find(25) == ints.end(), result);
-  test(*sitl::rangeof(ints).find_if([](const int &i)
+  test(sitl::range(ints).find(0) == ints.begin(), result);
+  test(sitl::range(ints).find(25) == ints.end(), result);
+  test(*sitl::range(ints).find_if([](const int &i)
                                     { return i == 6; }) == 6,
        result);
-  test(sitl::rangeof(ints).after(-1).count() == 0, result);
+  test(sitl::range(ints).after(-1).count() == 0, result);
 
-  test(sitl::rangeof(ints).all_of([](const int &i)
+  test(sitl::range(ints).all_of([](const int &i)
                                   { return i < 100; }),
        result);
 
-  test(sitl::rangeof(ints).none_of([](const int &i)
+  test(sitl::range(ints).none_of([](const int &i)
                                    { return i < 0; }),
        result);
-  test(sitl::rangeof(ints).any_of([](const int &i)
+  test(sitl::range(ints).any_of([](const int &i)
                                   { return i == 1; }),
        result);
   print_result(result);

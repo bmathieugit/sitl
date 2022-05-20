@@ -16,15 +16,6 @@ namespace sitl
     Strong<T[]> storage;
 
   public:
-    template <typename... U>
-    static constexpr Vector from(U &&...us) noexcept
-    {
-      return Vector(
-          Strong<T[]>(new T[]{forward<U>(us)...}),
-          sizeof...(U));
-    }
-
-  public:
     constexpr Vector() noexcept = default;
 
     explicit constexpr Vector(Size _max) noexcept
@@ -41,10 +32,12 @@ namespace sitl
       append(b, e);
     }
 
-    constexpr Vector(Strong<T[]> &&fb, Size lgth) noexcept
-        : lgth(lgth),
-          max(lgth),
-          storage(move(fb)) {}
+    template<Rangeable R>
+    constexpr Vector(R r) noexcept
+        : Vector(r.size())
+    {
+      lappend(r);
+    }
 
     constexpr Vector(const Vector &o) noexcept
         : Vector(o.max)
@@ -103,12 +96,12 @@ namespace sitl
 
     constexpr auto range() noexcept
     {
-      return rangeof(*this);
+      return range(*this);
     }
 
     constexpr auto range() const noexcept
     {
-      return rangeof(*this);
+      return range(*this);
     }
 
     constexpr Size size() const noexcept

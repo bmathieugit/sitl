@@ -5,7 +5,7 @@ int main()
 {
   TestResult result;
 
-  sitl::Set<int> s = sitl::Set<int>::from(1, 2, 3, 4, 5);
+  sitl::Set<int> s = sitl::range((const int[]){1, 2, 3, 4, 5});
 
   test(s.size() == 5, result);
   test(!s.empty(), result);
@@ -20,7 +20,11 @@ int main()
   test(s.size() == 6, result);
   test(!s.empty(), result);
 
-  test(sitl::Set<int>::from(1, 2, 3, 4, 5) == sitl::Set<int>::from(1, 2, 3, 4, 5), result);
+  
+  sitl::Set<int> s2 = sitl::range((const int[]){1, 2, 3, 4, 5});
+  sitl::Set<int> s3 = s2;
+
+  test(s2 == s3, result);
 
   print_result(result);
 }
