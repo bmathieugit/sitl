@@ -32,7 +32,7 @@ namespace sitl
       append(b, e);
     }
 
-    template<Rangeable R>
+    template <Rangeable R>
     constexpr Vector(R r) noexcept
         : Vector(r.size())
     {
@@ -258,6 +258,16 @@ namespace sitl
     const T &operator[](Size i) const noexcept
     {
       return storage[i];
+    }
+
+    constexpr T &back() noexcept
+    {
+      return storage[size() - 1];
+    }
+
+    constexpr const T &back() const noexcept
+    {
+      return storage[size() - 1];
     }
 
   public:

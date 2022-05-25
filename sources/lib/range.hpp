@@ -422,6 +422,16 @@ namespace sitl
       return Range(i < size() ? b + i : e, e);
     }
 
+    constexpr Range sub(Size i, Size ei) noexcept
+    {
+      return Range(i < size() ? b + i : e, ei < size() ? b + ei : e);
+    }
+
+    constexpr const Range sub(Size i, Size ei) const noexcept
+    {
+      return Range(i < size() ? b + i : e, ei < size() ? b + ei : e);
+    }
+
   public:
     template <Rangeable R>
     constexpr R as() noexcept
@@ -472,6 +482,11 @@ namespace sitl
     constexpr auto find(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
     {
       return apply(FindAlgorithm(), t);
+    }
+
+    constexpr bool contains(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
+    {
+      return find(t) != end();
     }
 
     constexpr auto find_if(auto &&pred) noexcept
