@@ -489,6 +489,11 @@ namespace sitl
       return find(t) != end();
     }
 
+    constexpr bool contains_if(auto &&pred) const noexcept
+    {
+      return find_if(pred) != end();
+    }
+
     constexpr auto find_if(auto &&pred) noexcept
     {
       return apply(FindIfAlgorithm(), pred);
@@ -622,13 +627,15 @@ namespace sitl
   };
 
   template <Rangeable C>
-  constexpr auto range(C &c) noexcept -> Range<decltype(declval<C>().begin())>
+  constexpr auto range(C &c) noexcept
+      -> Range<decltype(declval<C>().begin())>
   {
     return {c};
   }
 
   template <Rangeable C>
-  constexpr auto range(const C &c) noexcept -> const Range<decltype(declval<C>().begin())>
+  constexpr auto range(const C &c) noexcept
+      -> Range<decltype(declval<const C>().begin())>
   {
     return {c};
   }

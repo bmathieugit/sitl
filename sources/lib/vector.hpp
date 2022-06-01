@@ -84,24 +84,24 @@ namespace sitl
     }
 
   public:
-    constexpr operator Range<T *>() const noexcept
+    constexpr operator Range<T *>() noexcept
     {
       return range();
     }
 
-    constexpr operator Range<const T *>() noexcept
+    constexpr operator Range<const T *>() const noexcept
     {
       return range();
     }
 
     constexpr auto range() noexcept
     {
-      return range(*this);
+      return sitl::range(*this);
     }
 
     constexpr auto range() const noexcept
     {
-      return range(*this);
+      return sitl::range(*this);
     }
 
     constexpr Size size() const noexcept
@@ -150,7 +150,7 @@ namespace sitl
     }
 
   public:
-    constexpr void lpush_back(const T &t) noexcept
+    constexpr void lpush(const T &t) noexcept
     {
       if (lgth < max)
       {
@@ -159,7 +159,7 @@ namespace sitl
       }
     }
 
-    constexpr void lpush_back(T &&t) noexcept
+    constexpr void lpush(T &&t) noexcept
     {
       if (lgth < max)
       {
@@ -199,13 +199,13 @@ namespace sitl
     constexpr void lappend(const Vector &o) noexcept
     {
       for (const T &t : o)
-        lpush_back(t);
+        lpush(t);
     }
 
     constexpr void lappend(Vector &&o) noexcept
     {
       for (T &&t : o)
-        lpush_back(move(t));
+        lpush(move(t));
     }
 
     template <typename IT>
@@ -213,7 +213,7 @@ namespace sitl
     {
       while (b != e)
       {
-        lpush_back(*b);
+        lpush(*b);
         ++b;
       }
     }
@@ -291,6 +291,12 @@ namespace sitl
       return static_cast<const T *>(storage) + lgth;
     }
   };
+
+  template <typename T>
+  using VectorRange = Range<T *>;
+
+  template <typename T>
+  using VectorCRange = Range<const T *>;
 }
 
 #endif

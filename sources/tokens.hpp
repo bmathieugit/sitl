@@ -227,6 +227,73 @@ namespace sitl
     return tokens;
   }
 
+  enum class NodeType : int
+  {
+    WHILE,
+    IF,
+    FOR,
+    LET,
+    SET,
+    RETURN,
+    BEGIN,
+    END,
+    ADD,
+    NUM,
+    STR,
+    VAR,
+
+  };
+
+  using Depth = int;
+
+  struct Node
+  {
+    NodeType type;
+    Depth depth;
+    StringCRange value;
+  };
+
+  void syntax_while(VectorCRange<Token> tokens, Depth depth, Vector<Node> &nodes) noexcept
+  {
+    if (!tokens.empty() &&
+        (*tokens.begin()).value == sr("while"))
+    {
+      nodes.push(Node{NodeType::WHILE, depth + 1, (*tokens.begin()).value});
+      tokens = tokens.sub(1);
+    }
+  }
+
+  void syntax_statements(VectorCRange<Token> tokens, Depth depth, Vector<Node> &nodes) noexcept
+  {
+    while (!tokens.empty())
+    {
+      const Token &t = *tokens.begin();
+
+      if (t.value == sr("while"))
+        syntax_while(tokens, depth, nodes);
+    }
+  }
+
+  Vector<Node>
+  syntax(VectorCRange<Token> tokens) noexcept
+  {
+    Vector<Node> nodes;
+
+    for (auto &&t : tokens)
+      logger::debug("token : type : ", (int)t.type, "; value : ", t.value);
+
+    if (!tokens.contains_if(
+            [](const Token &t)
+            { return t.type == TokenType::ERROR; }))
+    {
+      logger::debug("aucun token error detecté dans tokens");
+      syntax_statements(tokens, 0, nodes);
+    }
+    else
+      logger::error("un token error est contenu dans tokens");
+
+    return nodes;
+  }
 }
 
 #endif

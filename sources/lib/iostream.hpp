@@ -55,7 +55,7 @@ namespace sitl
 
     constexpr void append(char c) noexcept
     {
-      res.lpush_back(c);
+      res.lpush(c);
     }
 
     constexpr String &&result() noexcept

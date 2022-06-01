@@ -100,9 +100,9 @@ namespace sitl
     }
 
   public:
-    constexpr void lpush_back(C c) noexcept
+    constexpr void lpush(C c) noexcept
     {
-      storage.lpush_back(c);
+      storage.lpush(c);
     }
 
     constexpr void push(C c) noexcept
