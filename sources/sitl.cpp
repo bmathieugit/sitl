@@ -1,6 +1,3 @@
-#include <fstream>
-#include <streambuf>
-
 #include <lib/string.hpp>
 #include <lib/logger.hpp>
 #include <lib/args.hpp>
@@ -18,11 +15,17 @@ int main(int argc, char **argv)
     sitl::logger::debug("file name found, fname");
   }
 
-  sitl::StringCRange src = sitl::sr("int i = \"coucou");
+  sitl::StringCRange src = sitl::sr(
+      "let int i 0\n"
+      "while (i <= 100)\n"
+      "be $ gin\n"
+      "  set i (i+1)\n"
+      "  print i\n"
+      "end\n");
   sitl::Vector<sitl::Token> tokens = sitl::tokenize(src);
 
   for (const sitl::Token &token : tokens)
     sitl::logger::debug(token.value, " : ", (int)token.type);
 
-  return EXIT_SUCCESS;
+  return 0;
 }

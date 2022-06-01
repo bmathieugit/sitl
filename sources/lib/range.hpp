@@ -354,7 +354,7 @@ namespace sitl
   };
 
   template <Iterator IT>
-  class Range
+  struct Range
   {
     IT b;
     IT e;
@@ -572,6 +572,13 @@ namespace sitl
     constexpr decltype(auto) around(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
     {
       return apply(AroundAlgorithm<const Range>(), t);
+    }
+
+    constexpr decltype(auto) go_after(const RemoveReference<decltype(*declval<IT>())> &t) noexcept
+    {
+      auto [bf, af] = around(t);
+      *this = af;
+      return bf;
     }
 
     constexpr Range inside(const RemoveReference<decltype(*declval<IT>())> &t1,
