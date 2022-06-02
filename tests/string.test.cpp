@@ -38,6 +38,10 @@ int main()
 
   test(str2.size() == 4, result);
 
+  sitl::Char c = 'a';
+
+  test(c.between('a', 'z'), result);
+
   print_result(result);
 
   return 0;

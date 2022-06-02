@@ -232,4 +232,47 @@ namespace sitl
   }
 }
 
+namespace sitl
+{
+  template <typename C>
+  class BasicChar
+  {
+  private:
+    C c;
+
+  public:
+    constexpr BasicChar(C _c) noexcept : c(_c) {}
+    constexpr BasicChar() = delete;
+    constexpr BasicChar(const BasicChar &c) noexcept = default;
+    constexpr BasicChar(BasicChar &&c) noexcept = default;
+    constexpr ~BasicChar() noexcept = default;
+    constexpr BasicChar &operator=(const BasicChar &c) noexcept = default;
+    constexpr BasicChar &operator=(BasicChar &&c) noexcept = default;
+
+  public:
+    constexpr bool between(C b, C e) const noexcept
+    {
+      return b <= c && c <= e;
+    }
+
+    template <Size n>
+    constexpr bool in(const C (&s)[n]) const noexcept
+    {
+      return BasicStringCRange<C>(s, s + n).contains(c);
+    }
+
+    constexpr bool operator==(C o) const noexcept
+    {
+      return c == o;
+    }
+
+    constexpr bool operator!=(C o) const noexcept
+    {
+      return c != o;
+    }
+  };
+
+  using Char = BasicChar<char>;
+}
+
 #endif

@@ -15,23 +15,27 @@ int main(int argc, char **argv)
     sitl::logger::debug("file name found, fname");
   }
 
-  // sitl::StringCRange src = sitl::sr(
-  //     "let int i 0\n"
-  //     "while (i <= 100)\n"
-  //     "begin\n"
-  //     "  set i (i+1)\n"
-  //     "  print i\n"
-  //     "end\n");
+  sitl::StringCRange src = sitl::sr(
+      "let int i 0\n"
+      "while ( i <= 100)\n"
+      "begin\n"
+      "  set i (i+1)\n"
+      "  print i\n"
+      "end\n");
 
-  sitl::StringCRange src = sitl::sr("while");
+  // sitl::StringCRange src = sitl::sr("let ii int 00");
 
   sitl::Vector<sitl::Token> tokens = sitl::tokenize(src);
-  sitl::Vector<sitl::Node> nodes = sitl::syntax(tokens);
+  
+  for (auto && token : tokens)
+    sitl::logger::debug("token type : ", (int)token.type, ", value : ", token.value);
+  
+  //sitl::Vector<sitl::Node> nodes = sitl::syntax(tokens);
 
-  for (auto &&node : nodes)
-    sitl::logger::debug("node{ type : ",(int) node.type,
-                        "; depth : ", node.depth,
-                        "; value : ", node.value, '}');
+  // for (auto &&node : nodes)
+  //   sitl::logger::debug("node{ type : ",(int) node.type,
+  //                       "; depth : ", node.depth,
+  //                       "; value : ", node.value, '}');
 
   return 0;
 }
