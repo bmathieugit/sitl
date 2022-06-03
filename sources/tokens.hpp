@@ -23,6 +23,11 @@ namespace sitl
     GREATER = 11,
     LESSEQ = 12,
     GREATEREQ = 13,
+    STAR = 14,
+    WHILE = 15,
+    STRUCT = 16,
+    BEGIN = 17,
+    END = 18,
   };
 
   struct Token
@@ -64,7 +69,7 @@ namespace sitl
   {
     constexpr bool operator()(StringCRange s) const noexcept
     {
-      return s.starts_with(Array<const char, 2>{{cn...}});
+      return s.starts_with(Array<const char, sizeof...(cn)>{{cn...}});
     }
   };
 
@@ -160,6 +165,16 @@ namespace sitl
   };
 
   template <>
+  struct CanBe<TokenType::STAR> : CanBeNChars<'*'>
+  {
+  };
+
+  template <>
+  struct Extract<TokenType::STAR> : ExtractNChars<1>
+  {
+  };
+
+  template <>
   struct CanBe<TokenType::EQUAL> : CanBeNChars<'='>
   {
   };
@@ -239,6 +254,46 @@ namespace sitl
   {
   };
 
+  template <>
+  struct CanBe<TokenType::STRUCT> : CanBeNChars<'s', 't', 'r', 'u', 'c', 't'>
+  {
+  };
+
+  template <>
+  struct Extract<TokenType::STRUCT> : ExtractNChars<6>
+  {
+  };
+
+  template <>
+  struct CanBe<TokenType::WHILE> : CanBeNChars<'w', 'h', 'i', 'l', 'e'>
+  {
+  };
+
+  template <>
+  struct Extract<TokenType::WHILE> : ExtractNChars<5>
+  {
+  };
+
+  template <>
+  struct CanBe<TokenType::BEGIN> : CanBeNChars<'b', 'e', 'g', 'i', 'n'>
+  {
+  };
+
+  template <>
+  struct Extract<TokenType::BEGIN> : ExtractNChars<5>
+  {
+  };
+
+  template <>
+  struct CanBe<TokenType::END> : CanBeNChars<'e', 'n', 'd'>
+  {
+  };
+
+  template <>
+  struct Extract<TokenType::END> : ExtractNChars<3>
+  {
+  };
+
   Vector<Token> tokenize(StringCRange src) noexcept
   {
     Vector<Token> tokens;
@@ -254,28 +309,31 @@ namespace sitl
 
         if (canbe<TokenType::BLANK>(c))
           res = extract<TokenType::BLANK>(line);
-        else if (canbe<TokenType::LABEL>(c))
-          res = extract<TokenType::LABEL>(line);
+
         else if (canbe<TokenType::NUMBER>(c))
           res = extract<TokenType::NUMBER>(line);
         else if (canbe<TokenType::STRING>(c))
           res = extract<TokenType::STRING>(line);
-        else if (canbe<TokenType::PLUS>(c))
-          res = extract<TokenType::PLUS>(line);
+
         else if (canbe<TokenType::LPAR>(c))
           res = extract<TokenType::LPAR>(line);
         else if (canbe<TokenType::RPAR>(c))
           res = extract<TokenType::RPAR>(line);
-        else if (canbe<TokenType::LESSEQ>(line))
-          res = extract<TokenType::LESSEQ>(line);
-        else if (canbe<TokenType::GREATEREQ>(line))
-          res = extract<TokenType::GREATEREQ>(line);
-        else if (canbe<TokenType::EQUAL>(c))
-          res = extract<TokenType::EQUAL>(line);
-        else if (canbe<TokenType::LESS>(c))
-          res = extract<TokenType::LESS>(line);
-        else if (canbe<TokenType::GREATER>(c))
-          res = extract<TokenType::GREATER>(line);
+
+        else if (canbe<TokenType::STAR>(c))
+          res = extract<TokenType::STAR>(line);
+
+        else if (canbe<TokenType::BEGIN>(line))
+          res = extract<TokenType::BEGIN>(line);
+        else if (canbe<TokenType::END>(line))
+          res = extract<TokenType::END>(line);
+        else if (canbe<TokenType::WHILE>(line))
+          res = extract<TokenType::WHILE>(line);
+        else if (canbe<TokenType::STRUCT>(line))
+          res = extract<TokenType::STRUCT>(line);
+
+        else if (canbe<TokenType::LABEL>(c))
+          res = extract<TokenType::LABEL>(line);
 
         line = line.sub(res.value.size());
 
@@ -297,18 +355,10 @@ namespace sitl
 
   enum class NodeType : int
   {
-    WHILE,
-    IF,
-    FOR,
-    LET,
-    SET,
-    RETURN,
+    STRUCT,
     BEGIN,
     END,
-    ADD,
-    NUM,
-    STR,
-    VAR,
+    LABEL
   };
 
   using Depth = int;
@@ -320,57 +370,31 @@ namespace sitl
     StringCRange value;
   };
 
-  // template <NodeType type>
-  // struct Analyzer
-  // {
-  // };
+  template <NodeType type>
+  struct SyntaxAnalyser;
 
-  // struct SyntaxWhileAnalyser
-  // {
-  //   constexpr void operator()()
-  // };
+  template <>
+  struct SyntaxAnalyser<NodeType::STRUCT>
+  {
+    constexpr auto operator()(VectorCRange<Token> line) const noexcept
+    {
+      if (line.size() == 2)
+      {
+        auto &&tstruct = line[0];
+        auto &&tname = line[1];
 
-  // void syntax_while(VectorCRange<Token> tokens, Depth depth, Vector<Node> &nodes) noexcept
-  // {
-  //   if (!tokens.empty() &&
-  //       (*tokens.begin()).value == sr("while"))
-  //   {
-  //     nodes.push(Node{NodeType::WHILE, depth + 1, (*tokens.begin()).value});
-  //     tokens = tokens.sub(1);
-  //   }
-  // }
+        if (tstruct.type == TokenType::STRUCT &&
+            tname.type == TokenType::LABEL)
+        {
+          NodeType type = NodeType::STRUCT;
+          Node nstruct{NodeType::STRUCT, depth + 1, tname.value};
 
-  // void syntax_statements(VectorCRange<Token> tokens, Depth depth, Vector<Node> &nodes) noexcept
-  // {
-  //   while (!tokens.empty())
-  //   {
-  //     const Token &t = *tokens.begin();
-
-  //     if (t.value == sr("while"))
-  //       syntax_while(tokens, depth, nodes);
-  //   }
-  // }
-
-  // Vector<Node>
-  // syntax(VectorCRange<Token> tokens) noexcept
-  // {
-  //   Vector<Node> nodes;
-
-  //   for (auto &&t : tokens)
-  //     logger::debug("token : type : ", (int)t.type, "; value : ", t.value);
-
-  //   if (!tokens.contains_if(
-  //           [](const Token &t)
-  //           { return t.type == TokenType::ERROR; }))
-  //   {
-  //     logger::debug("aucun token error detecté dans tokens");
-  //     syntax_statements(tokens, 0, nodes);
-  //   }
-  //   else
-  //     logger::error("un token error est contenu dans tokens");
-
-  //   return nodes;
-  // }
+          // On retourne un array d'une taille fixe permettant ainsi de 
+          return Array<Node, 1>(nstruct); // On retourne
+        }
+      }
+    }
+  };
 }
 
 #endif

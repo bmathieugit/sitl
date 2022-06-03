@@ -54,7 +54,8 @@ test: objects objects/algorithm.test.exe objects/strong.test.exe \
 			objects/args.test.exe
 	wc -l objects/*test*.s
 
-objects/sitl.exe: sources/sitl.cpp sources/lib/args.cpp
+objects/sitl.exe: sources/sitl.cpp \
+									sources/lib/args.cpp
 	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 
 sitl: objects objects/sitl.exe

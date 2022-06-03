@@ -1,8 +1,9 @@
-
-let int i 0
-
-while (i < 100)
+struct string
 begin
-  set i (i+1)
-  print i
+  char* b
+  char* e
 end
+
+
+
+
