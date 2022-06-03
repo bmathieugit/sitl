@@ -59,6 +59,33 @@ namespace sitl
                : Token{type, res};
   }
 
+  template <char... cn>
+  struct CanBeNChars
+  {
+    constexpr bool operator()(StringCRange s) const noexcept
+    {
+      return s.starts_with(Array<const char, 2>{{cn...}});
+    }
+  };
+
+  template <char o>
+  struct CanBeNChars<o>
+  {
+    constexpr bool operator()(Char c) const noexcept
+    {
+      return c == o;
+    }
+  };
+
+  template <Size n>
+  struct ExtractNChars
+  {
+    constexpr auto operator()(StringCRange src) const noexcept
+    {
+      return src.sub(0, n);
+    }
+  };
+
   template <>
   struct CanBe<TokenType::LABEL>
   {
@@ -100,12 +127,8 @@ namespace sitl
   };
 
   template <>
-  struct CanBe<TokenType::STRING>
+  struct CanBe<TokenType::STRING> : CanBeNChars<'"'>
   {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c == '"';
-    }
   };
 
   template <>
@@ -136,149 +159,84 @@ namespace sitl
     }
   };
 
-  // EQUAL = 6,
   template <>
-  struct CanBe<TokenType::EQUAL>
+  struct CanBe<TokenType::EQUAL> : CanBeNChars<'='>
   {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c == '=';
-    }
   };
 
   template <>
-  struct Extract<TokenType::EQUAL>
+  struct Extract<TokenType::EQUAL> : ExtractNChars<1>
   {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.sub(0, 1);
-    }
   };
 
   template <>
-  struct CanBe<TokenType::LPAR>
+  struct CanBe<TokenType::LPAR> : CanBeNChars<'('>
   {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c == '(';
-    }
   };
 
   template <>
-  struct Extract<TokenType::LPAR>
+  struct Extract<TokenType::LPAR> : ExtractNChars<1>
   {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.sub(0, 1);
-    }
   };
 
   template <>
-  struct CanBe<TokenType::RPAR>
+  struct CanBe<TokenType::RPAR> : CanBeNChars<')'>
   {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c == ')';
-    }
   };
 
   template <>
-  struct Extract<TokenType::RPAR>
+  struct Extract<TokenType::RPAR> : ExtractNChars<1>
   {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.sub(0, 1);
-    }
   };
 
   template <>
-  struct CanBe<TokenType::PLUS>
+  struct CanBe<TokenType::PLUS> : CanBeNChars<'+'>
   {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c == '+';
-    }
   };
 
   template <>
-  struct Extract<TokenType::PLUS>
+  struct Extract<TokenType::PLUS> : ExtractNChars<1>
   {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.sub(0, 1);
-    }
   };
 
   template <>
-  struct CanBe<TokenType::LESS>
+  struct CanBe<TokenType::LESS> : CanBeNChars<'<'>
   {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c == '<';
-    }
   };
 
   template <>
-  struct Extract<TokenType::LESS>
+  struct Extract<TokenType::LESS> : ExtractNChars<1>
   {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.sub(0, 1);
-    }
   };
 
   template <>
-  struct CanBe<TokenType::GREATER>
+  struct CanBe<TokenType::GREATER> : CanBeNChars<'>'>
   {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c == '>';
-    }
   };
 
   template <>
-  struct Extract<TokenType::GREATER>
+  struct Extract<TokenType::GREATER> : ExtractNChars<1>
   {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.sub(0, 1);
-    }
   };
 
   template <>
-  struct CanBe<TokenType::LESSEQ>
+  struct CanBe<TokenType::LESSEQ> : CanBeNChars<'<', '='>
   {
-    constexpr bool operator()(StringCRange s) const noexcept
-    {
-      return s.starts_with(sr("<="));
-    }
   };
 
   template <>
-  struct Extract<TokenType::LESSEQ>
+  struct Extract<TokenType::LESSEQ> : ExtractNChars<2>
   {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.sub(0, 2);
-    }
   };
 
   template <>
-  struct CanBe<TokenType::GREATEREQ>
+  struct CanBe<TokenType::GREATEREQ> : CanBeNChars<'>', '='>
   {
-    constexpr bool operator()(StringCRange s) const noexcept
-    {
-      return s.starts_with(sr(">="));
-    }
   };
 
   template <>
-  struct Extract<TokenType::GREATEREQ>
+  struct Extract<TokenType::GREATEREQ> : ExtractNChars<2>
   {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.sub(0, 2);
-    }
   };
 
   Vector<Token> tokenize(StringCRange src) noexcept
@@ -296,37 +254,26 @@ namespace sitl
 
         if (canbe<TokenType::BLANK>(c))
           res = extract<TokenType::BLANK>(line);
-
         else if (canbe<TokenType::LABEL>(c))
           res = extract<TokenType::LABEL>(line);
-
         else if (canbe<TokenType::NUMBER>(c))
           res = extract<TokenType::NUMBER>(line);
-
         else if (canbe<TokenType::STRING>(c))
           res = extract<TokenType::STRING>(line);
-
         else if (canbe<TokenType::PLUS>(c))
           res = extract<TokenType::PLUS>(line);
-
         else if (canbe<TokenType::LPAR>(c))
           res = extract<TokenType::LPAR>(line);
-
         else if (canbe<TokenType::RPAR>(c))
           res = extract<TokenType::RPAR>(line);
-
         else if (canbe<TokenType::LESSEQ>(line))
           res = extract<TokenType::LESSEQ>(line);
-
         else if (canbe<TokenType::GREATEREQ>(line))
           res = extract<TokenType::GREATEREQ>(line);
-
         else if (canbe<TokenType::EQUAL>(c))
           res = extract<TokenType::EQUAL>(line);
-
         else if (canbe<TokenType::LESS>(c))
           res = extract<TokenType::LESS>(line);
-
         else if (canbe<TokenType::GREATER>(c))
           res = extract<TokenType::GREATER>(line);
 
@@ -362,7 +309,6 @@ namespace sitl
     NUM,
     STR,
     VAR,
-
   };
 
   using Depth = int;
@@ -374,52 +320,57 @@ namespace sitl
     StringCRange value;
   };
 
-  template <NodeType type>
-  struct Analyzer
-  {
-  };
+  // template <NodeType type>
+  // struct Analyzer
+  // {
+  // };
 
-  void syntax_while(VectorCRange<Token> tokens, Depth depth, Vector<Node> &nodes) noexcept
-  {
-    if (!tokens.empty() &&
-        (*tokens.begin()).value == sr("while"))
-    {
-      nodes.push(Node{NodeType::WHILE, depth + 1, (*tokens.begin()).value});
-      tokens = tokens.sub(1);
-    }
-  }
+  // struct SyntaxWhileAnalyser
+  // {
+  //   constexpr void operator()()
+  // };
 
-  void syntax_statements(VectorCRange<Token> tokens, Depth depth, Vector<Node> &nodes) noexcept
-  {
-    while (!tokens.empty())
-    {
-      const Token &t = *tokens.begin();
+  // void syntax_while(VectorCRange<Token> tokens, Depth depth, Vector<Node> &nodes) noexcept
+  // {
+  //   if (!tokens.empty() &&
+  //       (*tokens.begin()).value == sr("while"))
+  //   {
+  //     nodes.push(Node{NodeType::WHILE, depth + 1, (*tokens.begin()).value});
+  //     tokens = tokens.sub(1);
+  //   }
+  // }
 
-      if (t.value == sr("while"))
-        syntax_while(tokens, depth, nodes);
-    }
-  }
+  // void syntax_statements(VectorCRange<Token> tokens, Depth depth, Vector<Node> &nodes) noexcept
+  // {
+  //   while (!tokens.empty())
+  //   {
+  //     const Token &t = *tokens.begin();
 
-  Vector<Node>
-  syntax(VectorCRange<Token> tokens) noexcept
-  {
-    Vector<Node> nodes;
+  //     if (t.value == sr("while"))
+  //       syntax_while(tokens, depth, nodes);
+  //   }
+  // }
 
-    for (auto &&t : tokens)
-      logger::debug("token : type : ", (int)t.type, "; value : ", t.value);
+  // Vector<Node>
+  // syntax(VectorCRange<Token> tokens) noexcept
+  // {
+  //   Vector<Node> nodes;
 
-    if (!tokens.contains_if(
-            [](const Token &t)
-            { return t.type == TokenType::ERROR; }))
-    {
-      logger::debug("aucun token error detecté dans tokens");
-      syntax_statements(tokens, 0, nodes);
-    }
-    else
-      logger::error("un token error est contenu dans tokens");
+  //   for (auto &&t : tokens)
+  //     logger::debug("token : type : ", (int)t.type, "; value : ", t.value);
 
-    return nodes;
-  }
+  //   if (!tokens.contains_if(
+  //           [](const Token &t)
+  //           { return t.type == TokenType::ERROR; }))
+  //   {
+  //     logger::debug("aucun token error detecté dans tokens");
+  //     syntax_statements(tokens, 0, nodes);
+  //   }
+  //   else
+  //     logger::error("un token error est contenu dans tokens");
+
+  //   return nodes;
+  // }
 }
 
 #endif

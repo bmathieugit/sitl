@@ -15,12 +15,12 @@ namespace sitl
   public:
     constexpr auto range() noexcept
     {
-      return range(*this);
+      return sitl::range(*this);
     }
 
     constexpr auto range() const noexcept
     {
-      return range(*this);
+      return sitl::range(*this);
     }
 
     constexpr Size size() const noexcept
