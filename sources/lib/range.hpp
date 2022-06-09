@@ -586,6 +586,13 @@ namespace sitl
       return bf;
     }
 
+    constexpr decltype(auto) go_after_if(auto &&pred) noexcept
+    {
+      auto [bf, af] = around_if(pred);
+      *this = af;
+      return bf;
+    }
+
     constexpr Range inside(const RemoveReference<decltype(*declval<IT>())> &t1,
                            const RemoveReference<decltype(*declval<IT>())> &t2) noexcept
     {

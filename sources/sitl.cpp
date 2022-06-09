@@ -18,8 +18,8 @@ int main(int argc, char **argv)
   sitl::StringCRange src = sitl::sr(
       "struct string\n"
       "begin\n"
-      "  char* b\n"
-      "  char* e\n"
+      "  param char b\n"
+      "  param char e\n"
       "end\n");
 
   // sitl::StringCRange src = sitl::sr("let ii int 00");
@@ -36,5 +36,7 @@ int main(int argc, char **argv)
   //                       "; depth : ", node.depth,
   //                       "; value : ", node.value, '}');
 
+  sitl::logger::debug("result ", sitl::SiltAnalyser()(tokens));
+
   return 0;
-}
+} 

@@ -28,6 +28,7 @@ namespace sitl
     STRUCT = 16,
     BEGIN = 17,
     END = 18,
+    PARAM = 19,
   };
 
   struct Token
@@ -294,6 +295,16 @@ namespace sitl
   {
   };
 
+  template <>
+  struct CanBe<TokenType::PARAM> : CanBeNChars<'p', 'a', 'r', 'a', 'm'>
+  {
+  };
+
+  template <>
+  struct Extract<TokenType::PARAM> : ExtractNChars<5>
+  {
+  };
+
   Vector<Token> tokenize(StringCRange src) noexcept
   {
     Vector<Token> tokens;
@@ -331,6 +342,8 @@ namespace sitl
           res = extract<TokenType::WHILE>(line);
         else if (canbe<TokenType::STRUCT>(line))
           res = extract<TokenType::STRUCT>(line);
+        else if (canbe<TokenType::PARAM>(line))
+          res = extract<TokenType::PARAM>(line);
 
         else if (canbe<TokenType::LABEL>(c))
           res = extract<TokenType::LABEL>(line);
@@ -353,48 +366,116 @@ namespace sitl
     return tokens;
   }
 
-  enum class NodeType : int
+  enum class LineType : int
   {
     STRUCT,
     BEGIN,
     END,
-    LABEL
+    PARAM,
+    ERROR
   };
 
   using Depth = int;
 
-  struct Node
+  struct Line
   {
-    NodeType type;
+    LineType type;
     Depth depth;
-    StringCRange value;
+    Vector<Token> tokens;
   };
 
-  template <NodeType type>
-  struct SyntaxAnalyser;
+  using Position = Size;
 
-  template <>
-  struct SyntaxAnalyser<NodeType::STRUCT>
+  template <TokenType type>
+  struct One
   {
-    constexpr auto operator()(VectorCRange<Token> line) const noexcept
+    static constexpr Size S = 1;
+    constexpr bool operator()(VectorCRange<Token> tline, Position pos) const noexcept
     {
-      if (line.size() == 2)
-      {
-        auto &&tstruct = line[0];
-        auto &&tname = line[1];
-
-        if (tstruct.type == TokenType::STRUCT &&
-            tname.type == TokenType::LABEL)
-        {
-          NodeType type = NodeType::STRUCT;
-          Node nstruct{NodeType::STRUCT, depth + 1, tname.value};
-
-          // On retourne un array d'une taille fixe permettant ainsi de 
-          return Array<Node, 1>(nstruct); // On retourne
-        }
-      }
+      return tline[pos].type == type;
     }
   };
+
+  template <TokenType... types>
+  struct Sequence
+  {
+    static constexpr Size S = sizeof...(types);
+    constexpr bool operator()(VectorCRange<Token> tline, Position pos) const noexcept
+    {
+      return (true && ... && (tline[pos++].type == types));
+    }
+  };
+
+  template <Size n, TokenType type>
+  struct NSome
+  {
+    static constexpr Size S = n;
+    constexpr bool operator()(VectorCRange<Token> tline, Position pos) const noexcept
+    {
+      for (int i = pos; i < n; i++)
+        if (tline[i].type != type)
+          return false;
+      return true;
+    }
+  };
+  template <typename... A>
+  struct LineAnalyser
+  {
+    static constexpr Size S = (0 + ... + A::S);
+    constexpr bool operator()(VectorCRange<Token> tline) const noexcept
+    {
+      bool tmp;
+      Size pos = 0;
+      return ((tline.size() >= S) && ... && ((tmp = A()(tline, pos)), pos += A::S, tmp));
+    }
+  };
+
+  using BeginLineAnalyser =
+      LineAnalyser<One<TokenType::BEGIN>>;
+
+  using StructLineAnalyser =
+      LineAnalyser<Sequence<
+          TokenType::STRUCT,
+          TokenType::LABEL>>;
+
+  using ParamLineAnalyser =
+      LineAnalyser<
+          One<TokenType::PARAM>,
+          One<TokenType::LABEL>,
+          One<TokenType::LABEL>>;
+
+  using EndLineAnalyser =
+      LineAnalyser<One<TokenType::END>>;
+
+  template <typename... A>
+  struct GlobalAnalyser
+  {
+    constexpr bool operator()(VectorCRange<Token> tokens) const noexcept
+    {
+
+      bool res = true;
+
+      do
+      {
+        VectorCRange<Token> line = tokens.go_after_if(
+            [](const Token &t)
+            { return t.type == TokenType::EOL; });
+
+        res = res && (... || A()(line));
+        logger::debug("temporary res : ", res, " with a line of length ", line.size());
+      } while (!tokens.empty() && res);
+
+      return res;
+    }
+  };
+
+  using SiltAnalyser =
+      GlobalAnalyser<
+          StructLineAnalyser,
+          BeginLineAnalyser,
+          ParamLineAnalyser,
+          EndLineAnalyser>;
+
 }
 
 #endif
