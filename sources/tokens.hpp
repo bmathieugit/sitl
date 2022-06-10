@@ -37,33 +37,80 @@ namespace sitl
     StringCRange value;
   };
 
-  template <TokenType type>
-  struct CanBe;
-
-  template <TokenType type>
-  struct Extract;
-
-  template <TokenType type>
-  constexpr bool canbe(Char c) noexcept
+  template <TokenType type, typename CANBE, typename EXTRACT>
+  struct Tokenizer
   {
-    return CanBe<type>()(c);
-  }
+    constexpr bool canbe(StringCRange s) const noexcept
+    {
+      return CANBE()(s);
+    }
 
-  template <TokenType type>
-  constexpr bool canbe(StringCRange s) noexcept
+    constexpr Token extract(StringCRange src) const noexcept
+    {
+      auto value = EXTRACT()(src);
+      return value.empty()
+                 ? Token{TokenType::ERROR, src.sub(0, 1)}
+                 : Token{type, value};
+    }
+  };
+
+  template <typename... T>
+  class GlobalTokenizer
   {
-    return CanBe<type>()(s);
-  }
+    using TT = TokenType;
 
-  template <TokenType type>
-  constexpr Token extract(StringCRange src) noexcept
-  {
-    StringCRange res = Extract<type>()(src);
+    constexpr Token error(StringCRange line) const noexcept
+    {
+      return Token{TT::ERROR, line.sub(0, 1)};
+    }
 
-    return res.empty()
-               ? Token{TokenType::ERROR, src.sub(0, 1)}
-               : Token{type, res};
-  }
+    constexpr Token eol() const noexcept
+    {
+      return Token{TT::EOL, sr("\\n")};
+    }
+
+    template <typename T0, typename... TN>
+    constexpr Token tokenize(StringCRange line) const noexcept
+    {
+      if (T0().canbe(line))
+        return T0().extract(line);
+      else if constexpr (sizeof...(TN) > 0)
+        return tokenize<TN...>(line);
+      else
+        return error(line);
+    }
+
+  public:
+    constexpr Vector<Token> operator()(StringCRange src) const noexcept
+    {
+      Vector<Token> tokens;
+
+      do
+      {
+        StringCRange line = src.go_after('\n');
+        Token tk;
+
+        while (!line.empty())
+        {
+          tk = tokenize<T...>(line);
+          line = line.sub(tk.value.size());
+
+          if (tk.type == TT::ERROR)
+            break;
+          else if (tk.type != TT::BLANK)
+            tokens.push(move(tk));
+        }
+
+        if (tk.type == TT::ERROR)
+          break;
+
+        tokens.push(eol());
+
+      } while (!src.empty());
+
+      return tokens;
+    }
+  };
 
   template <char... cn>
   struct CanBeNChars
@@ -77,9 +124,9 @@ namespace sitl
   template <char o>
   struct CanBeNChars<o>
   {
-    constexpr bool operator()(Char c) const noexcept
+    constexpr bool operator()(StringCRange s) const noexcept
     {
-      return c == o;
+      return s[0] == o;
     }
   };
 
@@ -92,279 +139,74 @@ namespace sitl
     }
   };
 
-  template <>
-  struct CanBe<TokenType::LABEL>
-  {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c.between('a', 'z') || c == '_';
-    }
-  };
+  using LabelTokenizer = Tokenizer<
+      TokenType::LABEL,
+      decltype([](StringCRange s) noexcept
+               { return Char(s[0]).between('a', 'z') ||
+                        s[0] == '_'; }),
+      decltype([](StringCRange src) noexcept
+               { return src.before_if(
+                     [](Char c) noexcept
+                     { return !(c.between('a', 'z') ||
+                                c == '_'); }); })>;
 
-  template <>
-  struct Extract<TokenType::LABEL>
-  {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.before_if(
-          [](Char c)
-          { return !(c.between('a', 'z') || c == '_'); });
-    }
-  };
+  using NumberTokenizer = Tokenizer<
+      TokenType::NUMBER,
+      decltype([](StringCRange s) noexcept
+               { return Char(s[0]).between('0', '9'); }),
+      decltype([](StringCRange src) noexcept
+               { return src.before_if(
+                     [](Char c) noexcept
+                     { return !c.between('0', '9'); }); })>;
 
-  template <>
-  struct CanBe<TokenType::NUMBER>
-  {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c.between('0', '9');
-    }
-  };
+  using StringTokenizer = Tokenizer<
+      TokenType::STRING,
+      CanBeNChars<'"'>,
+      decltype([](StringCRange src) noexcept
+               { return src.inside('"', '"'); })>;
 
-  template <>
-  struct Extract<TokenType::NUMBER>
-  {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.before_if(
-          [](Char c)
-          { return !c.between('0', '9'); });
-    }
-  };
+  using BlankTokenizer = Tokenizer<
+      TokenType::BLANK,
+      decltype([](StringCRange s) noexcept
+               { return Char(s[0]).in(" \t"); }),
+      decltype([](StringCRange src) noexcept
+               { return src.before_if(
+                     [](Char c)
+                     { return !c.in(" \t"); }); })>;
 
-  template <>
-  struct CanBe<TokenType::STRING> : CanBeNChars<'"'>
-  {
-  };
+  using StarTokenizer = Tokenizer<TokenType::STAR, CanBeNChars<'*'>, ExtractNChars<1>>;
+  using EqualTokenizer = Tokenizer<TokenType::EQUAL, CanBeNChars<'='>, ExtractNChars<1>>;
+  using LParTokenizer = Tokenizer<TokenType::LPAR, CanBeNChars<'('>, ExtractNChars<1>>;
+  using RParTokenizer = Tokenizer<TokenType::RPAR, CanBeNChars<')'>, ExtractNChars<1>>;
+  using PlusTokenizer = Tokenizer<TokenType::PLUS, CanBeNChars<'+'>, ExtractNChars<1>>;
+  using LessTokenizer = Tokenizer<TokenType::LESS, CanBeNChars<'<'>, ExtractNChars<1>>;
+  using GreaterTokenizer = Tokenizer<TokenType::GREATER, CanBeNChars<'>'>, ExtractNChars<1>>;
+  using LessEqTokenizer = Tokenizer<TokenType::LESSEQ, CanBeNChars<'<', '='>, ExtractNChars<2>>;
+  using GreaterEqTokenizer = Tokenizer<TokenType::GREATEREQ, CanBeNChars<'>', '='>, ExtractNChars<2>>;
 
-  template <>
-  struct Extract<TokenType::STRING>
-  {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.inside('"', '"');
-    }
-  };
+  using StructTokenizer = Tokenizer<TokenType::STRUCT, CanBeNChars<'s', 't', 'r', 'u', 'c', 't'>, ExtractNChars<6>>;
+  using BeginTokenizer = Tokenizer<TokenType::BEGIN, CanBeNChars<'b', 'e', 'g', 'i', 'n'>, ExtractNChars<5>>;
+  using EndTokenizer = Tokenizer<TokenType::END, CanBeNChars<'e', 'n', 'd'>, ExtractNChars<3>>;
+  using ParamTokenizer = Tokenizer<TokenType::PARAM, CanBeNChars<'p', 'a', 'r', 'a', 'm'>, ExtractNChars<5>>;
 
-  template <>
-  struct CanBe<TokenType::BLANK>
-  {
-    constexpr bool operator()(Char c) const noexcept
-    {
-      return c.in(" \t");
-    }
-  };
-
-  template <>
-  struct Extract<TokenType::BLANK>
-  {
-    constexpr auto operator()(StringCRange src) const noexcept
-    {
-      return src.before_if([](Char c)
-                           { return !c.in(" \t"); });
-    }
-  };
-
-  template <>
-  struct CanBe<TokenType::STAR> : CanBeNChars<'*'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::STAR> : ExtractNChars<1>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::EQUAL> : CanBeNChars<'='>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::EQUAL> : ExtractNChars<1>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::LPAR> : CanBeNChars<'('>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::LPAR> : ExtractNChars<1>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::RPAR> : CanBeNChars<')'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::RPAR> : ExtractNChars<1>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::PLUS> : CanBeNChars<'+'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::PLUS> : ExtractNChars<1>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::LESS> : CanBeNChars<'<'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::LESS> : ExtractNChars<1>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::GREATER> : CanBeNChars<'>'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::GREATER> : ExtractNChars<1>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::LESSEQ> : CanBeNChars<'<', '='>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::LESSEQ> : ExtractNChars<2>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::GREATEREQ> : CanBeNChars<'>', '='>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::GREATEREQ> : ExtractNChars<2>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::STRUCT> : CanBeNChars<'s', 't', 'r', 'u', 'c', 't'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::STRUCT> : ExtractNChars<6>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::WHILE> : CanBeNChars<'w', 'h', 'i', 'l', 'e'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::WHILE> : ExtractNChars<5>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::BEGIN> : CanBeNChars<'b', 'e', 'g', 'i', 'n'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::BEGIN> : ExtractNChars<5>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::END> : CanBeNChars<'e', 'n', 'd'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::END> : ExtractNChars<3>
-  {
-  };
-
-  template <>
-  struct CanBe<TokenType::PARAM> : CanBeNChars<'p', 'a', 'r', 'a', 'm'>
-  {
-  };
-
-  template <>
-  struct Extract<TokenType::PARAM> : ExtractNChars<5>
-  {
-  };
-
-  Vector<Token> tokenize(StringCRange src) noexcept
-  {
-    Vector<Token> tokens;
-
-    do
-    {
-      StringCRange line = src.go_after('\n');
-      Token res;
-
-      while (!line.empty())
-      {
-        Char c = line[0];
-
-        if (canbe<TokenType::BLANK>(c))
-          res = extract<TokenType::BLANK>(line);
-
-        else if (canbe<TokenType::NUMBER>(c))
-          res = extract<TokenType::NUMBER>(line);
-        else if (canbe<TokenType::STRING>(c))
-          res = extract<TokenType::STRING>(line);
-
-        else if (canbe<TokenType::LPAR>(c))
-          res = extract<TokenType::LPAR>(line);
-        else if (canbe<TokenType::RPAR>(c))
-          res = extract<TokenType::RPAR>(line);
-
-        else if (canbe<TokenType::STAR>(c))
-          res = extract<TokenType::STAR>(line);
-
-        else if (canbe<TokenType::BEGIN>(line))
-          res = extract<TokenType::BEGIN>(line);
-        else if (canbe<TokenType::END>(line))
-          res = extract<TokenType::END>(line);
-        else if (canbe<TokenType::WHILE>(line))
-          res = extract<TokenType::WHILE>(line);
-        else if (canbe<TokenType::STRUCT>(line))
-          res = extract<TokenType::STRUCT>(line);
-        else if (canbe<TokenType::PARAM>(line))
-          res = extract<TokenType::PARAM>(line);
-
-        else if (canbe<TokenType::LABEL>(c))
-          res = extract<TokenType::LABEL>(line);
-
-        line = line.sub(res.value.size());
-
-        if (res.type == TokenType::ERROR)
-          break;
-        else if (res.type != TokenType::BLANK)
-          tokens.push(move(res));
-      }
-
-      tokens.push(Token{TokenType::EOL, sr("\\n")});
-
-      if (tokens.back().type == TokenType::ERROR)
-        break;
-
-    } while (!src.empty());
-
-    return tokens;
-  }
+  using SitlTokenizer = GlobalTokenizer<
+      StructTokenizer,
+      BeginTokenizer,
+      EndTokenizer,
+      ParamTokenizer,
+      NumberTokenizer,
+      StringTokenizer,
+      BlankTokenizer,
+      StarTokenizer,
+      EqualTokenizer,
+      LParTokenizer,
+      RParTokenizer,
+      PlusTokenizer,
+      LessTokenizer,
+      GreaterTokenizer,
+      LessEqTokenizer,
+      GreaterEqTokenizer,
+      LabelTokenizer>;
 
   enum class LineType : int
   {
@@ -452,7 +294,6 @@ namespace sitl
   {
     constexpr bool operator()(VectorCRange<Token> tokens) const noexcept
     {
-
       bool res = true;
 
       do
@@ -469,7 +310,7 @@ namespace sitl
     }
   };
 
-  using SiltAnalyser =
+  using SitlAnalyser =
       GlobalAnalyser<
           StructLineAnalyser,
           BeginLineAnalyser,

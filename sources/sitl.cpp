@@ -24,19 +24,13 @@ int main(int argc, char **argv)
 
   // sitl::StringCRange src = sitl::sr("let ii int 00");
 
-  sitl::Vector<sitl::Token> tokens = sitl::tokenize(src);
+  sitl::Vector<sitl::Token> tokens = sitl::SitlTokenizer()(src);
 
   for (auto &&token : tokens)
     sitl::logger::debug("token type : ", (int)token.type, ", value : ", token.value);
 
-  // sitl::Vector<sitl::Node> nodes = sitl::syntax(tokens);
 
-  // for (auto &&node : nodes)
-  //   sitl::logger::debug("node{ type : ",(int) node.type,
-  //                       "; depth : ", node.depth,
-  //                       "; value : ", node.value, '}');
-
-  sitl::logger::debug("result ", sitl::SiltAnalyser()(tokens));
+  sitl::logger::debug("result ", sitl::SitlAnalyser()(tokens));
 
   return 0;
-} 
+}
