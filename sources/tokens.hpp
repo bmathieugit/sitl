@@ -29,6 +29,9 @@ namespace sitl
     BEGIN = 17,
     END = 18,
     PARAM = 19,
+    LET = 20,
+    EXPR = 21,
+    IF = 22,
   };
 
   struct Token
@@ -174,6 +177,27 @@ namespace sitl
                      [](Char c)
                      { return !c.in(" \t"); }); })>;
 
+  using ExpressionTokenizer = Tokenizer<
+      TokenType::EXPR,
+      decltype([](StringCRange s)
+               { return s.starts_with(sr("$(")); }),
+      decltype([](StringCRange s)
+               {
+        auto r = s.sub(2);
+        auto lvl = 1;
+        auto i = 0;
+        auto sz = r.size();
+        while (lvl != 0 && i < sz)
+        {
+          if (r[i] == '(')
+            ++lvl;
+          else if (r[i] == ')')
+            --lvl;
+          
+          ++i;
+        }
+        return s.sub(0, i+2); })>;
+
   using StarTokenizer = Tokenizer<TokenType::STAR, CanBeNChars<'*'>, ExtractNChars<1>>;
   using EqualTokenizer = Tokenizer<TokenType::EQUAL, CanBeNChars<'='>, ExtractNChars<1>>;
   using LParTokenizer = Tokenizer<TokenType::LPAR, CanBeNChars<'('>, ExtractNChars<1>>;
@@ -188,14 +212,17 @@ namespace sitl
   using BeginTokenizer = Tokenizer<TokenType::BEGIN, CanBeNChars<'b', 'e', 'g', 'i', 'n'>, ExtractNChars<5>>;
   using EndTokenizer = Tokenizer<TokenType::END, CanBeNChars<'e', 'n', 'd'>, ExtractNChars<3>>;
   using ParamTokenizer = Tokenizer<TokenType::PARAM, CanBeNChars<'p', 'a', 'r', 'a', 'm'>, ExtractNChars<5>>;
+  using LetTokenizer = Tokenizer<TokenType::LET, CanBeNChars<'l', 'e', 't'>, ExtractNChars<3>>;
 
   using SitlTokenizer = GlobalTokenizer<
       StructTokenizer,
       BeginTokenizer,
       EndTokenizer,
       ParamTokenizer,
+      LetTokenizer,
       NumberTokenizer,
       StringTokenizer,
+      ExpressionTokenizer,
       BlankTokenizer,
       StarTokenizer,
       EqualTokenizer,
@@ -214,7 +241,8 @@ namespace sitl
     BEGIN,
     END,
     PARAM,
-    ERROR
+    ERROR,
+    IF
   };
 
   using Depth = int;
@@ -260,6 +288,7 @@ namespace sitl
       return true;
     }
   };
+
   template <typename... A>
   struct LineAnalyser
   {
@@ -288,6 +317,9 @@ namespace sitl
 
   using EndLineAnalyser =
       LineAnalyser<One<TokenType::END>>;
+
+  using IfLineAnalyser =
+      LineAnalyser<One<TokenType::IF>>;
 
   template <typename... A>
   struct GlobalAnalyser

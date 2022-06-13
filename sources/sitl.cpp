@@ -20,7 +20,8 @@ int main(int argc, char **argv)
       "begin\n"
       "  param char b\n"
       "  param char e\n"
-      "end\n");
+      "end\n"
+      "let int i $(+ i (- 1 12))");
 
   // sitl::StringCRange src = sitl::sr("let ii int 00");
 
@@ -28,7 +29,6 @@ int main(int argc, char **argv)
 
   for (auto &&token : tokens)
     sitl::logger::debug("token type : ", (int)token.type, ", value : ", token.value);
-
 
   sitl::logger::debug("result ", sitl::SitlAnalyser()(tokens));
 
