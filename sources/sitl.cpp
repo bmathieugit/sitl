@@ -3,7 +3,7 @@
 #include <lib/args.hpp>
 #include <lib/vector.hpp>
 
-#include <tokens.hpp>
+#include <sitl.hpp>
 
 int main(int argc, char **argv)
 {
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
       "  param char b\n"
       "  param char e\n"
       "end\n"
-      "let int i $(+ i (- 1 12))");
+      "let int $ i '(+ i (- 1 12))'");
 
   // sitl::StringCRange src = sitl::sr("let ii int 00");
 

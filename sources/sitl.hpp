@@ -9,29 +9,22 @@ namespace sitl
 {
   enum class TokenType : int
   {
-    LABEL = 0,
-    NUMBER = 1,
-    STRING = 2,
-    BLANK = 3,
-    EOL = 4,
-    ERROR = 5,
-    EQUAL = 6,
-    LPAR = 7,
-    RPAR = 8,
-    PLUS = 9,
-    LESS = 10,
-    GREATER = 11,
-    LESSEQ = 12,
-    GREATEREQ = 13,
-    STAR = 14,
-    WHILE = 15,
-    STRUCT = 16,
-    BEGIN = 17,
-    END = 18,
-    PARAM = 19,
-    LET = 20,
-    EXPR = 21,
-    IF = 22,
+    LABEL,
+    NUMBER,
+    BLANK,
+    EOL,
+    ERROR,
+    WHILE,
+    STRUCT,
+    BEGIN,
+    END,
+    PARAM,
+    LET,
+    EXPR,
+    IF,
+    RETURN,
+    FUN,
+    PROC
   };
 
   struct Token
@@ -142,6 +135,15 @@ namespace sitl
     }
   };
 
+  template <char b, char e>
+  struct ExtractInside
+  {
+    constexpr auto operator()(StringCRange src) const noexcept
+    {
+      return src.inside(b, e);
+    }
+  };
+
   using LabelTokenizer = Tokenizer<
       TokenType::LABEL,
       decltype([](StringCRange s) noexcept
@@ -153,21 +155,6 @@ namespace sitl
                      { return !(c.between('a', 'z') ||
                                 c == '_'); }); })>;
 
-  using NumberTokenizer = Tokenizer<
-      TokenType::NUMBER,
-      decltype([](StringCRange s) noexcept
-               { return Char(s[0]).between('0', '9'); }),
-      decltype([](StringCRange src) noexcept
-               { return src.before_if(
-                     [](Char c) noexcept
-                     { return !c.between('0', '9'); }); })>;
-
-  using StringTokenizer = Tokenizer<
-      TokenType::STRING,
-      CanBeNChars<'"'>,
-      decltype([](StringCRange src) noexcept
-               { return src.inside('"', '"'); })>;
-
   using BlankTokenizer = Tokenizer<
       TokenType::BLANK,
       decltype([](StringCRange s) noexcept
@@ -177,62 +164,26 @@ namespace sitl
                      [](Char c)
                      { return !c.in(" \t"); }); })>;
 
-  using ExpressionTokenizer = Tokenizer<
-      TokenType::EXPR,
-      decltype([](StringCRange s)
-               { return s.starts_with(sr("$(")); }),
-      decltype([](StringCRange s)
-               {
-        auto r = s.sub(2);
-        auto lvl = 1;
-        auto i = 0;
-        auto sz = r.size();
-        while (lvl != 0 && i < sz)
-        {
-          if (r[i] == '(')
-            ++lvl;
-          else if (r[i] == ')')
-            --lvl;
-          
-          ++i;
-        }
-        return s.sub(0, i+2); })>;
-
-  using StarTokenizer = Tokenizer<TokenType::STAR, CanBeNChars<'*'>, ExtractNChars<1>>;
-  using EqualTokenizer = Tokenizer<TokenType::EQUAL, CanBeNChars<'='>, ExtractNChars<1>>;
-  using LParTokenizer = Tokenizer<TokenType::LPAR, CanBeNChars<'('>, ExtractNChars<1>>;
-  using RParTokenizer = Tokenizer<TokenType::RPAR, CanBeNChars<')'>, ExtractNChars<1>>;
-  using PlusTokenizer = Tokenizer<TokenType::PLUS, CanBeNChars<'+'>, ExtractNChars<1>>;
-  using LessTokenizer = Tokenizer<TokenType::LESS, CanBeNChars<'<'>, ExtractNChars<1>>;
-  using GreaterTokenizer = Tokenizer<TokenType::GREATER, CanBeNChars<'>'>, ExtractNChars<1>>;
-  using LessEqTokenizer = Tokenizer<TokenType::LESSEQ, CanBeNChars<'<', '='>, ExtractNChars<2>>;
-  using GreaterEqTokenizer = Tokenizer<TokenType::GREATEREQ, CanBeNChars<'>', '='>, ExtractNChars<2>>;
-
+  using ExpressionTokenizer = Tokenizer<TokenType::EXPR, CanBeNChars<'\''>, ExtractInside<'\'', '\''>>;
   using StructTokenizer = Tokenizer<TokenType::STRUCT, CanBeNChars<'s', 't', 'r', 'u', 'c', 't'>, ExtractNChars<6>>;
   using BeginTokenizer = Tokenizer<TokenType::BEGIN, CanBeNChars<'b', 'e', 'g', 'i', 'n'>, ExtractNChars<5>>;
   using EndTokenizer = Tokenizer<TokenType::END, CanBeNChars<'e', 'n', 'd'>, ExtractNChars<3>>;
   using ParamTokenizer = Tokenizer<TokenType::PARAM, CanBeNChars<'p', 'a', 'r', 'a', 'm'>, ExtractNChars<5>>;
   using LetTokenizer = Tokenizer<TokenType::LET, CanBeNChars<'l', 'e', 't'>, ExtractNChars<3>>;
+  using ReturnTokenizer = Tokenizer<TokenType::RETURN, CanBeNChars<'r', 'e', 't', 'u', 'r', 'n'>, ExtractNChars<6>>;
+
+  using FunTokenizer = Tokenizer<TokenType::FUN, CanBeNChars<'f', 'u', 'n'>, ExtractNChars<3>>;
+  using ProcTokenizer = Tokenizer<TokenType::PROC, CanBeNChars<'p', 'r', 'o', 'c'>, ExtractNChars<4>>;
 
   using SitlTokenizer = GlobalTokenizer<
+      BlankTokenizer,
       StructTokenizer,
       BeginTokenizer,
       EndTokenizer,
       ParamTokenizer,
       LetTokenizer,
-      NumberTokenizer,
-      StringTokenizer,
+      ReturnTokenizer,
       ExpressionTokenizer,
-      BlankTokenizer,
-      StarTokenizer,
-      EqualTokenizer,
-      LParTokenizer,
-      RParTokenizer,
-      PlusTokenizer,
-      LessTokenizer,
-      GreaterTokenizer,
-      LessEqTokenizer,
-      GreaterEqTokenizer,
       LabelTokenizer>;
 
   enum class LineType : int
@@ -318,6 +269,13 @@ namespace sitl
   using EndLineAnalyser =
       LineAnalyser<One<TokenType::END>>;
 
+  using LetLineAnalyser =
+      LineAnalyser<
+          Sequence<TokenType::LET,
+                   TokenType::LABEL,
+                   TokenType::LABEL,
+                   TokenType::EXPR>>;
+
   using IfLineAnalyser =
       LineAnalyser<One<TokenType::IF>>;
 
@@ -347,7 +305,8 @@ namespace sitl
           StructLineAnalyser,
           BeginLineAnalyser,
           ParamLineAnalyser,
-          EndLineAnalyser>;
+          EndLineAnalyser,
+          LetLineAnalyser>;
 
 }
 
