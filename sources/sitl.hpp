@@ -3,7 +3,6 @@
 
 #include <lib/string.hpp>
 #include <lib/vector.hpp>
-#include <lib/logger.hpp>
 
 namespace sitl
 {
@@ -164,16 +163,43 @@ namespace sitl
                      [](Char c)
                      { return !c.in(" \t"); }); })>;
 
-  using ExpressionTokenizer = Tokenizer<TokenType::EXPR, CanBeNChars<'\''>, ExtractInside<'\'', '\''>>;
-  using StructTokenizer = Tokenizer<TokenType::STRUCT, CanBeNChars<'s', 't', 'r', 'u', 'c', 't'>, ExtractNChars<6>>;
-  using BeginTokenizer = Tokenizer<TokenType::BEGIN, CanBeNChars<'b', 'e', 'g', 'i', 'n'>, ExtractNChars<5>>;
-  using EndTokenizer = Tokenizer<TokenType::END, CanBeNChars<'e', 'n', 'd'>, ExtractNChars<3>>;
-  using ParamTokenizer = Tokenizer<TokenType::PARAM, CanBeNChars<'p', 'a', 'r', 'a', 'm'>, ExtractNChars<5>>;
-  using LetTokenizer = Tokenizer<TokenType::LET, CanBeNChars<'l', 'e', 't'>, ExtractNChars<3>>;
-  using ReturnTokenizer = Tokenizer<TokenType::RETURN, CanBeNChars<'r', 'e', 't', 'u', 'r', 'n'>, ExtractNChars<6>>;
+  using ExpressionTokenizer =
+      Tokenizer<TokenType::EXPR,
+                CanBeNChars<'\''>,
+                ExtractInside<'\'', '\''>>;
+  using StructTokenizer =
+      Tokenizer<TokenType::STRUCT,
+                CanBeNChars<'s', 't', 'r', 'u', 'c', 't'>,
+                ExtractNChars<6>>;
+  using BeginTokenizer =
+      Tokenizer<TokenType::BEGIN,
+                CanBeNChars<'b', 'e', 'g', 'i', 'n'>,
+                ExtractNChars<5>>;
+  using EndTokenizer =
+      Tokenizer<TokenType::END,
+                CanBeNChars<'e', 'n', 'd'>,
+                ExtractNChars<3>>;
+  using ParamTokenizer =
+      Tokenizer<TokenType::PARAM,
+                CanBeNChars<'p', 'a', 'r', 'a', 'm'>,
+                ExtractNChars<5>>;
+  using LetTokenizer =
+      Tokenizer<TokenType::LET,
+                CanBeNChars<'l', 'e', 't'>,
+                ExtractNChars<3>>;
+  using ReturnTokenizer =
+      Tokenizer<TokenType::RETURN,
+                CanBeNChars<'r', 'e', 't', 'u', 'r', 'n'>,
+                ExtractNChars<6>>;
 
-  using FunTokenizer = Tokenizer<TokenType::FUN, CanBeNChars<'f', 'u', 'n'>, ExtractNChars<3>>;
-  using ProcTokenizer = Tokenizer<TokenType::PROC, CanBeNChars<'p', 'r', 'o', 'c'>, ExtractNChars<4>>;
+  using FunTokenizer =
+      Tokenizer<TokenType::FUN,
+                CanBeNChars<'f', 'u', 'n'>,
+                ExtractNChars<3>>;
+  using ProcTokenizer =
+      Tokenizer<TokenType::PROC,
+                CanBeNChars<'p', 'r', 'o', 'c'>,
+                ExtractNChars<4>>;
 
   using SitlTokenizer = GlobalTokenizer<
       BlankTokenizer,
@@ -293,7 +319,6 @@ namespace sitl
             { return t.type == TokenType::EOL; });
 
         res = res && (... || A()(line));
-        logger::debug("temporary res : ", res, " with a line of length ", line.size());
       } while (!tokens.empty() && res);
 
       return res;
