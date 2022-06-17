@@ -1,7 +1,7 @@
 #ifndef __lib_enumerate_hpp__
 #define __lib_enumerate_hpp__
 
-#include <utility>
+#include <lib/basic_types.hpp>
 
 namespace sitl
 {
@@ -9,14 +9,14 @@ namespace sitl
   struct EnumerateData
   {
     T &t;
-    size_t i;
+    Size i;
   };
 
   template <typename IT>
   struct EnumerateIterator
   {
-    size_t i;
-    size_t max;
+    Size i;
+    Size max;
     IT it;
 
     auto operator*()
@@ -56,7 +56,7 @@ namespace sitl
   template <typename IT>
   EnumerateIterator<IT>
   make_enumerate_iterator(
-      size_t i, size_t max, IT it)
+      Size i, Size max, IT it)
   {
     return {i, max, it};
   }
@@ -65,14 +65,14 @@ namespace sitl
   struct EnumerateCData
   {
     const T &t;
-    size_t i;
+    Size i;
   };
 
   template <typename IT>
   struct EnumerateCIterator
   {
-    size_t i;
-    size_t max;
+    Size i;
+    Size max;
     IT it;
 
     auto operator*()
@@ -112,7 +112,7 @@ namespace sitl
   template <typename IT>
   EnumerateCIterator<IT>
   make_enumerate_citerator(
-      size_t i, size_t max, IT it)
+      Size i, Size max, IT it)
   {
     return {i, max, it};
   }

@@ -1,6 +1,7 @@
 #ifndef __silt_test_hpp__
 #define __silt_test_hpp__
 
+#include <lib/basic_types.hpp>
 #include <lib/vector.hpp>
 #include <lib/string.hpp>
 #include <lib/logger.hpp>
@@ -29,7 +30,7 @@ namespace test
     String reason;
   };
 
-  template <size_t n>
+  template <Size n>
   struct Results
   {
     StringCRange descr;
@@ -47,8 +48,8 @@ namespace test
           logger::info("    |- /!\\ ", r.reason);
       }
 
-      size_t ntotal = res.size();
-      size_t nsucceed = res.range().find_if(
+      Size ntotal = res.size();
+      Size nsucceed = res.range().find_if(
           [](const Result &r)
           { return r.success; });
 
@@ -81,7 +82,7 @@ namespace test
     }
   };
 
-  template <size_t n>
+  template <Size n>
   struct TestSuite
   {
     StringCRange descr;
@@ -92,7 +93,7 @@ namespace test
       Results<n> res;
       res.descr = descr;
 
-      for (size_t i = 0; i < tests.size(); ++i)
+      for (Size i = 0; i < tests.size(); ++i)
         res.res[i] = tests[i].run();
 
       return res;
@@ -121,12 +122,12 @@ namespace test
   };
 }
 
-test::TestDefinition operator""_test(const char *descr, size_t n)
+test::TestDefinition operator""_test(const char *descr, Size n)
 {
   return {{descr, n}};
 }
 
-test::TestSuiteDefinition operator""_suite(const char *descr, size_t n)
+test::TestSuiteDefinition operator""_suite(const char *descr, Size n)
 {
   return {{descr, n}};
 }

@@ -18,7 +18,8 @@ namespace lisp
   struct Token
   {
     TokenType type;
-    StringCRange value;
+    sitl::StringCRange value;
+
   };
 
 }
