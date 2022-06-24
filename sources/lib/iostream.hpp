@@ -159,15 +159,14 @@ namespace sitl
     int i = -1;
 
   public:
-    constexpr void push(char c) noexcept { data[++i] = c; }
-    constexpr char pop() noexcept { return data[i--]; }
-    constexpr bool empty() noexcept { return i == -1; }
+    void push(char c) noexcept { data[++i] = c; }
+    char pop() noexcept { return data[i--]; }
+    bool empty() noexcept { return i == -1; }
   };
 
   template <Output OUT, IsUnsignedInteger T>
   constexpr OUT &operator<<(OUT &buff, T t) noexcept
   {
-
     StackArray tbuff;
 
     if (t == 0)
@@ -188,7 +187,6 @@ namespace sitl
   template <Output OUT, IsSignedInteger T>
   constexpr OUT &operator<<(OUT &buff, T t) noexcept
   {
-
     bool neg = t < 0;
 
     T tmp = neg ? -t : t;

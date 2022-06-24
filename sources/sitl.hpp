@@ -447,6 +447,10 @@ namespace sitl
           d = 0;
         }
       }
+      else if (analyseLabel(tokens) ||
+               analyseString(tokens) ||
+               analyseNumber(tokens))
+        ++d;
 
       return d;
     }
