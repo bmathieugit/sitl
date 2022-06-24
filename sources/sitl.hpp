@@ -11,6 +11,7 @@ namespace sitl
     LABEL,
     NUMBER,
     BLANK,
+    STRING,
     EOL,
     ERROR,
     WHILE,
@@ -23,7 +24,9 @@ namespace sitl
     IF,
     RETURN,
     FUN,
-    PROC
+    PROC,
+    LPAR,
+    RPAR
   };
 
   struct Token
@@ -143,26 +146,39 @@ namespace sitl
     }
   };
 
-  using LabelTokenizer = Tokenizer<
-      TokenType::LABEL,
+  using NumberTokenizer = Tokenizer<
+      TokenType::NUMBER,
       decltype([](StringCRange s) noexcept
-               { return Char(s[0]).between('a', 'z') ||
-                        s[0] == '_'; }),
-      decltype([](StringCRange src) noexcept
-               { return src.before_if(
+               { return Char(s[0]).between('0', '9'); }),
+      decltype([](StringCRange s) noexcept
+               { return s.before_if(
                      [](Char c) noexcept
-                     { return !(c.between('a', 'z') ||
-                                c == '_'); }); })>;
-
-  using BlankTokenizer = Tokenizer<
-      TokenType::BLANK,
-      decltype([](StringCRange s) noexcept
-               { return Char(s[0]).in(" \t"); }),
-      decltype([](StringCRange src) noexcept
-               { return src.before_if(
-                     [](Char c)
-                     { return !c.in(" \t"); }); })>;
-
+                     { return !(c.between('0', '9')); }); })>;
+  using LabelTokenizer =
+      Tokenizer<
+          TokenType::LABEL,
+          decltype([](StringCRange s) noexcept
+                   { return Char(s[0]).between('a', 'z') ||
+                            s[0] == '_'; }),
+          decltype([](StringCRange src) noexcept
+                   { return src.before_if(
+                         [](Char c) noexcept
+                         { return !(c.between('a', 'z') ||
+                                    c == '_'); }); })>;
+  using BlankTokenizer =
+      Tokenizer<
+          TokenType::BLANK,
+          decltype([](StringCRange s) noexcept
+                   { return Char(s[0]).in(" \t"); }),
+          decltype([](StringCRange src) noexcept
+                   { return src.before_if(
+                         [](Char c)
+                         { return !c.in(" \t"); }); })>;
+  using StringTokenizer =
+      Tokenizer<
+          TokenType::STRING,
+          CanBeNChars<'"'>,
+          ExtractInside<'"', '"'>>;
   using ExpressionTokenizer =
       Tokenizer<TokenType::EXPR,
                 CanBeNChars<'\''>,
@@ -171,6 +187,14 @@ namespace sitl
       Tokenizer<TokenType::STRUCT,
                 CanBeNChars<'s', 't', 'r', 'u', 'c', 't'>,
                 ExtractNChars<6>>;
+  using RParTokenizer =
+      Tokenizer<TokenType::RPAR,
+                CanBeNChars<')'>,
+                ExtractNChars<1>>;
+  using LParTokenizer =
+      Tokenizer<TokenType::LPAR,
+                CanBeNChars<'('>,
+                ExtractNChars<1>>;
   using BeginTokenizer =
       Tokenizer<TokenType::BEGIN,
                 CanBeNChars<'b', 'e', 'g', 'i', 'n'>,
@@ -211,6 +235,14 @@ namespace sitl
       ReturnTokenizer,
       ExpressionTokenizer,
       LabelTokenizer>;
+
+  using LispTokenizer = GlobalTokenizer<
+      NumberTokenizer,
+      StringTokenizer,
+      LabelTokenizer,
+      LParTokenizer,
+      RParTokenizer,
+      BlankTokenizer>;
 
   enum class LineType : int
   {
@@ -332,6 +364,93 @@ namespace sitl
           ParamLineAnalyser,
           EndLineAnalyser,
           LetLineAnalyser>;
+
+  struct ExpressionAnalyser
+  {
+  public:
+    constexpr bool operator()(VectorCRange<Token> tokens) const noexcept
+    {
+      return analyseExpression(tokens) != 0;
+    }
+
+  private:
+    using Distance = Size;
+    using TT = TokenType;
+
+    constexpr bool analyseNumber(VectorCRange<Token> tokens) const noexcept
+    {
+      return !tokens.empty() &&
+             tokens[0].type == TT::NUMBER;
+    }
+
+    constexpr bool analyseString(VectorCRange<Token> tokens) const noexcept
+    {
+      return !tokens.empty() &&
+             tokens[0].type == TT::STRING;
+    }
+
+    constexpr bool analyseLabel(VectorCRange<Token> tokens) const noexcept
+    {
+      return !tokens.empty() &&
+             tokens[0].type == TT::LABEL;
+    }
+
+    constexpr bool analyseOpenExpression(VectorCRange<Token> tokens) const noexcept
+    {
+      return !tokens.empty() &&
+             tokens[0].type == TT::LPAR;
+    }
+
+    constexpr bool analyseCloseExpression(VectorCRange<Token> tokens) const noexcept
+    {
+      return !tokens.empty() &&
+             tokens[0].type == TT::RPAR;
+    }
+
+    constexpr Distance analyseExpression(VectorCRange<Token> tokens) const noexcept
+    {
+      Distance d = 0;
+
+      if (analyseOpenExpression(tokens))
+      {
+        ++d;
+        tokens = tokens.sub(1);
+
+        if (analyseLabel(tokens))
+        {
+          ++d;
+          tokens = tokens.sub(1);
+
+          while (!tokens.empty() && analyseCloseExpression(tokens))
+          {
+            if (analyseString(tokens) ||
+                analyseLabel(tokens) ||
+                analyseNumber(tokens))
+            {
+              ++d;
+              tokens.sub(1);
+            }
+            else if (Distance subd = analyseExpression(tokens); subd != 0)
+            {
+              d += subd;
+              tokens.sub(subd);
+            }
+          }
+
+          if (analyseCloseExpression(tokens))
+          {
+            ++d;
+          }
+        }
+        else
+        {
+          d = 0;
+        }
+      }
+
+      return d;
+    }
+  };
 
 }
 
