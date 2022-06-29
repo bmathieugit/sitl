@@ -5,7 +5,7 @@
 #include <lib/vector.hpp>
 #include <model/token.hpp>
 #include <model/tokentype.hpp>
-#include<tokenizer/tokenizer.hpp>
+#include <tokenizer/tokenizer.hpp>
 #include <tokenizer/globaltokenizer.hpp>
 #include <tokenizer/canbenchars.hpp>
 #include <tokenizer/extractinside.hpp>
@@ -18,23 +18,11 @@
 #include <analyser/oneanalyser.hpp>
 #include <analyser/nsomeanalyser.hpp>
 #include <analyser/sequenceanalyser.hpp>
-
+#include <analyser/globalanalyser.hpp>
+#include <analyser/lineanalyser.hpp>
 
 namespace sitl
 {
-
-  template <typename... A>
-  struct LineAnalyser
-  {
-    static constexpr Size S = (0 + ... + A::S);
-    constexpr bool operator()(VectorCRange<Token> tline) const noexcept
-    {
-      bool tmp;
-      Size pos = 0;
-      return ((tline.size() >= S) && ... && ((tmp = A()(tline, pos)), pos += A::S, tmp));
-    }
-  };
-
   using BeginLineAnalyser =
       LineAnalyser<One<TokenType::BEGIN>>;
 
@@ -61,26 +49,6 @@ namespace sitl
 
   using IfLineAnalyser =
       LineAnalyser<One<TokenType::IF>>;
-
-  template <typename... A>
-  struct GlobalAnalyser
-  {
-    constexpr bool operator()(VectorCRange<Token> tokens) const noexcept
-    {
-      bool res = true;
-
-      do
-      {
-        VectorCRange<Token> line = tokens.go_after_if(
-            [](const Token &t)
-            { return t.type == TokenType::EOL; });
-
-        res = res && (... || A()(line));
-      } while (!tokens.empty() && res);
-
-      return res;
-    }
-  };
 
   using SitlAnalyser =
       GlobalAnalyser<
