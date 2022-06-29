@@ -6,7 +6,7 @@
 
 namespace sitl
 {
-  using SitlTokenizer = GlobalTokenizer<
+  using ProceduralGTokenizer = GlobalTokenizer<
       BlankTokenizer,
       StructTokenizer,
       BeginTokenizer,

@@ -22,14 +22,14 @@ int main(int argc, char **argv)
       "  param char e\n"
       "end\n"
       "let int i '(+ i (- 1 12))'");
-  sitl::Vector<sitl::Token> silt_tokens = sitl::SitlTokenizer()(src);
+  sitl::Vector<sitl::Token> silt_tokens = sitl::ProceduralGTokenizer()(src);
 
   for (auto &&token : silt_tokens)
     sitl::logger::debug("token type : ", (int)token.type, ", value : ", token.value);
 
   sitl::logger::debug("result ", sitl::SitlAnalyser()(silt_tokens));
   sitl::StringCRange src2 = sitl::sr("(add 1 (minus 2 \"toto\"))");
-  sitl::Vector<sitl::Token> lisp_tokens = sitl::ExpressionTokenizer()(src2);
+  sitl::Vector<sitl::Token> lisp_tokens = sitl::ExpressionGTokenizer()(src2);
 
   for (auto &&token : lisp_tokens)
     sitl::logger::debug("token type : ", (int)token.type, ", value : ", token.value);

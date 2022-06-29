@@ -6,7 +6,7 @@
 
 namespace sitl
 {
-  using ExpressionTokenizer = GlobalTokenizer<
+  using ExpressionGTokenizer = GlobalTokenizer<
       NumberTokenizer,
       StringTokenizer,
       LabelTokenizer,
