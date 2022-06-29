@@ -11,27 +11,11 @@
 #include <tokenizer/extractinside.hpp>
 #include <tokenizer/extractnchars.hpp>
 #include <tokenizer/tokenizers.hpp>
+#include <tokenizer/proceduraltokenizer.hpp>
+#include <tokenizer/expressiontokenizer.hpp>
 
 namespace sitl
 {
-  using SitlTokenizer = GlobalTokenizer<
-      BlankTokenizer,
-      StructTokenizer,
-      BeginTokenizer,
-      EndTokenizer,
-      ParamTokenizer,
-      LetTokenizer,
-      ReturnTokenizer,
-      ExpressionTokenizer,
-      LabelTokenizer>;
-
-  using LispTokenizer = GlobalTokenizer<
-      NumberTokenizer,
-      StringTokenizer,
-      LabelTokenizer,
-      LParTokenizer,
-      RParTokenizer,
-      BlankTokenizer>;
 
   enum class LineType : int
   {

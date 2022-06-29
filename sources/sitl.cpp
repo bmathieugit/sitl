@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
   sitl::logger::debug("result ", sitl::SitlAnalyser()(silt_tokens));
   sitl::StringCRange src2 = sitl::sr("(add 1 (minus 2 \"toto\"))");
-  sitl::Vector<sitl::Token> lisp_tokens = sitl::LispTokenizer()(src2);
+  sitl::Vector<sitl::Token> lisp_tokens = sitl::ExpressionTokenizer()(src2);
 
   for (auto &&token : lisp_tokens)
     sitl::logger::debug("token type : ", (int)token.type, ", value : ", token.value);
