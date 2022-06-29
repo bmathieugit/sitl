@@ -4,6 +4,8 @@
 namespace sitl
 {
   using Size = unsigned long long;
+  using Depth = Size;
+  using Position = Size;
 }
 
 #endif

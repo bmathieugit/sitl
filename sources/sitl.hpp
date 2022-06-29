@@ -13,63 +13,15 @@
 #include <tokenizer/tokenizers.hpp>
 #include <tokenizer/proceduraltokenizer.hpp>
 #include <tokenizer/expressiontokenizer.hpp>
+#include <model/line.hpp>
+#include <model/linetype.hpp>
+#include <analyser/oneanalyser.hpp>
+#include <analyser/nsomeanalyser.hpp>
+#include <analyser/sequenceanalyser.hpp>
+
 
 namespace sitl
 {
-
-  enum class LineType : int
-  {
-    STRUCT,
-    BEGIN,
-    END,
-    PARAM,
-    ERROR,
-    IF
-  };
-
-  using Depth = int;
-
-  struct Line
-  {
-    LineType type;
-    Depth depth;
-    Vector<Token> tokens;
-  };
-
-  using Position = Size;
-
-  template <TokenType type>
-  struct One
-  {
-    static constexpr Size S = 1;
-    constexpr bool operator()(VectorCRange<Token> tline, Position pos) const noexcept
-    {
-      return tline[pos].type == type;
-    }
-  };
-
-  template <TokenType... types>
-  struct Sequence
-  {
-    static constexpr Size S = sizeof...(types);
-    constexpr bool operator()(VectorCRange<Token> tline, Position pos) const noexcept
-    {
-      return (true && ... && (tline[pos++].type == types));
-    }
-  };
-
-  template <Size n, TokenType type>
-  struct NSome
-  {
-    static constexpr Size S = n;
-    constexpr bool operator()(VectorCRange<Token> tline, Position pos) const noexcept
-    {
-      for (int i = pos; i < n; i++)
-        if (tline[i].type != type)
-          return false;
-      return true;
-    }
-  };
 
   template <typename... A>
   struct LineAnalyser
