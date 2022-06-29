@@ -8,6 +8,8 @@ Voici un exemple de code sitl qui affiche "hello world !" dans la console :
 ```sitl
 fun main
 begin
-  print '"hello world"'
+  print '"hello world !"'
 end
 ```
+
+
