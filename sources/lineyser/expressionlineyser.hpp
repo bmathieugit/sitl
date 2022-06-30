@@ -79,7 +79,9 @@ namespace sitl
               ++d;
               tokens.sub(1);
             }
-            else if (Distance subd = analyseExpression(tokens); subd != 0)
+            else if (
+              Distance subd = analyseExpression(tokens); 
+              subd != 0)
             {
               d += subd;
               tokens.sub(subd);

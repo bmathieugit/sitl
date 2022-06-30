@@ -10,14 +10,16 @@ namespace sitl
   template <typename... A>
   struct GlobalLineyser
   {
-    constexpr bool operator()(
+    constexpr Vector<Line> operator()(
         VectorCRange<Token> tokens) const noexcept
     {
+      Vector<Line> lines;
+
       bool res = true;
 
       do
       {
-        VectorCRange<Token> line = tokens.go_after_if(
+        VectorCRange<Token> tline = tokens.go_after_if(
             [](const Token &t)
             { return t.type == TokenType::EOL; });
 

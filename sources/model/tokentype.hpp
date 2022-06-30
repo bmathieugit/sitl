@@ -25,6 +25,8 @@ namespace sitl
     LPAR,
     RPAR
   };
+
+  using TT = TokenType;
 }
 
 #endif

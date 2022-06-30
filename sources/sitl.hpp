@@ -15,9 +15,6 @@
 #include <tokenizer/proceduraltokenizer.hpp>
 #include <tokenizer/expressiontokenizer.hpp>
 
-#include <lineyser/onelineyser.hpp>
-#include <lineyser/nsomelineyser.hpp>
-#include <lineyser/sequencelineyser.hpp>
 #include <lineyser/globallineyser.hpp>
 #include <lineyser/lineyser.hpp>
 #include <lineyser/lineysers.hpp>

@@ -14,8 +14,11 @@ namespace sitl
     ELSE,
     WHILE,
     RETURN, 
-    FUN
+    FUN, 
+    LET
   };
+
+  using LT = LineType;
 }
 
 #endif
