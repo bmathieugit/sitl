@@ -4,7 +4,7 @@
 namespace sitl
 {
   template <Size n, TokenType type>
-  struct NSomeAnalyser
+  struct NSomeLineyser
   {
     static constexpr Size S = n;
     constexpr bool operator()(VectorCRange<Token> tline, Position pos) const noexcept
@@ -17,7 +17,7 @@ namespace sitl
   };
 
   template <Size n, TokenType type>
-  using NSome = NSomeAnalyser<n, type>;
+  using NSome = NSomeLineyser<n, type>;
 }
 
 #endif

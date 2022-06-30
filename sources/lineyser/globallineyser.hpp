@@ -8,7 +8,7 @@
 namespace sitl
 {
   template <typename... A>
-  struct GlobalAnalyser
+  struct GlobalLineyser
   {
     constexpr bool operator()(
         VectorCRange<Token> tokens) const noexcept

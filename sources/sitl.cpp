@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
   logger::debug(
       "result ",
-      sitl::SitlAnalyser()(
+      sitl::SitlLineyser()(
           sitl::ProceduralGTokenizer()(
               sitl::sr(
                   "struct string\n"
@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 
   logger::debug(
       "result : ",
-      sitl::ExpressionAnalyser()(
+      sitl::ExpressionLineyser()(
           sitl::ExpressionGTokenizer()(
               sitl::sr(
                   "(add 1 (minus 2 \"toto\"))"))));

@@ -6,7 +6,7 @@
 namespace sitl
 {
   template <TokenType type>
-  struct OneAnalyser
+  struct OneLineyser
   {
     static constexpr Size S = 1;
 
@@ -17,7 +17,7 @@ namespace sitl
   };
 
   template<TokenType type>
-  using One = OneAnalyser<type>;
+  using One = OneLineyser<type>;
 }
 
 #endif

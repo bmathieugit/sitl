@@ -6,7 +6,7 @@
 namespace sitl
 {
   template <typename... A>
-  struct LineAnalyser
+  struct Lineyser
   {
     static constexpr Size S = (0 + ... + A::S);
     constexpr bool operator()(

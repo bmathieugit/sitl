@@ -6,7 +6,7 @@
 namespace sitl
 {
   template <TokenType... types>
-  struct SequenceAnalyser
+  struct SequenceLineyser
   {
     static constexpr Size S = sizeof...(types);
 
@@ -18,9 +18,8 @@ namespace sitl
     }
   };
 
-
   template<TokenType ... types>
-  using Sequence = SequenceAnalyser<types...>;
+  using Sequence = SequenceLineyser<types...>;
 }
 
 #endif

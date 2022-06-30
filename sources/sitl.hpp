@@ -15,50 +15,50 @@
 #include <tokenizer/expressiontokenizer.hpp>
 #include <model/line.hpp>
 #include <model/linetype.hpp>
-#include <analyser/oneanalyser.hpp>
-#include <analyser/nsomeanalyser.hpp>
-#include <analyser/sequenceanalyser.hpp>
-#include <analyser/globalanalyser.hpp>
-#include <analyser/lineanalyser.hpp>
+#include <lineyser/onelineyser.hpp>
+#include <lineyser/nsomelineyser.hpp>
+#include <lineyser/sequencelineyser.hpp>
+#include <lineyser/globallineyser.hpp>
+#include <lineyser/lineyser.hpp>
 
 namespace sitl
 {
-  using BeginLineAnalyser =
-      LineAnalyser<One<TokenType::BEGIN>>;
+  using BeginLineyser =
+      Lineyser<One<TokenType::BEGIN>>;
 
-  using StructLineAnalyser =
-      LineAnalyser<Sequence<
+  using StructLineyser =
+      Lineyser<Sequence<
           TokenType::STRUCT,
           TokenType::LABEL>>;
 
-  using ParamLineAnalyser =
-      LineAnalyser<
+  using ParamLineyser =
+      Lineyser<
           One<TokenType::PARAM>,
           One<TokenType::LABEL>,
           One<TokenType::LABEL>>;
 
-  using EndLineAnalyser =
-      LineAnalyser<One<TokenType::END>>;
+  using EndLineyser =
+      Lineyser<One<TokenType::END>>;
 
-  using LetLineAnalyser =
-      LineAnalyser<
+  using LetLineyser =
+      Lineyser<
           Sequence<TokenType::LET,
                    TokenType::LABEL,
                    TokenType::LABEL,
                    TokenType::EXPR>>;
 
-  using IfLineAnalyser =
-      LineAnalyser<One<TokenType::IF>>;
+  using IfLineyser =
+      Lineyser<One<TokenType::IF>>;
 
-  using SitlAnalyser =
-      GlobalAnalyser<
-          StructLineAnalyser,
-          BeginLineAnalyser,
-          ParamLineAnalyser,
-          EndLineAnalyser,
-          LetLineAnalyser>;
+  using SitlLineyser =
+      GlobalLineyser<
+          StructLineyser,
+          BeginLineyser,
+          ParamLineyser,
+          EndLineyser,
+          LetLineyser>;
 
-  struct ExpressionAnalyser
+  struct ExpressionLineyser
   {
   public:
     constexpr bool operator()(VectorCRange<Token> tokens) const noexcept
