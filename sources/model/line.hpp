@@ -9,8 +9,8 @@ namespace sitl
 {
   struct Line
   {
-    LineType type;
     Depth depth;
+    LineType type;
     Vector<Token> tokens;
   };
 }

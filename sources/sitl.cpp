@@ -16,24 +16,25 @@ int main(int argc, char **argv)
     logger::debug("file name found, fname");
   }
 
-  logger::debug(
-      "result ",
-      sitl::SitlLineyser()(
-          sitl::ProceduralGTokenizer()(
-              sitl::sr(
-                  "struct string\n"
-                  "begin\n"
-                  "  param char b\n"
-                  "  param char e\n"
-                  "end\n"
-                  "let int i '(+ i (- 1 12))'"))));
+  auto proclines = sitl::ProceduralLineyser()(
+      sitl::ProceduralGTokenizer()(
+          sitl::sr(
+              "struct string\n"
+              "begin\n"
+              "  param char b\n"
+              "  param char e\n"
+              "end\n"
+              "let int i '(+ i (- 1 12))'")));
+  for (const sitl::Line &l : proclines)
+    logger::debug("type ", (int)l.type);
+/* 
+  auto exprlines = sitl::ExpressionLineyser()(
+      sitl::ExpressionGTokenizer()(
+          sitl::sr(
+              "(add 1 (minus 2 \"toto\"))")));
 
-  logger::debug(
-      "result : ",
-      sitl::ExpressionLineyser()(
-          sitl::ExpressionGTokenizer()(
-              sitl::sr(
-                  "(add 1 (minus 2 \"toto\"))"))));
+  for (const sitl::Line &l : exprlines)
+    logger::debug("type: ", (int)l.type); */
 
   return 0;
 }

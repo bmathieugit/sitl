@@ -7,7 +7,7 @@
 
 namespace sitl
 {
-  template <typename... A>
+  template <typename... L>
   struct GlobalLineyser
   {
     constexpr Vector<Line> operator()(
@@ -15,18 +15,31 @@ namespace sitl
     {
       Vector<Line> lines;
 
-      bool res = true;
-
       do
       {
         VectorCRange<Token> tline = tokens.go_after_if(
             [](const Token &t)
             { return t.type == TokenType::EOL; });
 
-        res = res && (... || A()(line));
-      } while (!tokens.empty() && res);
+        lines.push(lineyse<L...>(tline));
+      } while (!tokens.empty() &&
+               lines.back().type != LT::ERROR);
 
-      return res;
+      return lines;
+    }
+
+  private:
+    template <typename L0, typename... LN>
+    Line lineyse(VectorCRange<Token> tline) const noexcept
+    {
+      Line l = L0()(tline);
+
+      if (l.type == LT::ERROR)
+        return l;
+      else if constexpr (sizeof...(LN) > 0)
+        return lineyse<LN...>(tline);
+      else
+        return Line{Depth(0), LT::ERROR};
     }
   };
 }

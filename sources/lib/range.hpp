@@ -353,6 +353,81 @@ namespace sitl
     static constexpr const T *value = nullptr;
   };
 
+  template <typename M, typename IT>
+  concept Mapper = requires(M &&m, IT &&it)
+  {
+    m(*it);
+  };
+
+  template <Iterator I, Mapper<I> M>
+  class MapIterator
+  {
+    M mapper;
+    I it;
+
+  public:
+    constexpr MapIterator(I _it, M _mapper) noexcept
+        : it(_it),
+          mapper(_mapper) {}
+
+    constexpr MapIterator() noexcept = delete;
+    constexpr ~MapIterator() noexcept = default;
+    constexpr MapIterator(const MapIterator &) noexcept = default;
+    constexpr MapIterator(MapIterator &&) noexcept = default;
+    constexpr MapIterator &operator=(const MapIterator &) noexcept = default;
+    constexpr MapIterator &operator=(MapIterator &&) noexcept = default;
+
+  public:
+    constexpr MapIterator &operator++() noexcept
+    {
+      ++it;
+      return *this;
+    }
+
+    constexpr MapIterator operator++(int) noexcept
+    {
+      auto tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+
+    constexpr MapIterator operator+(int offset) const noexcept
+    {
+      return MapIterator(it + offset, mapper);
+    }
+
+    constexpr auto operator-(const MapIterator &o) const noexcept
+    {
+      return it - o.it;
+      ;
+    }
+
+    constexpr decltype(mapper(*it)) operator*() noexcept
+    {
+      return mapper(*it);
+    }
+
+    constexpr bool operator==(const MapIterator &o) const noexcept
+    {
+      return it == o.it;
+    }
+
+    constexpr bool operator!=(const MapIterator &o) const noexcept
+    {
+      return it != o.it;
+    }
+
+    constexpr decltype(auto) operator[](Size i) noexcept
+    {
+      return it[i];
+    }
+
+    constexpr decltype(auto) operator[](Size i) const noexcept
+    {
+      return it[i];
+    }
+  };
+
   template <Iterator IT>
   struct Range
   {
@@ -430,6 +505,23 @@ namespace sitl
     constexpr const Range sub(Size i, Size ei) const noexcept
     {
       return Range(i < size() ? b + i : e, ei < size() ? b + ei : e);
+    }
+
+  public:
+    template <Mapper<IT> M>
+    constexpr Range<MapIterator<IT, M>> map(M &&mapper) noexcept
+    {
+      return Range<MapIterator<IT, M>>(
+          MapIterator<IT, M>(b, mapper),
+          MapIterator<IT, M>(e, mapper));
+    }
+
+    template <Mapper<IT> M>
+    constexpr Range<MapIterator<IT, M>> map(M &&mapper) const noexcept
+    {
+      return Range<MapIterator<IT, M>>(
+          MapIterator<IT, M>(b, mapper),
+          MapIterator<IT, M>(e, mapper));
     }
 
   public:

@@ -6,7 +6,7 @@
 
 namespace sitl
 {
-  using SitlLineyser =
+  using ProceduralLineyser =
       GlobalLineyser<
           StructLineyser,
           BeginLineyser,
