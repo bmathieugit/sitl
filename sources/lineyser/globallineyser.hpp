@@ -14,6 +14,7 @@ namespace sitl
         VectorCRange<Token> tokens) const noexcept
     {
       Vector<Line> lines;
+      Depth depth = 0;
 
       do
       {
@@ -21,7 +22,8 @@ namespace sitl
             [](const Token &t)
             { return t.type == TokenType::EOL; });
 
-        lines.push(lineyse<L...>(tline));
+        lines.push(lineyse<L...>(tline, depth));
+        depth = lines.back().depth;
       } while (!tokens.empty() &&
                lines.back().type != LT::ERROR);
 
@@ -30,14 +32,14 @@ namespace sitl
 
   private:
     template <typename L0, typename... LN>
-    Line lineyse(VectorCRange<Token> tline) const noexcept
+    Line lineyse(VectorCRange<Token> tline, Depth depth) const noexcept
     {
-      Line l = L0()(tline);
+      Line l = L0()(tline, depth);
 
-      if (l.type == LT::ERROR)
+      if (l.type != LT::ERROR)
         return l;
       else if constexpr (sizeof...(LN) > 0)
-        return lineyse<LN...>(tline);
+        return lineyse<LN...>(tline, depth);
       else
         return Line{Depth(0), LT::ERROR};
     }

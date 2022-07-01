@@ -26,7 +26,7 @@ int main(int argc, char **argv)
               "end\n"
               "let int i '(+ i (- 1 12))'")));
   for (const sitl::Line &l : proclines)
-    logger::debug("type ", (int)l.type);
+    logger::debug("type ", (int)l.type, " depth ", l.depth);
 /* 
   auto exprlines = sitl::ExpressionLineyser()(
       sitl::ExpressionGTokenizer()(

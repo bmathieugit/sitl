@@ -8,22 +8,33 @@
 
 namespace sitl
 {
-  template <LineType type, TokenType... ttypes>
+  using DepthModifier = int;
+
+  template <DepthModifier mod,
+            LineType type,
+            TokenType... ttypes>
   struct Lineyser
   {
     constexpr Line operator()(
-        VectorCRange<Token> tline) const noexcept
+        VectorCRange<Token> tline,
+        Depth depth) const noexcept
     {
       Line line;
 
-      if (tline.map([](const Token &t){ return t.type; })
-               .starts_with(Array<TT, sizeof...(ttypes)>({ttypes...})))
+      if (depth + mod >= 0)
+        line.depth = depth + mod;
+      else
+        line.depth = 0;
+
+      if (tline.map([](const Token &t)
+                    { return t.type; })
+              .starts_with(Array<TT, sizeof...(ttypes)>({ttypes...})))
       {
         line.tokens.append(tline.begin(),
                            tline.begin() + sizeof...(ttypes));
         line.type = type;
       }
-      else 
+      else
         line.type = LT::ERROR;
 
       return line;
