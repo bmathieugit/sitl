@@ -64,7 +64,7 @@ namespace sitl
   using TupleStorage = TupleElements<MakeTupleSequenceType<sizeof...(T)>, T...>;
 
   template <typename... T>
-  struct Tuple : TupleStorage<T...>
+  class Tuple : public TupleStorage<T...>
   {
   public:
     constexpr Tuple() = default;
@@ -76,16 +76,14 @@ namespace sitl
 
   private:
     template <typename... O, TupleIndex... i>
-    constexpr Tuple(const Tuple<O...> &o,
-                    TupleSequence<i...>)
-        : TupleStorage<T...>{forward<O>(o.template get<i>())...}
+    constexpr Tuple(const Tuple<O...> &o, TupleSequence<i...>)
+        : TupleStorage<T...>{get<i>(o)...}
     {
     }
 
     template <typename... O, TupleIndex... i>
-    constexpr Tuple(Tuple<O...> &&o,
-                    TupleSequence<i...>)
-        : TupleStorage<T...>{move(o.template get<i>())...}
+    constexpr Tuple(Tuple<O...> &&o, TupleSequence<i...>)
+        : TupleStorage<T...>{get<i>(o)...}
     {
     }
 

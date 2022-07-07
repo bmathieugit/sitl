@@ -2,6 +2,7 @@
 #define __sitl_compiler_hpp__
 
 #include <agent.hpp>
+#include <lib/tuple.hpp>
 
 namespace sitl
 {
@@ -17,9 +18,20 @@ namespace sitl
    * des lignes de codes.
    */
   template <Agent ERROR, Agent... AGENTS>
-  struct Compiler
+  class Compiler
   {
     Tuple<ERROR, AGENTS...> agents;
+
+  public:
+    constexpr Compiler(const ERROR &err, const AGENTS &...ags)
+        : agents(err, ags...) {}
+
+    constexpr Compiler(const Compiler &) = default;
+    constexpr Compiler(Compiler &&) = default;
+    constexpr Compiler& operator=(const Compiler&) = default;
+    constexpr Compiler& operator=(Compiler&&) = default;
+    constexpr ~Compiler() = default;
+    
   };
 }
 
