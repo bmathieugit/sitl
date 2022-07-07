@@ -57,23 +57,23 @@ int main(int argc, char **argv)
 
   int i = 12;
   sitl::Tuple<int &, int> t(i, 24);
-  t.get<0>() = 14;
-  logger::debug("value 1 : ", t.get<0>(),
-                "; value 2 : ", t.get<1>(),
-                ";value orig : ", i);
-
+  get<0>(t) = 14;
   sitl::Tuple<int &, int> t2 = t;
-  logger::debug("value 1 : ", t2.get<0>(),
-                "; value 2 : ", t2.get<1>(),
+  
+  logger::debug("value 1 : ", get<0>(t),
+                "; value 2 : ", get<1>(t),
                 ";value orig : ", i);
-  t.get<0>() = 15;
-
-  logger::debug("value 1 : ", t2.get<0>(),
-                "; value 2 : ", t2.get<1>(),
+  logger::debug("value 1 : ", get<0>(t2),
+                "; value 2 : ", get<1>(t2),
                 ";value orig : ", i);
+  
+  get<0>(t) = 15;
 
-  logger::debug("value 1 : ", t.get<0>(),
-                "; value 2 : ", t.get<1>(),
+  logger::debug("value 1 : ", get<0>(t),
+                "; value 2 : ", get<1>(t),
+                ";value orig : ", i);
+  logger::debug("value 1 : ", get<0>(t2),
+                "; value 2 : ", get<1>(t2),
                 ";value orig : ", i);
 
   return 0;
