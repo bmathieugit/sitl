@@ -3,6 +3,7 @@
 
 #include <agent.hpp>
 #include <lib/tuple.hpp>
+#include <lib/string.hpp>
 
 namespace sitl
 {
@@ -28,10 +29,26 @@ namespace sitl
 
     constexpr Compiler(const Compiler &) = default;
     constexpr Compiler(Compiler &&) = default;
-    constexpr Compiler& operator=(const Compiler&) = default;
-    constexpr Compiler& operator=(Compiler&&) = default;
+    constexpr Compiler &operator=(const Compiler &) = default;
+    constexpr Compiler &operator=(Compiler &&) = default;
     constexpr ~Compiler() = default;
-    
+
+  public:
+    void compile(const String &src)
+    {
+      /**
+       * @brief for each line compile the line
+       */
+    }
+
+    void compileLine(const String& src)
+    {
+      /**
+       * @brief test for each agent if one corresponds
+       * to the current line and if it is, interpret
+       * this line of code.
+       */
+    }
   };
 }
 

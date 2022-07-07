@@ -6,26 +6,26 @@
 namespace sitl
 {
   using TupleIndex = unsigned int;
-
-  template <TupleIndex... i>
-  struct TupleSequence
+  
+  template <TupleIndex... i> struct TupleSequence{};
+  
+  template <TupleIndex first, TupleIndex ... next>
+  constexpr auto makeSequenceImpl()
   {
-  };
+    if constexpr (first == 0)
+      return TupleSequence<first, next...>();
+    else 
+       return makeSequenceImpl<first - 1, first, next...>();
+  }
 
-  template <TupleIndex max, TupleIndex... i>
-  struct MakeTupleSequence
-      : public MakeTupleSequence<max - 1, max - 1, i...>
+  template <TupleIndex max>
+  constexpr auto makeSequence()
   {
-  };
-
-  template <TupleIndex... i>
-  struct MakeTupleSequence<0, i...>
-  {
-    using type = TupleSequence<i...>;
-  };
-
-  template <TupleIndex N>
-  using MakeTupleSequenceType = typename MakeTupleSequence<N>::type;
+    return makeSequenceImpl<max>();
+  }
+  
+  template <typename ... T>
+  using MakeSequence = decltype(makeSequence<sizeof...(T)-1>());
 
   template <typename T, TupleIndex i>
   struct TupleElement
@@ -61,7 +61,7 @@ namespace sitl
   };
 
   template <typename... T>
-  using TupleStorage = TupleElements<MakeTupleSequenceType<sizeof...(T)>, T...>;
+  using TupleStorage = TupleElements<MakeSequence<T...>, T...>;
 
   template <typename... T>
   class Tuple : public TupleStorage<T...>
@@ -96,13 +96,13 @@ namespace sitl
 
     template <typename... O>
     constexpr Tuple(const Tuple<O...> &o)
-        : Tuple(o, MakeTupleSequenceType<sizeof...(T)>())
+        : Tuple(o, MakeSequence<T...>())
     {
     }
 
     template <typename... O>
     constexpr Tuple(Tuple<O...> &&o)
-        : Tuple(move(o), MakeTupleSequenceType<sizeof...(T)>())
+        : Tuple(move(o), MakeSequence<T...>())
     {
     }
 
