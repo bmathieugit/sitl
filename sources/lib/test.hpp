@@ -11,7 +11,7 @@
 
 #include <typeinfo>
 
-namespace test
+namespace sitl::test
 {
   struct AssertError
   {
@@ -42,22 +42,22 @@ namespace test
 
       for (const Result &r : res)
       {
-        logger::info("  |- ", r.descr, ':', r.success);
+        logger::info("  |- ", r.descr, " : ", r.success);
 
         if (not r.success)
           logger::info("    |- /!\\ ", r.reason);
       }
 
       Size ntotal = res.size();
-      Size nsucceed = res.range().find_if(
+      Size nsucceed = res.range().count_if(
           [](const Result &r)
           { return r.success; });
 
-      logger::info("  |->>> tests " nsucceed, '/', ntotal, "# succeed");
+      logger::info("  |->>> tests ", nsucceed, '/', ntotal, " succeed");
     }
   };
 
-  struct test
+  struct Test
   {
     StringCRange descr;
     void (*fn)();
@@ -86,7 +86,7 @@ namespace test
   struct TestSuite
   {
     StringCRange descr;
-    Array<test, n> tests;
+    Array<Test, n> tests;
 
     Results<n> run() const noexcept
     {
@@ -104,7 +104,7 @@ namespace test
   {
     StringCRange descr;
 
-    test operator()(void (*fn)())
+    Test operator()(void (*fn)())
     {
       return {descr, fn};
     }
@@ -114,25 +114,24 @@ namespace test
   {
     StringCRange descr;
 
-    auto operator()(const auto... tests)
-        -> TestSuite<sizeof...(tests)>
+    auto operator()(const auto... tests) -> TestSuite<sizeof...(tests)>
     {
-      return {descr, {tests...}};
+      return {descr, Array<Test, sizeof...(tests)>{tests...}};
     }
   };
 }
 
-test::TestDefinition operator""_test(const char *descr, Size n)
+sitl::test::TestDefinition operator""_test(const char *descr, long unsigned int n)
 {
-  return {{descr, n}};
+  return {{descr, descr + n}};
 }
 
-test::TestSuiteDefinition operator""_suite(const char *descr, Size n)
+sitl::test::TestSuiteDefinition operator""_suite(const char *descr, long unsigned int n)
 {
-  return {{descr, n}};
+  return {{descr, descr + n}};
 }
 
-namespace test::is
+namespace sitl::test::is
 {
   struct Equals
   {
@@ -201,7 +200,7 @@ namespace test::is
   };
 }
 
-namespace test::assert
+namespace sitl::test::assert
 {
   void that(auto is, const auto &...args)
   {
@@ -210,12 +209,12 @@ namespace test::assert
 
   void equals(const auto &a, const auto &b)
   {
-    that(test::is::Equals(), a, b);
+    that(is::Equals(), a, b);
   }
 
   void not_equals(const auto &a, const auto &b)
   {
-    that(test::is::NotEquals(), a, b);
+    that(is::NotEquals(), a, b);
   }
 
   template <typename Ex>

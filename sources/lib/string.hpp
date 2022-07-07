@@ -175,12 +175,12 @@ namespace sitl
   public:
     constexpr operator BasicStringCRange<C>() const noexcept
     {
-      return BasicStringCRange<C>(data(), size());
+      return BasicStringCRange<C>(begin(), end());
     }
 
     constexpr operator BasicStringRange<C>() noexcept
     {
-      return BasicStringRange<C>(data(), size());
+      return BasicStringRange<C>(begin(), end());
     }
 
     constexpr C &operator[](Size i) noexcept
