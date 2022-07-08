@@ -55,26 +55,6 @@ int main(int argc, char **argv)
   for (const sitl::Line &l : proclines)
     logger::debug("type ", (int)l.type, " depth ", l.depth);
 
-  int i = 12;
-  sitl::Tuple<int &, int> t(i, 24);
-  get<0>(t) = 14;
-  sitl::Tuple<int &, int> t2 = t;
-  
-  logger::debug("value 1 : ", get<0>(t),
-                "; value 2 : ", get<1>(t),
-                ";value orig : ", i);
-  logger::debug("value 1 : ", get<0>(t2),
-                "; value 2 : ", get<1>(t2),
-                ";value orig : ", i);
-  
-  get<0>(t) = 15;
-
-  logger::debug("value 1 : ", get<0>(t),
-                "; value 2 : ", get<1>(t),
-                ";value orig : ", i);
-  logger::debug("value 1 : ", get<0>(t2),
-                "; value 2 : ", get<1>(t2),
-                ";value orig : ", i);
 
   return 0;
 }
