@@ -121,6 +121,9 @@ namespace sitl
       return *this;
     }
   };
+
+  template <>
+  class Tuple<> {};
 }
 
 #endif
