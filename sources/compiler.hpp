@@ -24,6 +24,7 @@ namespace sitl
     Tuple<ERROR, AGENTS...> agents;
 
   public:
+    
     constexpr Compiler(const ERROR &err, const AGENTS &...ags)
         : agents(err, ags...) {}
 
@@ -34,22 +35,37 @@ namespace sitl
     constexpr ~Compiler() = default;
 
   public:
+    
     void compile(const String &src)
     {
-      /**
-       * @brief for each line compile the line
-       */
-      
-    
+      auto rsrc = src.range();
+
+      do
+      {
+        Size l = 0;
+        compileLine(rsrc.go_after('\n'), l, MakeSequence<ERROR, AGENTS...>());
+      } 
+      while (rsrc.size() != 0);
     }
 
-    void compileLine(const String& src)
+  private:
+    
+    template <TupleIndex ... i>
+    void compileLine(StringCRange line, Size lnum, TupleSequence<i...>)
     {
-      /**
-       * @brief test for each agent if one corresponds
-       * to the current line and if it is, interpret
-       * this line of code.
-       */
+      compileLine(line, lnum, get<i>(agents)...);
+    }
+
+    void compileLine(
+      StringCRange line, Size lnum, 
+      ERROR &err, auto &first, auto &...tails)
+    {
+      if (first.test(line))
+        first.act(line, lnum);
+      else if constexpr (sizeof...(tails) != 0)
+        compileLine(line, lnum, err, tails);
+      else 
+        err.act(line, lnum);
     }
   };
 }
