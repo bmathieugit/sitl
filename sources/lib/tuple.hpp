@@ -10,7 +10,7 @@ namespace sitl
   template <TupleIndex... i> struct TupleSequence{};
   
   template <TupleIndex first, TupleIndex ... next>
-  constexpr auto makeSequenceImpl()
+  consteval auto makeSequenceImpl()
   {
     if constexpr (first == 0)
       return TupleSequence<first, next...>();
@@ -19,7 +19,7 @@ namespace sitl
   }
 
   template <TupleIndex max>
-  constexpr auto makeSequence()
+  consteval auto makeSequence()
   {
     return makeSequenceImpl<max>();
   }
