@@ -40,6 +40,10 @@ objects/set.test.exe: tests/set.test.cpp
 	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 	./$@
 
+objects/map.test.exe: tests/map.test.cpp
+	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
+	./$@
+
 objects/strong.test.exe: tests/strong.test.cpp
 	g++ -o $@ $^ ${CCINCLUDES} ${CCFLAGS}
 	./$@
@@ -55,7 +59,7 @@ objects/args.test.exe: tests/args.test.cpp sources/lib/args.cpp
 test: objects objects/algorithm.test.exe objects/strong.test.exe \
 			objects/array.test.exe objects/vector.test.exe objects/string.test.exe \
 			objects/iostream.test.exe objects/list.test.exe objects/set.test.exe \
-			objects/args.test.exe objects/tuple.test.exe
+			objects/args.test.exe objects/tuple.test.exe objects/map.test.exe
 	wc -l objects/*test*.s
 
 objects/sitl.exe: sources/sitl.cpp \

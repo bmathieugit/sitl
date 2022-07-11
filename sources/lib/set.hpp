@@ -2,6 +2,7 @@
 #define __lib_set_hpp__
 
 #include <lib/list.hpp>
+#include <lib/utility.hpp>
 #include <lib/basic_types.hpp>
 #include <lib/range.hpp>
 
@@ -87,6 +88,21 @@ namespace sitl
     void push(const T &t) noexcept
     {
       push(static_cast<T &&>(T(t)));
+    }
+    
+    void fpush(T&& t) noexcept
+    {
+      auto it = range().find_if([&t](const T& o) {
+        return t <= o;
+      });
+
+      if (it == end() || *it == t)
+        storage.insert(it, move(t));
+    }
+
+    void fpush(const T& t) noexcept
+    {
+      fpush(move(T(t)));
     }
 
     template <typename IT>

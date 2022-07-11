@@ -3,51 +3,48 @@
 
 #include <lib/set.hpp>
 #include <lib/basic_types.hpp>
-#include <lib/algorithm.hpp>
+#include <lib/logger.hpp>
 
 namespace sitl
 {
   template <typename K, typename V>
-  class Pair
+  struct Pair 
   {
-    K key;
-    V value;
-
-  public:
-    Pair(const K& k, const V& v)
-      : key(k), value(v) {}
-    
-    ~Pair() = default;
-    Pair(const Pair&) = default;
-    Pair(Pair&&) = default;
-    Pair& operator=(const Pair&) = default;
-    Pair& operator=(Pair&&) = default;
-  
-  public:
-    bool operator==(const Pair& o) const 
-    {
-      return key == o.key;
-    }
-
-    bool operator!=(const Pair& o) const 
-    {
-      return !(*this == o);
-    }
-
-    bool operator<(const Pair& o) const
-    {
-      return key < o.key;
-    }
-
-    bool operator<=(const Pair& o) const
-    {
-      return *this == o || *this < o;  
-    }
-
-  public:
-    const K& () const { return key; }
-    const V& v() const { return value; }
+    K k;
+    V v;
   };
+
+  template <typename K, typename V>
+  bool operator == (
+    const Pair<K, V>& p1, 
+    const Pair<K, V>& p2)
+  {
+    return p1.k == p2.k;
+  }
+
+  template <typename K, typename V>
+  bool operator != (
+    const Pair<K, V>& p1, 
+    const Pair<K, V>& p2)
+  {
+    return p1.k != p2.k;
+  }
+
+  template <typename K, typename V>
+  bool operator < (
+    const Pair<K, V>& p1, 
+    const Pair<K, V>& p2)
+  {
+    return p1.k < p2.k;
+  }
+
+  template <typename K, typename V>
+  bool operator <= (
+    const Pair<K, V>& p1, 
+    const Pair<K, V>& p2)
+  {
+    return p1.k <= p2.k;
+  }
 
   template<typename V>
   class MapValue
@@ -75,6 +72,7 @@ namespace sitl
       return empty();
     }
 
+  public:
     V& get()
     {
       return *value;
@@ -109,33 +107,51 @@ namespace sitl
     Map(Map&&) = default;
     Map& operator=(const Map&) = default;
     Map& operator=(Map&&) = default;
+  
+  public:
+    Size size() const 
+    {
+      return entries.size();
+    }
+
+    bool empty() const 
+    {
+      return entries.empty();
+    }
 
   public:
-    // il nous fait un moyen d'accéder à n'importe quelle valeur via sa clé. On
-    // va donc mettre en place la fonction at qui prend en entrée une clé et qui
-    // rend en sortie la valeur associée. si la clé n'est pas présente dans la
-    // map alors l'optional retourné sera vide. On va donc mettre en place un 
-    // objet MapValue qui exprimé cette absence potentielle de valeur.
     MapValue<V> at(const K& key)
     {
       auto found = entries.range().find_if(
         [&key] (const Pair<K, V>& p) {
-          return p.k() == key;
+          return p.k == key;
         });
-      return found != entries.end()
-        ? MapValue<V>(*found)
+     
+     return found != entries.end()
+        ? MapValue<V>((*found).v)
         : MapValue<V>();
     }
 
-    MapValue<const V> at(const K& key) const;
+    MapValue<const V> at(const K& key) const
     {
       auto found = entries.range().find_if(
         [&key] (const Pair<K, V>& p) {
-          return p.k() == key;
+          return p.k == key;
         });
-      return found != entries.end()
-        ? MapValue<const V>(*found)
+     
+     return found != entries.end()
+        ? MapValue<const V>((*found).v)
         : MapValue<const V>();
+    }
+   
+    void push(const K& key, const V& value)
+    {
+      entries.fpush(Pair<K, V>{key, value});
+    }
+
+    void push(const K& key, V&& value)
+    {
+      entries.fpush(Pair<K, V>{key, move(value)});
     }
   };
 }
