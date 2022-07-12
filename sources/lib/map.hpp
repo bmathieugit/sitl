@@ -3,7 +3,6 @@
 
 #include <lib/vector.hpp>
 #include <lib/basic_types.hpp>
-#include <lib/logger.hpp>
 
 namespace sitl
 {
@@ -13,6 +12,20 @@ namespace sitl
     K k;
     V v;
   };
+
+  template <typename K, typename V>
+  bool operator == (const Pair<K, V>& p,
+                    const Pair<K, V>& p2)
+  {
+    return p.k == p2.k;
+  }
+
+  template <typename K, typename V>
+  bool operator == (const Pair<K, V>& p, 
+                    const K& k)
+  {
+    return p.k == k;
+  }
 
   template <typename V> 
   struct MapValue
@@ -47,32 +60,26 @@ namespace sitl
   public:
     MapValue<V> at(const K& key)
     {
-     for (Pair<K, V>& p : entries)
-        if (p.k == key)
-          return MapValue<V>{&p.v};
-
-      return MapValue<V>{};
+      auto it = entries.range().find(key);
+      
+      return MapValue<V> {
+        it != entries.end()
+          ? &(*it).v
+          : nullptr
+      };
     }
 
-    const V* at(const K& key) const
+    MapValue<const V> at(const K& key) const
     {
-      for (const Pair<K, V>& p : entries)
-        if (p.k == key)
-          return &p.v;
+      auto it = entries.range().find(key);
       
-      return nullptr;
+      return MapValue<const V> {
+        it != entries.end()
+          ? &(*it).v
+          : nullptr
+      };
     }
    
-    void push(const K& key, const V& value)
-    {
-      auto found = at(key);
-
-      if (found)
-        found.get() = value;
-      else 
-        entries.push(Pair<K, V>(key, value));
-    }
-
     void push(const K& key, V&& value)
     {
       auto found = at(key);
@@ -81,7 +88,12 @@ namespace sitl
         found.get() = move(value);
       else 
         entries.push(Pair<K, V>(key, move(value)));
-     }
+    }
+  
+    void push(const K& key, const V& value)
+    {
+      push(move(V(value)));
+    }
   };
 }
 

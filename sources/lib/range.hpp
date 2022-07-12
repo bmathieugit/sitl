@@ -556,7 +556,7 @@ namespace sitl
                    { return true; });
     }
 
-    constexpr Size count(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
+    constexpr Size count(const auto &t) const noexcept
     {
       return apply(CountAlgorithm(), t);
     }
@@ -566,17 +566,17 @@ namespace sitl
       return apply(CountIfAlgorithm(), pred);
     }
 
-    constexpr auto find(const RemoveReference<decltype(*declval<IT>())> &t) noexcept
+    constexpr auto find(const auto &t) noexcept
     {
       return apply(FindAlgorithm(), t);
     }
 
-    constexpr auto find(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
+    constexpr auto find(const auto &t) const noexcept
     {
       return apply(FindAlgorithm(), t);
     }
 
-    constexpr bool contains(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
+    constexpr bool contains(const auto &t) const noexcept
     {
       return find(t) != end();
     }
@@ -641,37 +641,37 @@ namespace sitl
       return apply(AroundIfAlgorithm<const Range>(), pred);
     }
 
-    constexpr Range after(const RemoveReference<decltype(*declval<IT>())> &t) noexcept
+    constexpr Range after(const auto &t) noexcept
     {
       return Range(apply(AfterAlgorithm(), t), end());
     }
 
-    constexpr const Range after(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
+    constexpr const Range after(const auto &t) const noexcept
     {
       return Range(apply(AfterAlgorithm(), t), end());
     }
 
-    constexpr Range before(const RemoveReference<decltype(*declval<IT>())> &t) noexcept
+    constexpr Range before(const auto &t) noexcept
     {
       return Range(begin(), apply(BeforeAlgorithm(), t));
     }
 
-    constexpr const Range before(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
+    constexpr const Range before(const auto &t) const noexcept
     {
       return Range(begin(), apply(BeforeAlgorithm(), t));
     }
 
-    constexpr decltype(auto) around(const RemoveReference<decltype(*declval<IT>())> &t) noexcept
+    constexpr decltype(auto) around(const auto &t) noexcept
     {
       return apply(AroundAlgorithm<Range>(), t);
     }
 
-    constexpr decltype(auto) around(const RemoveReference<decltype(*declval<IT>())> &t) const noexcept
+    constexpr decltype(auto) around(const auto &t) const noexcept
     {
       return apply(AroundAlgorithm<const Range>(), t);
     }
 
-    constexpr decltype(auto) go_after(const RemoveReference<decltype(*declval<IT>())> &t) noexcept
+    constexpr decltype(auto) go_after(const auto &t) noexcept
     {
       auto [bf, af] = around(t);
       *this = af;
@@ -685,26 +685,26 @@ namespace sitl
       return bf;
     }
 
-    constexpr Range inside(const RemoveReference<decltype(*declval<IT>())> &t1,
-                           const RemoveReference<decltype(*declval<IT>())> &t2) noexcept
+    constexpr Range inside(const auto &t1,
+                           const auto &t2) noexcept
     {
       return apply(InsideAlgorithm<Range>(), t1, t2);
     }
 
-    constexpr Range inside(const RemoveReference<decltype(*declval<IT>())> &t1,
-                           const RemoveReference<decltype(*declval<IT>())> &t2) const noexcept
+    constexpr Range inside(const auto &t1,
+                           const auto &t2) const noexcept
     {
       return apply(InsideAlgorithm<Range>(), t1, t2);
     }
 
-    constexpr decltype(auto) outside(const RemoveReference<decltype(*declval<IT>())> &t1,
-                                     const RemoveReference<decltype(*declval<IT>())> &t2) noexcept
+    constexpr decltype(auto) outside(const auto &t1,
+                                     const auto &t2) noexcept
     {
       return apply(OutsideAlgorithm<Range>(), t1, t2);
     }
 
-    constexpr decltype(auto) outside(const RemoveReference<decltype(*declval<IT>())> &t1,
-                                     const RemoveReference<decltype(*declval<IT>())> &t2) const noexcept
+    constexpr decltype(auto) outside(const auto &t1,
+                                     const auto &t2) const noexcept
     {
       return apply(OutsideAlgorithm<Range>(), t1, t2);
     }
