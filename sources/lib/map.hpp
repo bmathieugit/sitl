@@ -15,14 +15,14 @@ namespace sitl
 
   template <typename K, typename V>
   bool operator == (const Pair<K, V>& p,
-                    const Pair<K, V>& p2)
+                    const Pair<K, V>& p2) noexcept
   {
     return p.k == p2.k;
   }
 
   template <typename K, typename V>
   bool operator == (const Pair<K, V>& p, 
-                    const K& k)
+                    const K& k) noexcept
   {
     return p.k == k;
   }
@@ -32,13 +32,13 @@ namespace sitl
   {
     V* v = nullptr;
 
-    operator bool () const 
+    operator bool () const noexcept
     {
       return v != nullptr;
     }
 
-    V& get() { return *v; }
-    const V& get() const { return *v; }
+    V& get() noexcept { return *v; }
+    const V& get() const noexcept { return *v; }
   };
 
   template <typename K, typename V>
@@ -47,18 +47,18 @@ namespace sitl
     Vector<Pair<K, V>> entries;
  
   public:
-    Size size() const 
+    Size size() const noexcept
     {
       return entries.size();
     }
 
-    bool empty() const 
+    bool empty() const noexcept
     {
       return entries.empty();
     }
 
   public:
-    MapValue<V> at(const K& key)
+    MapValue<V> at(const K& key) noexcept
     {
       auto it = entries.range().find(key);
       
@@ -69,7 +69,7 @@ namespace sitl
       };
     }
 
-    MapValue<const V> at(const K& key) const
+    MapValue<const V> at(const K& key) const noexcept
     {
       auto it = entries.range().find(key);
       
@@ -80,7 +80,7 @@ namespace sitl
       };
     }
    
-    void push(const K& key, V&& value)
+    void push(const K& key, V&& value) noexcept
     {
       auto found = at(key);
 
@@ -90,10 +90,16 @@ namespace sitl
         entries.push(Pair<K, V>(key, move(value)));
     }
   
-    void push(const K& key, const V& value)
+    void push(const K& key, const V& value) noexcept
     {
       push(move(V(value)));
     }
+
+  public:
+    auto begin() noexcept { return entries.begin(); }
+    auto end() noexcept { return entries.end(); }
+    auto begin() const noexcept { return entries.begin(); }
+    auto end() const noexcept { return entries.end(); }
   };
 }
 
