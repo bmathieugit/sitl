@@ -8,6 +8,141 @@
 
 namespace sitl
 {
+  template<typename T>
+  struct VectorData
+  {
+    Size lgth   = 0; 
+    Size max    = 0;
+    Strong<T[]> = nullptr;
+  };
+
+  template <typename P, typename T, typename O>
+  concept HasPrepushPolicy = 
+  requires (VectorData<T>& vd, const O& o, O&& o2) 
+  {
+    P::Prepush()(vd, o);
+    P::Prepush()(vd, move(o2));
+  };
+
+  template <typename P, typename T, typename O>
+  concept HasPushPolicy = 
+  requires (VectorData<T>& vd, const O& o, O&& o2) 
+  {
+    P::Push()(vd, o);
+    P::Push()(vd, move(o2));
+  };
+
+  template <typename P>
+  concept HasPostpushPolicy = 
+  requires (VectorData<T>& vd, const O& o, O&& o2) 
+  {
+    P::Postpush()(vd, o);
+    P::postpush()(vd, move(o2));
+  };
+
+  template <typename T, typename POLICIES>
+  class PVector : private VectorData<T>
+  { 
+  public:
+    ~PVector() noexcept = default;
+
+    PVector() noexcept = default;
+
+    explicit PVector(Size _max) noexcept
+     : lgth(0), max(_max), store(new T[max]) {}
+
+    template <typename IT>
+    PVector(IT b, IT e) noexcept 
+    {}
+
+    PVector(const PVector& o) noexcept
+    {}
+
+    PVector(PVector&& o) noexcept
+    {}
+
+    PVector& operator=(const PVector& o) noexcept
+    {}
+
+    PVector& operator=(PVector&& o) noexcept
+    {}
+
+  public:
+    Size size() const noexcept 
+    { return lgth; }
+
+    bool empty() const noexcept
+    { return lgth == 0; }
+
+    Size capacity() const noexcept
+    { return max; }
+
+  public:
+    auto data() noexcept 
+    { return store; }
+
+    auto data() const noexcept
+    { return store; }
+
+    auto begin() noexcept 
+    { return store; }
+
+    auto end() noexcept 
+    { return store + size; }
+
+    auto begin() const noexcept
+    { return store; }
+
+    auto end() const noexcept
+    { return store + size; }
+
+  public:
+    template <typename O>
+    void push(const O& o) noexcept
+    {
+      if constexpr (HasPrepushPolicy<POLICIES>)
+        POLICIES::Prepush()(*this, o);
+
+      if constexpr (HasPushPolicy<POLICIES>)
+        POLICIES::Push()(*this, o);
+     
+      if constexpr (HasPostpushPolicy<POLICIES>)
+        POLICIES::Postpush()(*this, o);
+    }
+
+    template <typename O>
+    void push(O&& o) noexcept
+    {
+      if constexpr (HasPrepushPolicy<POLICIES>)
+        POLICIES::Prepush()(*this, move(o));
+
+      if constexpr (HasPushPolicy<POLICIES>)
+        POLICIES::Push()(*this, move(o));
+     
+      if constexpr (HasPostpushPolicy<POLICIES>)
+        POLICIES::Postpush()(*this, move(o));
+    }
+
+    template <typename IT>
+    void append(IT b, IT e) noexcept
+    {
+      if constexpr (HasPreappendPolicy<POLICIES>)
+        POLICIES::Preappend()(*this, b, e);
+      
+      for (auto&& t : Range<IT>(b, e))
+        push(t);
+
+      if constexpr (HasPostappendPolicy<POLICIES>)
+        POLICIES::Postappend()(*this, b, e);
+    }
+
+    
+  };
+}
+
+
+namespace sitl
+{
   template <typename T>
   class Vector
   {
