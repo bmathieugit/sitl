@@ -428,6 +428,61 @@ namespace sitl
     }
   };
 
+  template<Iterator IT>
+  class MoveIterator
+  {
+    IT it;
+
+  public:
+    MoveIterator() = default;
+    ~MoveIterator() = default;
+    MoveIterator(const MoveIterator&) = default;
+    MoveIterator(MoveIterator&&) = default;
+    MoveIterator& operator=(const MoveIterator&) = default;
+    MoveIterator& operator=(MoveIterator&&) = default;
+
+    MoveIterator(IT _it) : it(_it) {}
+
+  public:
+    auto& operator++()
+    {
+      ++it;
+      return *this;
+    }
+
+    auto operator++(int)
+    {
+      auto tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+
+    auto operator+(int offset) const
+    { return MoveIterator(it + offset); }
+
+    auto operator-(const MoveIterator &o) const
+    { return it - o.it; }
+
+    decltype(auto) operator*()
+    { return move(*it); }
+
+    decltype(auto) operator*() const 
+    { return move(*it); }
+
+    bool operator==(const MoveIterator &o) const
+    { return it == o.it; }
+
+    bool operator!=(const MoveIterator &o) const
+    { return it != o.it; }
+
+    decltype(auto) operator[](Size i)
+    { return move(it[i]); }
+
+    decltype(auto) operator[](Size i) const
+    { return move(it[i]); }
+  };
+
+
   template <Iterator IT>
   struct Range
   {

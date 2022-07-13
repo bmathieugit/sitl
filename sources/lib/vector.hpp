@@ -8,209 +8,69 @@
 
 namespace sitl
 {
-  template<typename T>
-  struct VectorData
-  {
-    Size lgth   = 0; 
-    Size max    = 0;
-    Strong<T[]> = nullptr;
-  };
-
-  template <typename P, typename T, typename O>
-  concept HasPrepushPolicy = 
-  requires (VectorData<T>& vd, const O& o, O&& o2) 
-  {
-    P::Prepush()(vd, o);
-    P::Prepush()(vd, move(o2));
-  };
-
-  template <typename P, typename T, typename O>
-  concept HasPushPolicy = 
-  requires (VectorData<T>& vd, const O& o, O&& o2) 
-  {
-    P::Push()(vd, o);
-    P::Push()(vd, move(o2));
-  };
-
-  template <typename P>
-  concept HasPostpushPolicy = 
-  requires (VectorData<T>& vd, const O& o, O&& o2) 
-  {
-    P::Postpush()(vd, o);
-    P::postpush()(vd, move(o2));
-  };
-
-  template <typename T, typename POLICIES>
-  class PVector : private VectorData<T>
-  { 
-  public:
-    ~PVector() noexcept = default;
-
-    PVector() noexcept = default;
-
-    explicit PVector(Size _max) noexcept
-     : lgth(0), max(_max), store(new T[max]) {}
-
-    template <typename IT>
-    PVector(IT b, IT e) noexcept 
-    {}
-
-    PVector(const PVector& o) noexcept
-    {}
-
-    PVector(PVector&& o) noexcept
-    {}
-
-    PVector& operator=(const PVector& o) noexcept
-    {}
-
-    PVector& operator=(PVector&& o) noexcept
-    {}
-
-  public:
-    Size size() const noexcept 
-    { return lgth; }
-
-    bool empty() const noexcept
-    { return lgth == 0; }
-
-    Size capacity() const noexcept
-    { return max; }
-
-  public:
-    auto data() noexcept 
-    { return store; }
-
-    auto data() const noexcept
-    { return store; }
-
-    auto begin() noexcept 
-    { return store; }
-
-    auto end() noexcept 
-    { return store + size; }
-
-    auto begin() const noexcept
-    { return store; }
-
-    auto end() const noexcept
-    { return store + size; }
-
-  public:
-    template <typename O>
-    void push(const O& o) noexcept
-    {
-      if constexpr (HasPrepushPolicy<POLICIES>)
-        POLICIES::Prepush()(*this, o);
-
-      if constexpr (HasPushPolicy<POLICIES>)
-        POLICIES::Push()(*this, o);
-     
-      if constexpr (HasPostpushPolicy<POLICIES>)
-        POLICIES::Postpush()(*this, o);
-    }
-
-    template <typename O>
-    void push(O&& o) noexcept
-    {
-      if constexpr (HasPrepushPolicy<POLICIES>)
-        POLICIES::Prepush()(*this, move(o));
-
-      if constexpr (HasPushPolicy<POLICIES>)
-        POLICIES::Push()(*this, move(o));
-     
-      if constexpr (HasPostpushPolicy<POLICIES>)
-        POLICIES::Postpush()(*this, move(o));
-    }
-
-    template <typename IT>
-    void append(IT b, IT e) noexcept
-    {
-      if constexpr (HasPreappendPolicy<POLICIES>)
-        POLICIES::Preappend()(*this, b, e);
-      
-      for (auto&& t : Range<IT>(b, e))
-        push(t);
-
-      if constexpr (HasPostappendPolicy<POLICIES>)
-        POLICIES::Postappend()(*this, b, e);
-    }
-
-    
-  };
-}
-
-
-namespace sitl
-{
   template <typename T>
   class Vector
   {
     Size lgth = 0;
-    Size max = 0;
-    Strong<T[]> storage;
+    Size max  = 0;
+    Strong<T[]> store;
 
   public:
-    constexpr Vector() noexcept = default;
+    Vector()  = default;
 
-    explicit constexpr Vector(Size _max) noexcept
-        : lgth(0),
-          max(_max),
-          storage{new T[max]}
+    explicit Vector(Size _max) 
+        : lgth(0), max(_max), store{new T[max]}
     {
     }
 
-    template <typename IT>
-    constexpr Vector(IT b, IT e) noexcept
-        : Vector()
+    template <Iterator IT>
+    Vector(IT b, IT e) 
+      : Vector(e - b)
     {
-      append(b, e);
+      lappend(b, e);
     }
 
-    template <Rangeable R>
-    constexpr Vector(R r) noexcept
-        : Vector(r.size())
-    {
-      lappend(r);
-    }
+    template <Iterator IT>
+    Vector(Range<IT> r) 
+      : Vector(r.begin(), r.end())
+    {}
 
-    constexpr Vector(const Vector &o) noexcept
-        : Vector(o.max)
-    {
-      lappend(o.begin(), o.end());
-    }
+    Vector(const Vector &o) 
+      : Vector(o.begin(), o.end())
+    {}
 
-    constexpr Vector(Vector &&o) noexcept
+    Vector(Vector &&o) 
         : lgth(o.lgth),
           max(o.max),
-          storage(move(o.storage))
+          store(move(o.store))
     {
       o.lgth = 0;
       o.max = 0;
     }
 
-    constexpr ~Vector() noexcept = default;
+    ~Vector() = default;
 
-    constexpr Vector &operator=(const Vector &o) noexcept
+    Vector& operator=(const Vector &o) 
     {
       if (this != &o)
       {
-        lgth = 0;
-        max = o.max;
-        storage = new T[max];
+        lgth  = 0;
+        max   = o.max;
+        store = new T[max];
+        
         lappend(o.begin(), o.end());
       }
 
       return *this;
     }
 
-    constexpr Vector &operator=(Vector &&o) noexcept
+    Vector& operator=(Vector &&o) 
     {
       if (this != &o)
       {
         lgth = o.lgth;
         max = o.max;
-        storage = move(o.storage);
+        store = move(o.store);
         o.lgth = 0;
         o.max = 0;
       }
@@ -219,132 +79,123 @@ namespace sitl
     }
 
   public:
-    constexpr operator Range<T *>() noexcept
+    operator Range<T*>() 
     {
       return range();
     }
 
-    constexpr operator Range<const T *>() const noexcept
+    operator Range<const T*>() const 
     {
       return range();
     }
 
-    constexpr auto range() noexcept
+    operator Range<MoveIterator<T*>>() &&
+    {
+      return Range<MoveIterator<T*>>(
+        MoveIterator<T*>(begin()), 
+        MoveIterator<T*>(end()));
+    }
+
+    auto range() 
     {
       return sitl::range(*this);
     }
 
-    constexpr auto range() const noexcept
+    auto range() const 
     {
       return sitl::range(*this);
     }
 
-    constexpr Size size() const noexcept
+    Size size() const 
     {
       return lgth;
     }
 
-    constexpr Size capacity() const noexcept
+    Size capacity() const 
     {
       return max;
     }
 
-    constexpr bool empty() const noexcept
+    bool empty() const 
     {
       return lgth == 0;
     }
 
-    constexpr T *data() noexcept
+    T* data() 
     {
-      return storage;
+      return store;
     }
 
-    constexpr const T *data() const noexcept
+    const T* data() const 
     {
-      return storage;
+      return store;
     }
 
   public:
-    constexpr void increase(Size more) noexcept
+    void increase(Size more) 
     {
       if (more == 0)
         return;
 
-      Strong<T[]> nstorage = new T[max + more];
+      Strong<T[]> nstore = new T[max + more];
 
       for (Size i = 0; i < lgth; ++i)
-        nstorage[i] = move(storage[i]);
+        nstore[i] = move(store[i]);
 
-      storage = move(nstorage);
+      store = move(nstore);
       max = max + more;
     }
 
-    constexpr void clear() noexcept
+    void clear() 
     {
       lgth = 0;
     }
 
   public:
-    constexpr void lpush(const T &t) noexcept
+    void lpush(const T &t) 
     {
       if (lgth < max)
       {
-        storage[lgth] = t;
+        store[lgth] = t;
         ++lgth;
       }
     }
 
-    constexpr void lpush(T &&t) noexcept
+    void lpush(T &&t) 
     {
       if (lgth < max)
       {
-        storage[lgth] = move(t);
+        store[lgth] = move(t);
         ++lgth;
       }
     }
 
-    constexpr void push(const T &t) noexcept
+    void push(const T &t) 
     {
       if (lgth >= max)
         increase(max == 0 ? 10 : max * 2);
 
-      storage[lgth] = t;
+      store[lgth] = t;
       lgth = lgth + 1;
     }
 
-    constexpr void push(T &&t) noexcept
+    void push(T &&t) 
     {
       if (lgth >= max)
         increase(max == 0 ? 10 : max * 2);
 
-      storage[lgth] = move(t);
+      store[lgth] = move(t);
       lgth = lgth + 1;
     }
-
-    constexpr void lappend(Range<T *> sp) noexcept
+    
+    template <Iterator IT>
+    void lappend(Range<IT> sp) 
     {
       lappend(sp.begin(), sp.end());
-    }
-
-    constexpr void lappend(Range<const T *> sp) noexcept
-    {
-      lappend(sp.begin(), sp.end());
-    }
-
-    constexpr void lappend(const Vector &o) noexcept
-    {
-      for (const T &t : o)
-        lpush(t);
-    }
-
-    constexpr void lappend(Vector &&o) noexcept
-    {
-      for (T &&t : o)
-        lpush(move(t));
     }
 
     template <typename IT>
-    constexpr void lappend(IT b, IT e) noexcept
+    void lappend(IT b, IT e) 
     {
       while (b != e)
       {
@@ -353,30 +204,14 @@ namespace sitl
       }
     }
 
-    constexpr void append(Range<T *> sp) noexcept
+    template <typename IT>
+    void append(Range<IT> sp) 
     {
       append(sp.begin(), sp.end());
-    }
-
-    constexpr void append(Range<const T *> sp) noexcept
-    {
-      append(sp.begin(), sp.end());
-    }
-
-    constexpr void append(const Vector &o) noexcept
-    {
-      for (const T &t : o)
-        push(t);
-    }
-
-    constexpr void append(Vector &&o) noexcept
-    {
-      for (T &&t : o)
-        push(move(t));
     }
 
     template <typename IT>
-    constexpr void append(IT b, IT e) noexcept
+    void append(IT b, IT e) 
     {
       while (b != e)
       {
@@ -385,45 +220,45 @@ namespace sitl
       }
     }
 
-    constexpr T &operator[](Size i) noexcept
+    T &operator[](Size i) 
     {
-      return storage[i];
+      return store[i];
     }
 
-    const T &operator[](Size i) const noexcept
+    const T &operator[](Size i) const 
     {
-      return storage[i];
+      return store[i];
     }
 
-    constexpr T &back() noexcept
+    T &back() 
     {
-      return storage[size() - 1];
+      return store[size() - 1];
     }
 
-    constexpr const T &back() const noexcept
+    const T &back() const 
     {
-      return storage[size() - 1];
+      return store[size() - 1];
     }
 
   public:
-    constexpr T *begin() noexcept
+    T *begin() 
     {
-      return storage;
+      return store;
     }
 
-    constexpr T *end() noexcept
+    T *end() 
     {
-      return static_cast<T *>(storage) + lgth;
+      return static_cast<T *>(store) + lgth;
     }
 
-    constexpr const T *begin() const noexcept
+    const T *begin() const 
     {
-      return storage;
+      return store;
     }
 
-    constexpr const T *end() const noexcept
+    const T *end() const 
     {
-      return static_cast<const T *>(storage) + lgth;
+      return static_cast<const T *>(store) + lgth;
     }
   };
 
